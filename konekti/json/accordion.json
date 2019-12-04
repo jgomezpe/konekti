@@ -1,0 +1,6 @@
+{
+	"uses":["accordionItem"],
+	"js":true,
+	"html":true,
+	"css":false
+}
