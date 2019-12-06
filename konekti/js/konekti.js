@@ -427,8 +427,8 @@ class PlugIn{
 	insertBefore( sister, dictionary ){
 		var node = this.instance( dictionary )
 		var sisterNode = Util.vc( sister )
-		parentNode = sister.parentElement
-		parentNode.insertBefore( node, sister )
+		var parentNode = sisterNode.parentElement
+		parentNode.insertBefore( node, sisterNode )
 		this.connect( dictionary )
 	}
 
