@@ -15,7 +15,7 @@ searchBtn = window.plugin.searchBtn
 
 searchBtn.connect = function( dictionary ){
 	var id = dictionary.id
-	var input = Util.vc(id)
+	var input = Util.vc(id+'Input')
 
 	function check(event) {	dictionary.check( id, event.target.value ) }
 	if( dictionary.check != null ) input.addEventListener("input", check) 	
