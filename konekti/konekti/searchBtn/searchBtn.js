@@ -29,4 +29,3 @@ searchBtn.connect = function( dictionary ){
 	}
 	if( dictionary.find != null ) input.addEventListener("keyup", process) 	
 }
-

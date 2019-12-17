@@ -51,12 +51,19 @@ class Server{
 	}
 
 	/**
+	 * Gets the path to the plugIn
+	 * @param id PlugIn id 
+	 * @return The plugIns Path
+	 */
+	pluginPath(id){ return 'konekti/'+id+'/' }
+
+	/**
 	 * Creates a server based id for the given resource
 	 * @param id Id of the resource
 	 * @param type Type of the resource
 	 * @return A server based id for the given resource
 	 */
-	makeResourceID( id, type ){ return type+'/'+id+'.'+type }
+	makeResourceID( id, type ){ return id+'.'+type }
 
 	/**
 	 * Loads the given script (if possible)
@@ -174,12 +181,11 @@ class ServletServer extends Server{
 	}
 
 	/**
-	 * Creates a server based id for the given resource
-	 * @param id Id of the resource
-	 * @param type Type of the resource
-	 * @return A server based id for the given resource
+	 * Gets the path to the plugIn
+	 * @param id PlugIn id 
+	 * @return The plugIns Path
 	 */
-	makeResourceID( id, type ){ return id+'.'+type }
+	pluginPath(id){ return '' }
 
 	/**
 	 * Registers a command in the Server

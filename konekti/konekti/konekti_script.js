@@ -124,4 +124,3 @@ class Script{
 	 */
 	static stylesheet( url ){ Script.link( url, "stylesheet" ) }
 }
-

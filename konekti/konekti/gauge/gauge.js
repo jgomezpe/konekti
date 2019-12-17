@@ -15,10 +15,9 @@ gauge = window.plugin.gauge
 
 gauge.pos = function( event, id ){ return Math.floor(100 * (event.offsetX-1) / (Util.vc(id+"Container").offsetWidth-3) ); }
 
-gauge.instance = function( dictionary ){
-	var code = this.htmlCode( dictionary ) 
-	var node = Util.html( code )
+gauge.connect = function( dictionary ){
 	var id = dictionary.id
+	var node = Util.vc( id )
 	var c = Util.findChild( node, id+'Container' )
 	c.onmousemove = function(event) {
 		width = gauge.pos(event, id)
@@ -37,5 +36,3 @@ gauge.instance = function( dictionary ){
 	}
 	return node
 }
-
-

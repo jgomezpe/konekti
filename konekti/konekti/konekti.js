@@ -34,7 +34,7 @@ class Util{
 	 * @param str String to be converted to a JSON object
 	 * @return A JSON version of the String
 	 */
-	static json( str ){ return ((str!=null)&&(str.length>0))?JSON.util(str):null }
+	static json( str ){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null }
 
 	/**
 	 * Creates a HTML element from a string, if possible
@@ -314,7 +314,7 @@ class PlugIn{
 	constructor( server, id, next ){
 		this.id = id
 		this.server = server
-
+		
 		var js = false
 		var css = false
 		var html = false
@@ -341,11 +341,11 @@ class PlugIn{
 		}
 
 		function init2(){
-			if( css ) server.loadCSS(id, backCSS)
+			if( css ) server.loadCSS(server.pluginPath(id)+id, backCSS)
 			else cssLoaded = true
-			if( html ) server.getHTML(id, backHTML)
+			if( html ) server.getHTML(server.pluginPath(id)+id, backHTML)
 			else htmlLoaded = true
-			if( js ) server.loadJS(id, backJS)
+			if( js ) server.loadJS(server.pluginPath(id)+id, backJS)
 			else jsLoaded = true
 		}
 
@@ -376,7 +376,7 @@ class PlugIn{
 		this.next = next
 		this.server = server
 		this.id = id
-		this.server.getJSON( this.id, init )
+		this.server.getJSON( server.pluginPath(id)+this.id, init )
 	}
 	
 	/**
@@ -496,6 +496,13 @@ class Server{
 		xhttp.setRequestHeader("Cache-Control", "max-age=0")
 		xhttp.send()
 	}
+	
+	/**
+	 * Gets the path to the plugIn
+	 * @param id PlugIn id 
+	 * @return The plugIns Path
+	 */
+	pluginPath(id){ return 'konekti/'+id+'/' }
 
 	/**
 	 * Creates a server based id for the given resource
@@ -503,7 +510,7 @@ class Server{
 	 * @param type Type of the resource
 	 * @return A server based id for the given resource
 	 */
-	makeResourceID( id, type ){ return type+'/'+id+'.'+type }
+	makeResourceID( id, type ){ return id+'.'+type }
 
 	/**
 	 * Loads the given script (if possible)
@@ -621,12 +628,11 @@ class ServletServer extends Server{
 	}
 
 	/**
-	 * Creates a server based id for the given resource
-	 * @param id Id of the resource
-	 * @param type Type of the resource
-	 * @return A server based id for the given resource
+	 * Gets the path to the plugIn
+	 * @param id PlugIn id 
+	 * @return The plugIns Path
 	 */
-	makeResourceID( id, type ){ return id+'.'+type }
+	pluginPath(id){ return '' }
 
 	/**
 	 * Registers a command in the Server

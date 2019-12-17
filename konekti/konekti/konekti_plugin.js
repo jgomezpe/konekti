@@ -23,7 +23,7 @@ class PlugIn{
 	constructor( server, id, next ){
 		this.id = id
 		this.server = server
-
+		
 		var js = false
 		var css = false
 		var html = false
@@ -50,11 +50,11 @@ class PlugIn{
 		}
 
 		function init2(){
-			if( css ) server.loadCSS(id, backCSS)
+			if( css ) server.loadCSS(server.pluginPath(id)+id, backCSS)
 			else cssLoaded = true
-			if( html ) server.getHTML(id, backHTML)
+			if( html ) server.getHTML(server.pluginPath(id)+id, backHTML)
 			else htmlLoaded = true
-			if( js ) server.loadJS(id, backJS)
+			if( js ) server.loadJS(server.pluginPath(id)+id, backJS)
 			else jsLoaded = true
 		}
 
@@ -85,7 +85,7 @@ class PlugIn{
 		this.next = next
 		this.server = server
 		this.id = id
-		this.server.getJSON( this.id, init )
+		this.server.getJSON( server.pluginPath(id)+this.id, init )
 	}
 	
 	/**

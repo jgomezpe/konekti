@@ -32,7 +32,7 @@ class Util{
 	 * @param str String to be converted to a JSON object
 	 * @return A JSON version of the String
 	 */
-	static json( str ){ return ((str!=null)&&(str.length>0))?JSON.util(str):null }
+	static json( str ){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null }
 
 	/**
 	 * Creates a HTML element from a string, if possible
