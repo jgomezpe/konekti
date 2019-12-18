@@ -31,7 +31,7 @@ accordion.instance = function ( dictionary ){
 		for( var i=0; i<children.length; i++ ){
 			var child = children[i]
 			var childNode = null
-			if( child.isAccordion ){
+			if( child.children ){
 				if( child.color == undefined || child.color == null ) child.color = dictionary.color
 				childNode = accordion.instance( child )
 			}

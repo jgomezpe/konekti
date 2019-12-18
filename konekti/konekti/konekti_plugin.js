@@ -154,13 +154,21 @@ class PlugIn{
 		this.connect( dictionary )
 	}
 
+	/**
+	 * Loads a set of PlugIns
+	 * @param server Server containing the set of PlugIns
+	 * @param plugins Name of the PlugIns to be loaded
+	 * @param next Function that will be executed after loading the set of PlugIns
+	 */
 	static uses( server, plugins, next ){
+		if( window.plugin == null ) window.plugin = {}
 		var i=0
 		function step(){
 			if( i<plugins.length ){
 				var p = plugins[i]
 				i++
-				new PlugIn( server, p, step )
+				if( window.plugin[p] != null ) step()
+				else new PlugIn( server, p, step )
 			}else next()
 		}
 		step()
