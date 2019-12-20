@@ -11,9 +11,8 @@
 * @version 1.0
 */
 
-// Canvas functions
+// Accordion functions
 var accordion = window.plugin.accordion
-var accordionItem = window.plugin.accordionItem
 
 accordion.expand = function( id ){
 	var x = document.getElementById(id);
@@ -31,11 +30,12 @@ accordion.instance = function ( dictionary ){
 		for( var i=0; i<children.length; i++ ){
 			var child = children[i]
 			var childNode = null
+			child.select = dictionary.select
 			if( child.children ){
 				if( child.color == undefined || child.color == null ) child.color = dictionary.color
 				childNode = accordion.instance( child )
 			}
-			else childNode = accordionItem.instance( child )
+			else childNode = window.plugin.accordionitem.instance( child )
 			inner.appendChild( childNode )
 		}
 	}
