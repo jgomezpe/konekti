@@ -304,6 +304,8 @@ class Script{
 
 /* ************************************* PlugIn Methods ****************************************** */
 class PlugIn{
+	static URL( id ){ return "https://github.com/jgomezpe/konekti/tree/master/konekti/konekti/" + id + '/' }
+
 	/**
 	 * Creates a PlugIn with the given <i>id</i>, loading its resources from the given <i>server</i> and 
 	 * runs the <i>next</i> function after loaded
@@ -341,11 +343,11 @@ class PlugIn{
 		}
 
 		function init2(){
-			if( css ) server.loadCSS(server.pluginPath(id)+id, backCSS)
+			if( css ) server.loadCSS(x.path+id, backCSS)
 			else cssLoaded = true
-			if( html ) server.getHTML(server.pluginPath(id)+id, backHTML)
+			if( html ) server.getHTML(x.path+id, backHTML)
 			else htmlLoaded = true
-			if( js ) server.loadJS(server.pluginPath(id)+id, backJS)
+			if( js ) server.loadJS(x.path+id, backJS)
 			else jsLoaded = true
 		}
 
@@ -370,13 +372,23 @@ class PlugIn{
 			}else init2()
 		}
 
+		function checkKonektiFirst( obj ){
+			if( obj != null ){
+				x.path = PlugIn.URL(x.id)
+				init(obj)
+			}else{
+				x.path = this.server.pluginPath(id)
+				x.server.getJSON( x.path+x.id, init )
+			}
+
+		}
 
 		if( window.plugin == null ) window.plugin = {}
 		window.plugin[id] = this
 		this.next = next
 		this.server = server
 		this.id = id
-		this.server.getJSON( server.pluginPath(id)+this.id, init )
+		this.server.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
 	}
 	
 	/**
