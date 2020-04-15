@@ -304,7 +304,7 @@ class Script{
 
 /* ************************************* PlugIn Methods ****************************************** */
 class PlugIn{
-	static URL( id ){ return "https://github.com/jgomezpe/konekti/tree/master/konekti/konekti/" + id + '/' }
+	static URL( id ){ return "https://konekti.numtseng.com/konekti/" + id + '/' }
 
 	/**
 	 * Creates a PlugIn with the given <i>id</i>, loading its resources from the given <i>server</i> and 
