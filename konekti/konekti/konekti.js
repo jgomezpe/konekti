@@ -522,7 +522,7 @@ class Server{
 	 * @param id PlugIn id 
 	 * @return The plugIns Path
 	 */
-	pluginPath(id){ return 'konekti/'+id+'/' }
+	pluginPath(id){ return 'plugin/'+id+'/' }
 
 	/**
 	 * Creates a server based id for the given resource
