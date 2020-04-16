@@ -26,7 +26,7 @@ class Package{
 
 /* ************************************* A server ****************************************** */
 class Server{
-	constructor(){}
+	constructor(){ this.plugin_path = 'plugin/' }
 
 	/**
 	 * Reads a resource from the server
@@ -55,7 +55,7 @@ class Server{
 	 * @param id PlugIn id 
 	 * @return The plugIns Path
 	 */
-	pluginPath(id){ return 'plugin/'+id+'/' }
+	pluginPath(id){ return this.plugin_path+id+'/' }
 
 	/**
 	 * Creates a server based id for the given resource
