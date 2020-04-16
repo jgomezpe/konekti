@@ -1,0 +1,6 @@
+{
+	"uses":["captcha"],
+	"js":true,
+	"html":true,
+	"css":false
+}
