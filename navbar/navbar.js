@@ -27,7 +27,7 @@ window.plugin.navbar.instance = function ( dictionary ){
 			}else if( btn[i].find != null && btn[i].find ){
 				node.appendChild( window.plugin.searchbtn.instance( {'id':'search2', 'find':"Navigate.find()" } ) )
 			}else{
-				btn[i].run = "Navigate.·id·()"
+				btn[i].run = "Navigate."+btn[i].id+"()"
 				node.appendChild( window.plugin.btn.instance( btn[i] ) )
 			}
 
