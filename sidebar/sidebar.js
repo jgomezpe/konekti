@@ -12,26 +12,10 @@
 */
 
 // Sidebar functions
-var sidebar = window.plugin.sidebar
 
-sidebar.open = function( barId ){
+window.plugin.sidebar.open = function( barId ){
 	var c = Util.vc(barId)
 	c.style.display = "block" 
-//	c.style.width = '50%'
 }
 
-sidebar.close = function( barId ){ Util.vc(barId).style.display = "none" }
-
-sidebar.connect = function( dictionary ){
-	var id = dictionary.id
-	var btnHtml = '<button id="·id·Btn" class="·class·" onclick="window.plugin.sidebar.open(\'·id·\')">·caption·</button>'
-	var btnJson = { 'id': id, 'class':dictionary['class'], "caption":dictionary.caption }
-	btnHtml = Util.fromTemplate( btnHtml, btnJson, '·' )
-	var node = Util.html( btnHtml )
-	var c = Util.vc( id+'Btn' )
-	if( c!=null ) c.parentElement.replaceChild(node, c)
-	else{
-		c = Util.vc( dictionary.btnBar )
-		c.insertBefore( node, c.firstChild )
-	}
-}
+window.plugin.sidebar.close = function( barId ){ Util.vc(barId).style.display = "none" }

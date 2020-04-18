@@ -1,0 +1,6 @@
+{
+	"uses":["btn", "dropdown", "sidebar", "searchbtn"],
+	"js":true,
+	"html":true,
+	"css":false
+}

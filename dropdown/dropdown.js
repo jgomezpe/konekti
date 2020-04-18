@@ -13,15 +13,15 @@
 
 var dropdown = window.plugin.dropdown
 
-dropdown.connect = function( dictionary ){
-	var id = dictionary.id
-	var inner = Util.vc(id+'Options')
+dropdown.htmlCode = function( dictionary ){
 	var optHTML = '<a id="·id·" onclick="·select·(\'·id·\')" class="w3-bar-item w3-button">·caption·</a>'
 	var optsHTML = ''
 	for( var i in dictionary.options ){
-		dictionary.options[i].drop = id
+		dictionary.options[i].drop = dictionary.id
 		dictionary.options[i].select = dictionary.select
 		optsHTML += Util.fromTemplate( optHTML, dictionary.options[i], '·' )
 	}
-	inner.innerHTML = optsHTML
+	dictionary.options = optsHTML
+	return Util.fromTemplate( this.htmlTemplate, dictionary, '·' ) 
 }
+
