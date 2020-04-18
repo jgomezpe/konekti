@@ -1,7 +1,7 @@
 /**
 *
-* sidebar.js
-* <P>A Side Bar 
+* navbar.js
+* <P>A Navigation Bar 
 *
 * Copyright (c) 2019 by Jonatan Gomez-Perdomo. <br>
 * All rights reserved. See <A HREF="https://github.com/jgomezpe/konekti">License</A>. <br>
@@ -13,6 +13,7 @@
 
 window.plugin.navbar.instance = function ( dictionary ){
 	var id = dictionary.id
+	var onclick = dictionary.onclick || 'Navigate' 
 	var code = this.htmlCode( dictionary )
 	var node = Util.html( code )
 	var btn = dictionary.btn
@@ -25,16 +26,18 @@ window.plugin.navbar.instance = function ( dictionary ){
 				btn[i].id = side.id + 'Btn'
 				node.appendChild( window.plugin.btn.instance( btn[i] ) )
 			}else if( btn[i].find != null && btn[i].find ){
-				node.appendChild( window.plugin.searchbtn.instance( {'id':'search2', 'find':"Navigate.find()" } ) )
+				var find = btn[i].run || onclick+".find()"
+				node.appendChild( window.plugin.searchbtn.instance( {'id':'search2', 'find':find } ) )
 			}else{
-				btn[i].run = "Navigate."+btn[i].id+"()"
+				btn[i].run = btn[i].run || onclick+"."+btn[i].id+"()"
 				node.appendChild( window.plugin.btn.instance( btn[i] ) )
 			}
 
 		}
 	}
 	if( dictionary.multilanguage != null ){
-		var langBtn = {'id':'language', 'select':'Navigate.setLanguage', 'margin':'left', 'fa':"fa fa-language", 'options':dictionary.multilanguage }
+		var select = dictionary.setlanguage || onclick+".setLanguage"
+		var langBtn = {'id':'language', 'select':select, 'margin':'left', 'fa':"fa fa-language", 'options':dictionary.multilanguage }
 		node.appendChild( window.plugin.dropdown.instance(langBtn) )
 		window.plugin.dropdown.connect(langBtn)
 	}
