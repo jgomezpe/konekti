@@ -261,20 +261,20 @@ editor.load = function ( id ){
 	if( editor.loaded ) editor.done();
 }
 
-editor.setText = function ( editorId, txt ){
-	var edit = ace.edit(editorId);
+editor.setText = function ( id, txt ){
+	var edit = ace.edit(id+'-ace');
 	edit.setValue(txt, -1);
 }
 	
-editor.getText = function ( editorId ){
-	var edit = ace.edit(editorId);
+editor.getText = function ( id ){
+	var edit = ace.edit(id+'-ace');
 	return edit.getValue();
 }
 
-editor.locateCursor = function ( editorId, row, column ){
-	var edit = ace.edit(editorId);
+editor.locateCursor = function ( id, row, column ){
+	var edit = ace.edit(id+'-ace');
 	edit.moveCursorTo(row, column);
 	edit.focus();
 }
 	
-editor.highlight = function ( editorId, row ){ editor.locateCursor( editorId, row,1 ); }
+editor.highlight = function (id, row ){ editor.locateCursor( id+'-ace', row,1 ); }
