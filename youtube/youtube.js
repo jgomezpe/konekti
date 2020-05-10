@@ -31,13 +31,49 @@ function onYouTubeIframeAPIReady(){
 	}
 }
 
-function onPlayerReady(event){}
-function onPlayerStateChange(event){ if (event.data == YT.PlayerState.PLAYING) {} }
+/*player.addEventListener("onStateChange", updateBar);
+
+*/
+
 
 // Youtube manager functions
 youtube.connect = function( dictionary ){
 	if( youtube.APILoaded ){
-		window[dictionary.id] = new YT.Player(dictionary.id+'-inner', {
+		var id = dictionary.id
+
+		function onPlayerReady(event){
+			video = event.target.playerInfo.videoData.video_id
+			comp = document.getElementById(video)
+			var clientId = comp.getAttribute('client')
+			if( clientId != null ){
+				var client = window[clientId]
+				client.pause(id, function(){ window[id].pauseVideo() } ) 
+				client.play(id, function(){ window[id].playVideo() })
+				client.seek(id, function(time){ window[id].seekTo(time,true) })
+			}
+		}
+
+		function onPlayerStateChange(event){ 
+			video = event.target.playerInfo.videoData.video_id
+			comp = document.getElementById(video)
+			var client = comp.getAttribute('client')
+			if( client != null ){
+				if (event.data == YT.PlayerState.PLAYING) {
+					function updatePlaying() {
+					    if (YT.PlayerState.PLAYING) {
+						window[client].playing(id, event.target.playerInfo.currentTime)
+						comp.setAttribute('timeout', setTimeout(updatePlaying,100))
+					    }
+					}
+					updatePlaying()
+				}else{
+					clearTimeout(comp.getAttribute('timeout'))
+					window[client].paused(id)
+				}
+			}
+		}
+
+		window[id] = new YT.Player(dictionary.video, {
 			videoId: dictionary.video,
 			playerVars: {rel: 0, fs:0, modestbranding:1},
 				events: {

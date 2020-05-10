@@ -1,0 +1,6 @@
+{
+	"uses":["title", "sidebar", "navbar", "accordion", "dropdown"],
+	"js":true,
+	"html":true,
+	"css":false
+}

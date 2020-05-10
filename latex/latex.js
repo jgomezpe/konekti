@@ -14,11 +14,40 @@
 
 var latex = window.plugin.latex
 
-latex.initAPI = function(){ document.getElementsByTagName('body')[0].setAttribute('class','no-mathjax') }
+/*latex.initAPI = function(){
+	console.log('Latex...'+MathJax)
+	if( MathJax!=null ) MathJax.Hub.Queue(["Typeset",MathJax.Hub]) 
+	window['MathJax'] = MathJax
+	document.getElementsByTagName('body')[0].setAttribute('class','no-mathjax') 
+}*/
 
 if(window.MathJax==null || MathJax == null ){
-	Script.load( "text/x-mathjax-config", "MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\\\(','\\\\)']],processClass: 'mathjax', ignoreClass: 'no-mathjax'}});" )
-	Script.loadJS("https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML", latex.initAPI)
+	Script.loadJS("https://polyfill.io/v3/polyfill.min.js?features=es6")
+	Script.loadJS("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js") //, latex.initAPI)
 }
 
-latex.connect = function( dictionary ){ if( MathJax!=null ) MathJax.Hub.Queue(["Typeset",MathJax.Hub]) }
+latex.getText = function( id ){
+	var output = Util.vc(id)
+	return output['code']
+}
+
+latex.setText = function( id, tex ){
+	var output = Util.vc(id)
+	output['code'] = tex
+	output.innerHTML = tex
+	MathJax.texReset()
+	MathJax.typesetClear()
+	MathJax.typesetPromise([output]).catch(function (err) {
+		output.innerHTML = ''
+		output.appendChild(document.createTextNode(err.message))
+		console.error(err)
+	}).then(function () {});
+}
+
+latex.connect = function( dictionary ){
+	if(dictionary.client!=null){
+		var id = dictionary.id
+		client = window[dictionary.client]
+		client.editor( id, function(){ latex.getText(id) }, function(tex){ latex.setText(id,tex) } )
+	}
+}
