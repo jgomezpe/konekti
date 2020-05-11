@@ -33,7 +33,7 @@ window.plugin.app.build = function( id, lang, languages ){
 		if( languages==null ){ this.server.getJSON( 'language/supported', back ) }
 		else{ back(languages) }
 	}else{
-		this.server.getConfigFile = function(file, next){ this.getJSON('language/'+lang+'/'+file, next) } 
+		this.server.getConfigFile = function(file, next){ this.getJSON(file, next) } 
 		this.server.getConfigFile(id, replaceWithId ) 
 	}
 }
@@ -49,7 +49,7 @@ window.plugin.app.setLanguage = function( id, lang ){
 		dictionary.id = id 
 		window.plugin.app.replaceWith(dictionary)
 	}
-	this.server.getConfigFile = function(file, next){ this.getJSON(file, next) } 
+	this.server.getConfigFile = function(file, next){ this.getJSON('language/'+lang+'/'+file, next) } 
 	this.server.getConfigFile(id, replaceWithId ) 
 }
 
