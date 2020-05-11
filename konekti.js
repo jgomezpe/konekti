@@ -184,6 +184,18 @@ class Util{
 	 * @return The node with the given id (A shortcut of the <i>document.getElementById</i> method
 	 */
 	static vc( id ){ return document.getElementById(id) }
+
+	/**
+	 * Determines the interface language
+	 * @return Interface language
+	 */ 
+	static language(){
+		var urlParams = new URLSearchParams(window.location.search)
+		var lang = urlParams.get('lang')  || navigator.language || navigator.userLanguage 
+		var idx = lang.indexOf('-')
+		if( idx > 0 ) lang = lang.substring(0,idx)
+		return lang
+	}
 }
 
 /* ************************************* Script Methods ****************************************** */

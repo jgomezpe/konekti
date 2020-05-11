@@ -10,34 +10,49 @@
 * (E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A> )
 * @version 1.0
 */
-
-window.plugin.app.language = function(){
-	var urlParams = new URLSearchParams(window.location.search)
-	var lang = urlParams.get('lang')  || navigator.language || navigator.userLanguage 
-	var idx = lang.indexOf('-')
-	if( idx > 0 ) lang = lang.substring(0,idx)
-	return lang
-}
-
-window.plugin.app.build = function( id ){
-	window.plugin.app.setLanguage(id, window.plugin.app.language())
-}
-
-window.plugin.app.setLanguage = function( id, lang ){
-	function back(language){
-		var found = false;
-		for(var i = 0; i < language.supported.length && !found; i++) 
-		    found = (language.supported[i].id == lang )
-		if( !found ) lang = language['default']
-		function next( dictionary ){
-			dictionary.id=id
-			dictionary.languages = language
-			window.plugin.app.replaceWith(dictionary) 
-		}
-		this.server.getJSON( 'language/'+lang+'/'+id, next) 
+window.plugin.app.build = function( id, lang, languages ){
+	function replaceWithId( dictionary ){
+		dictionary.id = id 
+		window.plugin.app.replaceWith(dictionary)
 	}
-	this.server.getJSON( 'language', back )
+
+	if(lang!=null){
+		function back(languages){
+			var found = false;
+			for(var i = 0; i < languages.supported.length && !found; i++) 
+			    found = (languages.supported[i].id == lang )
+			if( !found ) lang = languages['default']
+			this.server.getConfigFile = function(file, next){ this.getJSON('language/'+lang+'/'+file, next) } 
+
+			function next( dictionary ){
+				dictionary.languages = languages
+				replaceWithId(dictionary) 
+			}
+			this.server.getConfigFile(id, next) 
+		}
+		if( languages==null ){ this.server.getJSON( 'language/supported', back ) }
+		else{ back(languages) }
+	}else{
+		this.server.getConfigFile = function(file, next){ this.getJSON('language/'+lang+'/'+file, next) } 
+		this.server.getConfigFile(id, replaceWithId ) 
+	}
 }
+
+
+/**
+ * Sets the interface language
+ * @param lang Interface language
+ * @param next Function to be excetuted after setting the interface language
+ */ 
+window.plugin.app.setLanguage = function( id, lang ){
+	function replaceWithId( dictionary ){
+		dictionary.id = id 
+		window.plugin.app.replaceWith(dictionary)
+	}
+	this.server.getConfigFile = function(file, next){ this.getJSON(file, next) } 
+	this.server.getConfigFile(id, replaceWithId ) 
+}
+
 
 window.plugin.app.connect = function( dictionary ){
 	id = dictionary.id

@@ -29,35 +29,6 @@ Script.loadJS("https://ace.c9.io/build/src/ace.js", editor.done)
 
 editor.view = []
 
-function EditLanguage(){
-	var lang = this
-
-	lang.mode = function(dictionary){
-		var e = ace.edit(dictionary.id+'-ace');
-		e.session.setMode("ace/mode/"+dictionary.mode);
-	}
-
-	lang.theme = function(dictionary){
-		var e = ace.edit(dictionary.id+'-ace');
-		if( dictionary.theme!=null) e.setTheme("ace/theme/"+dictionary.theme);
-	}
-
-	lang.init = function(dictionary){
-		editor.ace_define(window['get_'+dictionary.mode](id));
-		var id = dictionary.id
-		lang.theme(dictionary)
-		lang.mode(dictionary)
-		var e = ace.edit(id+'-ace');
-		e.setShowPrintMargin(false);
-		if(dictionary.client!=null){
-			client = window[dictionary.client]
-			client.editor( id, function(){ editor.getText(id) }, function(txt){ editor.setText(id,txt) } )
-		}
-
-	}
-}
-
-
 editor.ace_define = function ( lang ){
 	var id = lang.mode;
 	ace.define(
@@ -70,7 +41,7 @@ editor.ace_define = function ( lang ){
 			var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 
 			var EditorHighlightRules = function() {
-				this.$rules = lang.tokens();
+				this.$rules = lang.tokens;
 				this.normalizeRules();
 			};
 
@@ -242,16 +213,19 @@ editor.ace_define = function ( lang ){
 
 editor.connect = function ( dictionary ){
 	if( editor.loaded ){
-		var mode = dictionary.mode
-		var lang = editor[mode]
-		if( lang == undefined || lang == null ){
-			function callbacksimple(){
-				lang = editor[mode]
-				if( lang == undefined || lang == null ) editor[mode] = lang = new EditLanguage()
-				lang.init(dictionary)
-			}
-			this.server.loadJS(PlugIn.URL(this.id)+'ace/'+mode, callbacksimple)
-		}else lang.init(dictionary)
+		var id = dictionary.id
+		if( dictionary.code != null ){
+			dictionary.code.cid = id
+			editor.ace_define(dictionary.code)
+		} 
+		var e = ace.edit(id+'-ace');
+		e.session.setMode("ace/mode/"+dictionary.mode);
+		if( dictionary.theme!=null) e.setTheme("ace/theme/"+dictionary.theme);
+		e.setShowPrintMargin(false);
+		if(dictionary.client!=null){
+			client = window[dictionary.client]
+			client.editor( id, function(){ editor.getText(id) }, function(txt){ editor.setText(id,txt) } )
+		}
 	}else editor.view.push( dictionary )
 }
 	
