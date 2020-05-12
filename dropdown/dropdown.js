@@ -14,14 +14,13 @@
 var dropdown = window.plugin.dropdown
 
 dropdown.htmlCode = function( dictionary ){
-	if( dictionary.owner != null ){ dictionary.owner = "'"+dictionary.owner+"'," }
-	else{ dictionary.owner ='' }
-	var optHTML = '<a id="·id·" onclick="·select·(·owner·\'·id·\')" class="w3-bar-item w3-button">·caption·</a>'
+	if( dictionary.client == null ) dictionary.client = 'client'
+	var optHTML;
+	optHTML = '<a id="·id·" onclick="·client·.select(\'·id·\')" class="w3-bar-item w3-button">·caption·</a>'
 	var optsHTML = ''
 	for( var i in dictionary.options ){
-		dictionary.options[i].owner = dictionary.owner
+		dictionary.options[i].client = dictionary.client
 		dictionary.options[i].drop = dictionary.id
-		dictionary.options[i].select = dictionary.select
 		optsHTML += Util.fromTemplate( optHTML, dictionary.options[i], '·' )
 	}
 	dictionary.options = optsHTML

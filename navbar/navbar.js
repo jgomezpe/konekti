@@ -13,16 +13,23 @@
 
 window.plugin.navbar.instance = function ( dictionary ){
 	var id = dictionary.id
-	var onclick = dictionary.onclick || 'Navigate' 
+	var onclick = dictionary.client || 'client' 
 	var code = this.htmlCode( dictionary )
 	var node = Util.html( code )
 	if( dictionary.side != null ){
-		var sideBtn = {'select':'tocSelect', 'margin':'left', 'fa':"fa fa-bars", 'class':"w3-button w3-bar-item  w3-margin-right w3-xlarge" }
-		sideBtn.run = "window.plugin.sidebar.open('"+dictionary.side+"')"
+		var sideBtn = {'margin':'left', 'fa':"fa fa-bars", 'class':"w3-button w3-bar-item  w3-margin-right w3-xlarge" }
+		sideBtn.run = "window.plugin.sidebar.open('"+dictionary.side.id+"')"
 		sideBtn.id = dictionary.side + 'Btn'
 		node.appendChild( window.plugin.btn.instance( sideBtn ) )
-		var sideBar = {'id':dictionary.side, 'width':'50%', 'btnBar': id, 'class':"w3-button w3-bar-item  w3-margin-right w3-xlarge"}
+		var sideBar = dictionary.side 
+		sideBar.client = onclick
+		sideBar.width ='50%'
+		sideBar.btnBar = id
+		sideBar['class'] ="w3-button w3-bar-item  w3-margin-right w3-xlarge"
 		window.plugin.sidebar.replaceWith(sideBar)
+	}
+	if( dictionary.search ){
+		node.appendChild( window.plugin.searchbtn.instance( {'id':'search2', 'find':onclick+".find" } ) )
 	}
 	var btn = dictionary.btn
 	if( btn != null ){
@@ -32,18 +39,17 @@ window.plugin.navbar.instance = function ( dictionary ){
 		}
 	}
 
-/*
-	if( btn[i].find != null && btn[i].find ){
-		var find = btn[i].run || onclick+".find()"
-		node.appendChild( window.plugin.searchbtn.instance( {'id':'search2', 'find':find } ) )
+	// Language Button
+	var server = this.server
+	if( server.languages!=null && server.languages[dictionary.root]!=null ){
+		if( window.plugin.navbar.langManager == null ) window.plugin.navbar.langManager = {}
+		window.plugin.navbar.langManager[id] = { select: function(lang){ PlugIn.setLanguage(server, dictionary.root, lang) } }
+		var langBtn = {'id':'language', root:dictionary.root, client:"window.plugin.navbar.langManager['"+id+"']", fa:'fa fa-language', 'margin':'left', 'class':"w3-button w3-bar-item w3-xlarge", 'options': server.languages[dictionary.root].supported }
+		langNode = window.plugin.dropdown.instance(langBtn)
+		node.appendChild( langNode )
 	}
 
-	if( dictionary.multilanguage != null ){
-		var select = dictionary.setlanguage || onclick+".setLanguage"
-		var langBtn = {'id':'language', 'select':select, 'margin':'left', 'fa':"fa fa-language", 'options':dictionary.multilanguage }
-		node.appendChild( window.plugin.dropdown.instance(langBtn) )
-		window.plugin.dropdown.connect(langBtn)
-	}
+/*
 */
 	return node
 }

@@ -19,3 +19,11 @@ window.plugin.sidebar.open = function( barId ){
 }
 
 window.plugin.sidebar.close = function( barId ){ Util.vc(barId).style.display = "none" }
+
+
+window.plugin.sidebar.connect = function( dictionary ){
+	dictionary.content.id = dictionary.id+'Content'
+	dictionary.content.client = dictionary.client
+	PlugIn.build( this.server, dictionary.content )
+}
+
