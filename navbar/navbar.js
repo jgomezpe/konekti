@@ -42,8 +42,10 @@ window.plugin.navbar.instance = function ( dictionary ){
 	// Language Button
 	var server = this.server
 	if( server.languages!=null && server.languages[dictionary.root]!=null ){
+/*		if( window.plugin.navbar.langManager == null ) window.plugin.navbar.langManager = {}
+		window.plugin.navbar.langManager[id] = { select: function(lang){ PlugIn.setLanguage(server, dictionary.root, lang) } } */
 		if( window.plugin.navbar.langManager == null ) window.plugin.navbar.langManager = {}
-		window.plugin.navbar.langManager[id] = { select: function(lang){ PlugIn.setLanguage(server, dictionary.root, lang) } }
+		window.plugin.navbar.langManager[id] = { select: function(lang){ window[onclick].setLanguage(dictionary.root, lang) } }
 		var langBtn = {'id':'language', root:dictionary.root, client:"window.plugin.navbar.langManager['"+id+"']", fa:'fa fa-language', 'margin':'left', 'class':"w3-button w3-bar-item w3-xlarge", 'options': server.languages[dictionary.root].supported }
 		langNode = window.plugin.dropdown.instance(langBtn)
 		node.appendChild( langNode )

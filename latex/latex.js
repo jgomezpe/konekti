@@ -28,20 +28,29 @@ if(window.MathJax==null || MathJax == null ){
 
 latex.getText = function( id ){
 	var output = Util.vc(id)
-	return output['code']
+	return output['initial']
 }
 
 latex.setText = function( id, tex ){
 	var output = Util.vc(id)
-	output['code'] = tex
+	output['initial'] = tex
 	output.innerHTML = tex
-	MathJax.texReset()
-	MathJax.typesetClear()
-	MathJax.typesetPromise([output]).catch(function (err) {
-		output.innerHTML = ''
-		output.appendChild(document.createTextNode(err.message))
-		console.error(err)
-	}).then(function () {});
+	var tout = null
+	function set(){
+		if( typeof MathJax!="undefined" ){
+			if( tout !=null ) clearTimeout(tout)
+			MathJax.texReset()
+			MathJax.typesetClear()
+			MathJax.typesetPromise([output]).catch(function (err) {
+				output.innerHTML = ''
+				output.appendChild(document.createTextNode(err.message))
+				console.error(err)
+			}).then(function () {});
+		}else{
+			tout = setTimeout(set,1000)
+		}
+	}
+	set()
 }
 
 latex.connect = function( dictionary ){
@@ -50,4 +59,6 @@ latex.connect = function( dictionary ){
 		client = window[dictionary.client]
 		client.editor( id, function(){ latex.getText(id) }, function(tex){ latex.setText(id,tex) } )
 	}
+	
+	latex.setText(dictionary.id, dictionary.initial)
 }

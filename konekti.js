@@ -318,10 +318,10 @@ class Script{
 class PlugIn{
 	static URL( id ){ return "https://konekti.numtseng.com/source/" + id + '/' }
 
-	static build( server, dictionary ){
+	static build( server, dictionary, callback ){
 		function inner( dict ){
 			var uses = []
-			if( dict.plugin != null ){
+			if( dict!=null && dict.plugin != null ){
 				if( dict.plugin != "" ){
 					uses.push(dict.plugin);
 				}else{
@@ -333,28 +333,35 @@ class PlugIn{
 			return uses
 		}
 
-		function inner_replace( dict ){
-			if( dict.plugin != null ){
+		function inner_replace( dict, id ){
+			if( dict!=null && dict.plugin != null ){
+				if( dict.id == null ) dict.id = id
 				if( dict.plugin != "" ){
 					dict.root = dictionary.id
 					if( dictionary.client != null && dict.client == null ) dict.client = dictionary.client
 					window.plugin[dict.plugin].replaceWith(dict)
 				}else{
 					for( var c in dict ){
-						inner_replace(dict[c])
+						inner_replace(dict[c], c)
 					}
 				}
 			}
 		}
 
-		PlugIn.uses(server, inner(dictionary), function(){ inner_replace(dictionary) })
+		PlugIn.uses(server, inner(dictionary), 
+			function(){ 
+				inner_replace(dictionary, dictionary.id) 
+				if( callback != null ) callback()
+			}
+		)
 	}
 
-
-	static load( server, id, lang, languages ){
+/*
+	static load( server, id, callback, lang, languages ){
 		function buildWithId( dictionary ){
 			dictionary.id = id 
 			PlugIn.build(server, dictionary)
+			if( callback != null ) callback(dictionary)
 		}
 
 		if(lang!=null){
@@ -380,13 +387,13 @@ class PlugIn{
 			server.getConfigFile(id, buildWithId ) 
 		}
 	}
-
+*/
 
 	/**
 	 * Sets the interface language
 	 * @param lang Interface language
 	 * @param next Function to be excetuted after setting the interface language
-	 */ 
+	 * / 
 	static setLanguage = function( server, id, lang ){
 		function buildWithId( dictionary ){
 			dictionary.id = id 
@@ -396,7 +403,7 @@ class PlugIn{
 		server.getConfigFile(id, buildWithId ) 
 	}
 
-
+*/
 
 
 	/**
@@ -587,6 +594,23 @@ class Package{
 /* ************************************* A server ****************************************** */
 class Server{
 	constructor(){ this.plugin_path = 'plugin/' }
+
+	getConfigFile(file, next){ server.getJSON(file, next) } 
+
+	multiLanguage(id, lang, callback){
+		var server = this
+		function back(languages){
+			if( server.languages == null ) server.languages = {}
+			server.languages[id] = languages
+			var found = false;
+			for(var i = 0; i < languages.supported.length && !found; i++) 
+			    found = (languages.supported[i].id == lang )
+			if( !found ) lang = languages['default']
+			server.getConfigFile = function(file, next){ server.getJSON('language/'+lang+'/'+file, next) } 
+			callback()
+		}
+		server.getJSON( 'language/supported', back )
+	}
 
 	/**
 	 * Reads a resource from the server
