@@ -1,0 +1,5 @@
+{
+	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
+	"js":"window.plugin.iframe.getText = function( id ){\n fr = Util.vc(id)\n return fr.contentWindow.document.documentElement.outerHTML\n}\n\nwindow.plugin.iframe.setText = function( id, txt ){\n fr = Util.vc(id+'-frame')\n fr.src = 'data:text/html;charset=utf-8,' + txt\n}\n\nwindow.plugin.iframe.connect = function( dictionary ){\n var id = dictionary.id\n if(dictionary.client!=null){\n  var client = window[dictionary.client]\n  client.editor( id, function(){ return window.plugin.iframe.getText(id) }, function(txt){ window.plugin.iframe.setText(id, txt) } )\n }\n}",
+	"html":"<div id='·id·' style='position:relative; width:100%; padding-bottom:56.25%; height:0'>\n <iframe id='·id·-frame' name='·id·' src='·src·' style='position:absolute; width:100%; height:100%; top:0; left:0'></iframe>\n</div>"
+}

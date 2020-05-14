@@ -1,0 +1,5 @@
+{
+	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
+	"js":"window.plugin.dropdown.htmlCode=function(dictionary){\n if(dictionary.client==null) dictionary.client='client'\n var optHTML=\"<a id='·id·' onclick='·client·.select(\\\"·id·\\\")' class='w3-bar-item w3-button'>·caption·</a>\"\n var optsHTML = ''\n for( var i in dictionary.options ){\n  dictionary.options[i].client = dictionary.client\n  dictionary.options[i].drop = dictionary.id\n  optsHTML += Util.fromTemplate( optHTML, dictionary.options[i], '·' )\n }\n dictionary.options = optsHTML\n return Util.fromTemplate( this.htmlTemplate, dictionary, '·' )\n}",
+	"html":"<div id='·id·' class='w3-dropdown-hover'>\n <button class='w3-button w3-bar-item w3-xlarge'><i class='·fa·' aria-hidden='true'></i></button>\n <div id='·id·Options' class='w3-dropdown-content w3-bar-block w3-border'>·options·</div>\n</div>\n<div class='w3-clear'></div>"
+}

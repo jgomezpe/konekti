@@ -316,7 +316,7 @@ class Script{
 
 /* ************************************* PlugIn Methods ****************************************** */
 class PlugIn{
-	static URL( id ){ return "https://konekti.numtseng.com/source/" + id + '/' }
+	static URL( id ){ return "https://konekti.numtseng.com/source/" }
 
 	static build( server, dictionary, callback ){
 		function inner( dict ){
@@ -373,9 +373,9 @@ class PlugIn{
 		this.id = id
 		this.server = server
 		
-		var js = false
-		var css = false
-		var html = false
+		var js
+		var css 
+		var html 
 		var htmlLoaded = false
 		var jsLoaded = false
 		var cssLoaded = false
@@ -399,12 +399,29 @@ class PlugIn{
 		}
 
 		function init2(){
-			if( css ) server.loadCSS(x.path+id, backCSS)
-			else cssLoaded = true
-			if( html ) server.getHTML(x.path+id, backHTML)
-			else htmlLoaded = true
-			if( js ) server.loadJS(x.path+id, backJS)
-			else jsLoaded = true
+			if( typeof css == 'undefined' ){ cssLoaded = true }
+			else if( typeof css == 'boolean' ){
+				if( css ){ server.loadCSS(x.path+id, backCSS) }
+				else{ cssLoaded = true }
+			}else{
+				Util.addCSS(css) 
+				backCSS(css)
+			}
+
+			if( typeof html == 'undefined' ){ htmlLoaded = true }
+			else if( typeof html == 'boolean' ){
+				if( html ){ server.getHTML(x.path+id, backHTML) }
+				else{ htmlLoaded = true }
+			}else{ backHTML( html ) }
+
+			if( typeof js == 'undefined' ){ backJS() }
+			else if( typeof js == 'boolean' ){
+				if( js ){ server.loadJS(x.path+id, backJS) }
+				else{ backJS() }
+			}else{
+				eval(js)
+				backJS()
+			}
 		}
 
 		function init( obj ){
@@ -595,7 +612,7 @@ class Server{
 	 * @param id PlugIn id 
 	 * @return The plugIns Path
 	 */
-	pluginPath(id){ return this.plugin_path+id+'/' }
+	pluginPath(id){ return this.plugin_path }
 
 	/**
 	 * Creates a server based id for the given resource

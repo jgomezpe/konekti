@@ -1,6 +1,0 @@
-{
-	"uses":["navbar","editor","iframe"],
-	"js":true,
-	"html":true,
-	"css":false
-}

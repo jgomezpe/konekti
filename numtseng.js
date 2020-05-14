@@ -15,8 +15,8 @@ class Numtseng{
 						'<!-- Side bar -->'+
 						'<div id="toc"></div>'+
 						'<div id="navbar" class="w3-bar"></div>'+
-						'<div id="top" ></div>'+
-						'<div id="bottom" ></div>'+
+						'<div id="higher" ></div>'+
+						'<div id="lower" ></div>'+
 					'</div>'+
 					'<div class="w3-half"><div id="right" ></div> </div>'+
 				'</div>'+
@@ -100,7 +100,10 @@ class Client{
 	next(){	numtseng.goto(numtseng_dictionary.content.navigation.next) }
 	up(){ numtseng.goto(numtseng_dictionary.content.navigation.up) }
 	down(){	numtseng.goto(numtseng_dictionary.content.navigation.down) }
-	select(id){ numtseng.goto(id) }
+	select(id){
+console.log('[Numtseng]'+id)
+	 numtseng.goto(id) 
+	}
 
 	paused(id){
 		if( this.media[id] == null ) this.media[id] = {}

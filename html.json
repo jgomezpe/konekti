@@ -1,0 +1,5 @@
+{
+	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
+	"js":"window.plugin.html.getText( id ){\n fr = Util.vc(id)\n return fr.innerHTML\n}\n\nwindow.plugin.html.setText( id, txt ){\n fr = Util.vc(id)\n fr.innerHTML = txt\n}\n\nwindow.plugin.html = function( dictionary ){\n var id = dictionary.id\n if(dictionary.client!=null){\n  client = window[dictionary.client]\n  client.editor( id, function(){ return window.plugin.html.getText(id) },	function(txt){ window.plugin.html.setText(id, txt) })\n	}\n}",
+	"html":"<div id='·id·' class='w3-rest'>\n·initial·\n</div>"
+}

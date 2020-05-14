@@ -1,0 +1,5 @@
+{
+	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
+	"js":"// Google recaptcha API\nwindow.captchaCallback = function(){\n window.plugin.captcha.loaded = true\n while( window.plugin.captcha.view.length > 0 ){\n  var dictionary = window.plugin.captcha.view[0]\n  window.plugin.captcha.view.shift()\n  window.plugin.captcha.connect( dictionary )\n }\n}\n\nwindow.plugin.captcha.loaded = false\nScript.loadJS('https://www.google.com/recaptcha/api.js?onload=captchaCallback&render=explicit')\n\n// Captcha manager methods\nwindow.plugin.captcha.view = []\n\nwindow.plugin.captcha.connect = function( dictionary ){\n if( window.plugin.captcha.loaded ) grewindow.plugin.captcha.render(dictionary.id, { 'sitekey' : dictionary.key, 'callback' : window.captchaVerify } ) \n else window.plugin.captcha.view.push(dictionary)\n}\n\n//captchaVerify = function(response){\n //response = nsgl.server.nsgl('login', 'captcha', response, nsgl.client.run) // @TODO Check this\n//}",
+	"html":"<div id='·id·' class='w3-container' key='·key·'></div>"
+}

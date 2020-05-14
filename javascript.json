@@ -1,0 +1,6 @@
+{
+	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
+	"uses":["navbar","editor","iframe"],
+	"js":true,
+	"html":"<div id='·id·' class='w3-rest'>\n <div id='·id·JSnavbar' class='w3-bar'></div>\n <div id='·id·JSeditor' ></div>\n <div id='·id·JSconsole' ></div>\n</div>"
+}
