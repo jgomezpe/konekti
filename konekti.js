@@ -324,6 +324,9 @@ class PlugIn{
 			if( dict!=null && dict.plugin != null ){
 				if( dict.plugin != "" ){
 					uses.push(dict.plugin);
+					for( var c in dict ){
+						uses = uses.concat(inner(dict[c]))
+					}
 				}else{
 					for( var c in dict ){
 						uses = uses.concat(inner(dict[c]))
@@ -340,6 +343,9 @@ class PlugIn{
 					dict.root = dictionary.id
 					if( dictionary.client != null && dict.client == null ) dict.client = dictionary.client
 					window.plugin[dict.plugin].replaceWith(dict)
+					for( var c in dict ){
+						inner_replace(dict[c], c)
+					}
 				}else{
 					for( var c in dict ){
 						inner_replace(dict[c], c)
@@ -355,56 +361,6 @@ class PlugIn{
 			}
 		)
 	}
-
-/*
-	static load( server, id, callback, lang, languages ){
-		function buildWithId( dictionary ){
-			dictionary.id = id 
-			PlugIn.build(server, dictionary)
-			if( callback != null ) callback(dictionary)
-		}
-
-		if(lang!=null){
-			function back(languages){
-				if( server.languages == null ) server.languages = {}
-				server.languages[id] = languages
-				var found = false;
-				for(var i = 0; i < languages.supported.length && !found; i++) 
-				    found = (languages.supported[i].id == lang )
-				if( !found ) lang = languages['default']
-				server.getConfigFile = function(file, next){ server.getJSON('language/'+lang+'/'+file, next) } 
-
-				function next( dictionary ){
-					dictionary.languages = languages
-					buildWithId(dictionary) 
-				}
-				server.getConfigFile(id, next) 
-			}
-			if( languages==null ){ server.getJSON( 'language/supported', back ) }
-			else{ back(languages) }
-		}else{
-			server.getConfigFile = function(file, next){ server.getJSON(file, next) } 
-			server.getConfigFile(id, buildWithId ) 
-		}
-	}
-*/
-
-	/**
-	 * Sets the interface language
-	 * @param lang Interface language
-	 * @param next Function to be excetuted after setting the interface language
-	 * / 
-	static setLanguage = function( server, id, lang ){
-		function buildWithId( dictionary ){
-			dictionary.id = id 
-			PlugIn.build(server, dictionary)
-		}
-		server.getConfigFile = function(file, next){ server.getJSON('language/'+lang+'/'+file, next) } 
-		server.getConfigFile(id, buildWithId ) 
-	}
-
-*/
-
 
 	/**
 	 * Creates a PlugIn with the given <i>id</i>, loading its resources from the given <i>server</i> and 

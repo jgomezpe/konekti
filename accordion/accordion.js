@@ -41,3 +41,7 @@ accordion.instance = function ( dictionary ){
 	}
 	return node
 }
+
+accordion.connect = function ( dictionary ){
+	accordion.instance(dictionary)
+}

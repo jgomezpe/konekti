@@ -1,8 +1,7 @@
 /**
 *
-* latex.js
-* <P> A latex component (based on MathJax). 
-* It cannot be used along the htmleditor plugin (scripts: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js and https://cloud.tinymce.com/5/tinymce.min.js are non-compatible)
+* iframe.js
+* <P> An iframe component. 
 *
 * Copyright (c) 2019 by Jonatan Gomez-Perdomo. <br>
 * All rights reserved. See <A HREF="https://github.com/jgomezpe/konekti">License</A>. <br>
@@ -12,8 +11,20 @@
 * @version 1.0
 */
 
-var iframe = window.plugin.iframe
+window.plugin.iframe.getText = function( id ){
+	fr = Util.vc(id)
+	return fr.contentWindow.document.documentElement.outerHTML 
+}
 
-iframe.connect = function( dictionary ){
+window.plugin.iframe.setText = function( id, txt ){
+	fr = Util.vc(id+'-frame')
+	fr.src = "data:text/html;charset=utf-8," + txt 
+}
 
+window.plugin.iframe.connect = function( dictionary ){
+	var id = dictionary.id
+	if(dictionary.client!=null){
+		var client = window[dictionary.client]
+		client.editor( id, function(){ return window.plugin.iframe.getText(id) }, function(txt){ window.plugin.iframe.setText(id, txt) } )
+	}
 }

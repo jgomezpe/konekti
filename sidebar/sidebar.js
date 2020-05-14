@@ -20,10 +20,24 @@ window.plugin.sidebar.open = function( barId ){
 
 window.plugin.sidebar.close = function( barId ){ Util.vc(barId).style.display = "none" }
 
+window.plugin.sidebar.client = {}
 
+class SideBarClient{
+	constructor( id, client ){
+		this.id = id
+		this.client = client || 'client'
+	}
+	select(itemId){
+		window.plugin.sidebar.close(this.id)
+		window[this.client].select(itemId)
+	}
+
+}
 window.plugin.sidebar.connect = function( dictionary ){
-	dictionary.content.id = dictionary.id+'Content'
-	dictionary.content.client = dictionary.client
-	PlugIn.build( this.server, dictionary.content )
+	var id = dictionary.id
+	dictionary.content.id = id+'Content'
+	window.plugin.sidebar.client[id] = new SideBarClient(id, dictionary.client)
+	dictionary.content.client = "window.plugin.sidebar.client['"+id+"']"
+	window.plugin[dictionary.content.plugin].replaceWith(dictionary.content)
 }
 

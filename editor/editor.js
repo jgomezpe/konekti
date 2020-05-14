@@ -223,8 +223,8 @@ editor.connect = function ( dictionary ){
 		if( dictionary.theme!=null) e.setTheme("ace/theme/"+dictionary.theme);
 		e.setShowPrintMargin(false);
 		if(dictionary.client!=null){
-			client = window[dictionary.client]
-			client.editor( id, function(){ editor.getText(id) }, function(txt){ editor.setText(id,txt) } )
+			var client = window[dictionary.client]
+			client.editor( id, function(){ return editor.getText(id) }, function(txt){ editor.setText(id,txt) } )
 		}
 	}else editor.view.push( dictionary )
 }

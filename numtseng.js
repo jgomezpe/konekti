@@ -9,16 +9,16 @@ class Numtseng{
 	html(id){
 		var x = '<div id="'+id+'" class="w3-rest">'+
 				'<div id="title"  class="w3-container w3-center" >Title</div>'+
-				'<!-- Side bar -->'+
-				'<div id="toc"></div>'+
 				'<!-- Page Content -->'+
-				'<div id="navbar" class="w3-bar"></div>'+
 				'<div class="w3-row">'+
-					'<div class="w3-container w3-half" >'+
+					'<div class="w3-half" >'+
+						'<!-- Side bar -->'+
+						'<div id="toc"></div>'+
+						'<div id="navbar" class="w3-bar"></div>'+
 						'<div id="top" ></div>'+
 						'<div id="bottom" ></div>'+
 					'</div>'+
-					'<div class="w3-container w3-half"><div id="right" ></div> </div>'+
+					'<div class="w3-half"><div id="right" ></div> </div>'+
 				'</div>'+
 			'</div>'
 		return x
@@ -84,8 +84,6 @@ class Numtseng{
 			PlugIn.build(s, dictionary)
 			numtseng_dictionary.content.navigation = dictionary.navigation
 			numtseng_dictionary.content.scripts = dictionary.content.scripts
-/*			if(dictionary.content != null) numtseng_dictionary.content = dictionary.content
-			if(dictionary.nav.side.content != null)	numtseng_dictionary.nav.side.content = dictionary.nav.side.content */
 		}
 		this.server.getConfigFile(topic, callback) 		
 	}
@@ -150,4 +148,4 @@ class Client{
 	}
 }
 
-window.client = new Client()
+client = new Client()
