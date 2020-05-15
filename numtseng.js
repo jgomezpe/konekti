@@ -118,6 +118,8 @@ console.log('[Numtseng]'+id)
 			var i=script.mark.length-1
 			while( i>=0 && script.mark[i].time>time ){ i-- }
 			if(i>=0){
+console.log('[numtseng...]'+this.edit[script.target].getText())
+				if( typeof script.text == "undefined" || script.text == null ) script.text = this.edit[script.target].getText()
 				var text = script.text.substring(0,script.mark[i].end) + script.mark[i].add
 				this.edit[script.target].setText(text)
 			}
