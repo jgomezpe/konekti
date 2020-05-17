@@ -13,211 +13,80 @@
 * @version 1.0
 */
 
-/* ************************************* Util Methods ****************************************** */
-class Util{
-	/**
-	 * Creates a string from string (id function)
-	 * @param str String to be converted to a String
-	 * @return A String version of the String
-	 */
-	static txt( str ){ return str }
-
-	/**
-	 * Creates a XML object from a string, if possible
-	 * @param str String to be converted to a XML object
-	 * @return A XML version of the String
-	 */
-	static xml( str ){ return new DOMutilr().utilFromString(str,"text/xml") }
-
-	/**
-	 * Creates a JSON object from a string, if possible
-	 * @param str String to be converted to a JSON object
-	 * @return A JSON version of the String
-	 */
-	static json( str ){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null }
-
-	/**
-	 * Creates a HTML element from a string, if possible
-	 * @param str String representing a single HTML element
-	 * @return A HTML version of the string
-	 */
-	static html(str) {
-	    var template = document.createElement('template')
-	    str = str.trim()
-	    template.innerHTML = str
-	    return template.content.firstChild
-	}
-
-	/**
-	 * Creates a CSS node from a string, if possible
-	 * @param str String representing a CSS file
-	 * @return A CSS node version of the string
-	 */
-	static css( str ){
-		if( str!=null ){
-			str = str.trim();
-			var d = document.createElement('style')
-			d.innerHTML = str
-			return d
-		}
-		return null;
-	}
-
-	/**
-	 * Adds a CSS file (as String) to the client, if possible
-	 * @param str String representing a CSS file
-	 */
-	static addCSS( str ){
-		var d = Util.css( str )
-		if( d != null ) document.getElementsByTagName('head')[0].appendChild(d)
-	}
-
-	/**
-	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
-	 * For example, if <i>str='lorem ·X· dolor ·haha· amet'</i>, <i>c='·'</i> and <i>dictionary={'X':'ipsum', 'haha':'sit' }
-	 * then this method will return the string <i>lorem ipsum dolor sit amet'</i>
-	 * @param str Template used for generating the String
-	 * @param dictionary Set of pairs <i>(TAG,value)</i> used for replacing each <i>TAG</> by its corresponding <i>value</i>
-	 * @param c Enclosing tag character
-	 * @return A String from a template by replacing the set of tags with their associated values. 
-	 */
-	static fromTemplate( str, dictionary, c ){
-		var x = str.split(c)
-		var state = 0
-		var res = ""
-	  	var tag = ''
-		for( var i = 0; i<x.length; i++ ){
-			switch( state ){
-				case  0:
-					res += x[i]
-					state = 1
-				break;    
-				case 1:
-		        		if( x[i].length > 0 ){
-		        			tag = x[i]
-						state = 2
-					}else{
-						res += c
-		        			state = 0
-					}
-				break;
-			    	case 2:
-				    	if( x[i].length > 0 || i==x.length-1 ){
-						res += ((dictionary[tag]!=null)?dictionary[tag]:tag) + x[i]
-						state = 1
-					}else{
-		            			tag += c
-						state = 3
-					}                
-				break;
-				case 3:
-		        		if( x[i].length > 0 ) tag += x[i]
-						state = 2
-			}
-		}
-		return res
-	}
-
-	/**
-	 * Obtains the set of tags defined in a String template. A tag is limited both sides by a character <i>c</i>. For example, if <i>str='lorem·X·ipsum·haha· quia'</i>
-	 * and <i>c='·'</i> then this method will return the array of tags <i>['X', 'haha']</i>
-	 * @param str Template used for generating the String
-	 * @param c Enclosing tag character
-	 * @return A dictionary, set of pairs <i>(TAG,value)</i>, containing each <i>TAG</> in the template
-	 */
-	static templateTags( str, c ){
-		var array = []
-		var x = str.split(c)
-		var state = 0
-	  	var tag = ''
-		for( var i = 0; i<x.length; i++ ){
-			switch( state ){
-				case  0:
-					state = 1
-				break;    
-				case 1:
-		        		if( x[i].length > 0 ){
-		        			tag = x[i]
-						state = 2
-					}else{ state = 0 }
-				break;
-			    	case 2:
-				    	if( x[i].length > 0 || i==x.length-1 ){
-						array.push(tag)
-						state = 1
-					}else{
-		            			tag += c
-						state = 3
-					}                
-				break;
-				case 3:
-		        		if( x[i].length > 0 ) tag += x[i]
-					state = 2
-			}
-		}
-		return array
-	}
-	
-	/**
-	 * Obtains a JSON version of a String
-	 * @param str String to be stored as JSON String
-	 * @return A JSON version of the String
-	 */
-	static encode( str ){ return '"' + str.replace(/\\/g, '\\\\').replace(/"/g,'\\"') +'"' }
-
-	/**
-	 * Obtains the child node (starting with <i>node</i> as parent) with the given id
-	 * @param node The starting node for the searching process
-	 * @param childId Id of the node being located
-	 * @return The child node (starting with <i>node</i> as parent) with the given id
-	 */
-	static findChild( node, childId ){
-		var components = node.getElementsByTagName("*")
-		var c = null
-		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
-		return c
-	}
-
-	/**
-	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
-	 * @param id Id of the element being located
-	 * @return The node with the given id (A shortcut of the <i>document.getElementById</i> method
-	 */
-	static vc( id ){ return document.getElementById(id) }
-
-	/**
-	 * Determines the interface language
-	 * @return Interface language
-	 */ 
-	static language(){
-		var urlParams = new URLSearchParams(window.location.search)
-		var lang = urlParams.get('lang')  || navigator.language || navigator.userLanguage 
-		var idx = lang.indexOf('-')
-		if( idx > 0 ) lang = lang.substring(0,idx)
-		return lang
-	}
-}
-
 /* ************************************* Script Methods ****************************************** */
 
-loadedScripts = [];
 
 /**
  * Script Management
  * @param getResource A function that brings the resource from the server
  */
-class Script{
+Konekti = {
+	/**
+	 * Inits the konekti framework
+	 * @param callback Function that will be called after initializing the konekti framework
+	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
+	 */
+	init: function( servlet ){
+		if( servlet == null ){ Konekti.server = new Server() }
+		else{ Konekti.server = new ServletServer(servlet) }
+	},
+
+	build(dictionary, client, callback){
+		function inner( dict ){
+			var uses = []
+			if( dict!=null && dict.plugin != null ){
+				if( dict.plugin != "" ){
+					uses.push(dict.plugin);
+					for( var c in dict ){
+						uses = uses.concat(inner(dict[c]))
+					}
+				}else{
+					for( var c in dict ){
+						uses = uses.concat(inner(dict[c]))
+					}
+				}
+			}
+			return uses
+		}
+
+		function inner_replace(dict){
+			if( dict!=null && dict.plugin != null ){
+				if( dict.plugin != "" ){
+					if( typeof dict.client == "undefined" || dict.client==null ) dict.client = client
+					Konekti.plugin[dict.plugin].replaceWith(dict)
+					for( var c in dict ){
+						inner_replace(dict[c])
+					}
+				}else{
+					for( var c in dict ){
+						inner_replace(dict[c])
+					}
+				}
+			}
+		}
+
+		PlugIn.uses(inner(dictionary), 
+			function(){ 
+				inner_replace(dictionary) 
+				if( callback != null ) callback()
+			}
+		)	
+	}
+}
+
+Konekti.script={
+	loaded : [],
 
 	/** 
 	 * Gets the position of the script <i>x</i> in the array of loaded scripts. If the script has not been loaded, this method returns the size of the array of loaded scripts.
 	 * @param x Script to be located
 	 * @return Position of the script if it was previously loaded, <i>n=size(src)</i> otherwise
 	 */
-	static index( id ){
+	index: function( id ){
 		var i=0;
-		while(i<loadedScripts.length && id!=loadedScripts[i].id){ i++ }
+		while(i<Konekti.script.loaded.length && id!=Konekti.script.loaded[i].id){ i++ }
 		return i
-	}
+	},
 
 	/**
 	 * Adds a script to the client from its source code 
@@ -226,19 +95,19 @@ class Script{
 	 * @param code Source code of the script
 	 * @param next Function that will be called after loading the script
 	 */
-	static add( type, id, code ){
-		var index = Script.index(id)
-		if( index == loadedScripts.length ){ 
+	add: function( type, id, code ){
+		var index = Konekti.script.index(id)
+		if( index == Konekti.script.loaded.length ){ 
 			var element = document.createElement( 'script' )
 			element.defer = true
 			element.charset="utf-8"
 			if( type!=null ) element.type = type
-			loadedScripts.push({"id":id})
+			Konekti.script.loaded.push({"id":id})
 			element.innerHTML = code
 			var b = document.getElementsByTagName('script')[0]
 			b.parentNode.insertBefore(element, b)
 		}
-	}
+	},
 
 	/**
 	 * Adds a script to the client from a cloud url
@@ -247,9 +116,9 @@ class Script{
 	 * @param next Function that will be called after loading the script
 	 * @param error Function that will be called if the script cold not be loaded
 	 */
-	static load( type, url, next ){
-		var index = Script.index(url)
-		if( index == loadedScripts.length ){ 
+	load : function( type, url, next ){
+		var index = Konekti.script.index(url)
+		if( index == Konekti.script.loaded.length ){ 
 			var element = document.createElement( 'script' )
 			if( type!=null ) element.type = type
 			element.async = true
@@ -259,7 +128,7 @@ class Script{
 			element.onreadystatechange = null
 
 			var myScript = {id:url, state:0, queue:[next] } 
-			loadedScripts.push(myScript)
+			Konekti.script.loaded.push(myScript)
 			
 			function onload(){
 				myScript.state = 1
@@ -278,13 +147,13 @@ class Script{
 			var b = document.getElementsByTagName('script')[0]
 			b.parentNode.insertBefore(element, b)
 		}else{
-			myScript = loadedScripts[index]
+			myScript = Konekti.script.loaded[index]
 			var state = myScript.state
 			var queue = myScript.queue
 			if( state==1 ) next()
 			if( state==0 ) queue.push( next )
 		}
-	}
+	},
 
 	/**
 	 * Adds a javascript to the client from a cloud url
@@ -292,86 +161,238 @@ class Script{
 	 * @param next Function that will be called after loading the script
 	 * @param error Function that will be called if the script cold not be loaded
 	 */
-	static loadJS( url, next ){ Script.load( 'text/javascript', url, next ) }
+	loadJS: function( url, next ){ Konekti.script.load( 'text/javascript', url, next ) },
 
 	/**
 	 * Adds a link to the client from a cloud url
 	 * @param url URLs of the link
 	 * @param rel 
 	 */
-	static link( url, rel ){
+	link: function( url, rel ){
 		var l = document.createElement('link')
 		l.rel = rel
 		l.href = url
 		l.crossorigin="anonymous"
 		document.getElementsByTagName('head')[0].appendChild(l)
-	}
+	},
 
 	/**
 	 * Adds a style sheet to the client from a cloud url
 	 * @param url URLs of the style sheet
 	 */
-	static stylesheet( url ){ Script.link( url, "stylesheet" ) }
+	stylesheet: function( url ){ Konekti.script.link( url, "stylesheet" ) },
+}
+
+
+
+/* ************************************* Util Methods ****************************************** */
+Konekti.util = {
+	/**
+	 * Creates a string from string (id function)
+	 * @param str String to be converted to a String
+	 * @return A String version of the String
+	 */
+	txt: function(str){ return str },
+
+	/**
+	 * Creates a XML object from a string, if possible
+	 * @param str String to be converted to a XML object
+	 * @return A XML version of the String
+	 */
+	xml: function(str){ return new DOMutilr().utilFromString(str,"text/xml") },
+
+	/**
+	 * Creates a JSON object from a string, if possible
+	 * @param str String to be converted to a JSON object
+	 * @return A JSON version of the String
+	 */
+	json: function(str){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null },
+
+	/**
+	 * Creates a HTML element from a string, if possible
+	 * @param str String representing a single HTML element
+	 * @return A HTML version of the string
+	 */
+	html: function(str) {
+	    var template = document.createElement('template')
+	    str = str.trim()
+	    template.innerHTML = str
+	    return template.content.firstChild
+	},
+
+	/**
+	 * Creates a CSS node from a string, if possible
+	 * @param str String representing a CSS file
+	 * @return A CSS node version of the string
+	 */
+	css: function(str){
+		if(str!=null){
+			str = str.trim();
+			var d = document.createElement('style')
+			d.innerHTML = str
+			return d
+		}
+		return null;
+	},
+
+	/**
+	 * Adds a CSS file (as String) to the client, if possible
+	 * @param str String representing a CSS file
+	 */
+	addCSS: function(str){
+		var d = Konekti.util.css( str )
+		if( d != null ) document.getElementsByTagName('head')[0].appendChild(d)
+	},
+
+	/**
+	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
+	 * For example, if <i>str='lorem ·X· dolor ·haha· amet'</i>, <i>c='·'</i> and <i>dictionary={'X':'ipsum', 'haha':'sit' }
+	 * then this method will return the string <i>lorem ipsum dolor sit amet'</i>
+	 * @param str Template used for generating the String
+	 * @param dictionary Set of pairs <i>(TAG,value)</i> used for replacing each <i>TAG</> by its corresponding <i>value</i>
+	 * @param c Enclosing tag character
+	 * @return A String from a template by replacing the set of tags with their associated values. 
+	 */
+	fromTemplate: function(str, dictionary, c){
+		var x = str.split(c)
+		var state = 0
+		var res = ""
+	  	var tag = ''
+		for( var i = 0; i<x.length; i++ ){
+			switch( state ){
+				case  0:
+					res += x[i]
+					state = 1
+				break;    
+				case 1:
+					if( x[i].length > 0 ){
+						tag = x[i]
+						state = 2
+					}else{
+						res += c
+						state = 0
+					}
+				break;
+			    	case 2:
+				    	if( x[i].length > 0 || i==x.length-1 ){
+						res += ((dictionary[tag]!=null)?dictionary[tag]:tag) + x[i]
+						state = 1
+					}else{
+			    			tag += c
+						state = 3
+					}                
+				break;
+				case 3:
+					if( x[i].length > 0 ) tag += x[i]
+						state = 2
+			}
+		}
+		return res
+	},
+
+	/**
+	 * Obtains the set of tags defined in a String template. A tag is limited both sides by a character <i>c</i>. For example, if <i>str='lorem·X·ipsum·haha· quia'</i>
+	 * and <i>c='·'</i> then this method will return the array of tags <i>['X', 'haha']</i>
+	 * @param str Template used for generating the String
+	 * @param c Enclosing tag character
+	 * @return A dictionary, set of pairs <i>(TAG,value)</i>, containing each <i>TAG</> in the template
+	 */
+	templateTags: function(str, c){
+		var array = []
+		var x = str.split(c)
+		var state = 0
+	  	var tag = ''
+		for( var i = 0; i<x.length; i++ ){
+			switch( state ){
+				case  0:
+					state = 1
+				break;    
+				case 1:
+					if( x[i].length > 0 ){
+						tag = x[i]
+						state = 2
+					}else{ state = 0 }
+				break;
+			    	case 2:
+				    	if( x[i].length > 0 || i==x.length-1 ){
+						array.push(tag)
+						state = 1
+					}else{
+			    			tag += c
+						state = 3
+					}                
+				break;
+				case 3:
+					if( x[i].length > 0 ) tag += x[i]
+					state = 2
+			}
+		}
+		return array
+	},
+
+	/**
+	 * Obtains a JSON version of a String
+	 * @param str String to be stored as JSON String
+	 * @return A JSON version of the String
+	 */
+	encode: function(str){ return '"' + str.replace(/\\/g, '\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n').replace(/\t/g,'\\t') +'"' },
+
+	/**
+	 * Obtains a String from a JSON version
+	 * @param str String to be recovered from a JSON String
+	 * @return The String from a JSON version
+	 */
+	decode: function(str){
+		var s = str.replace(/\\\\/g, '\\').replace(/\\"/g,'"').replace(/\\n/g,'\n').replace(/\\t/g,'\t')
+		return s.substring(1,s.length-1)
+	},
+
+	/**
+	 * Obtains the child node (starting with <i>node</i> as parent) with the given id
+	 * @param node The starting node for the searching process
+	 * @param childId Id of the node being located
+	 * @return The child node (starting with <i>node</i> as parent) with the given id
+	 */
+	findChild: function(node, childId){
+		var components = node.getElementsByTagName("*")
+		var c = null
+		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
+		return c
+	},
+
+	/**
+	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
+	 * @param id Id of the element being located
+	 * @return The node with the given id (A shortcut of the <i>document.getElementById</i> method
+	 */
+	vc: function(id){ return document.getElementById(id) },
+
+	/**
+	 * Determines the interface language
+	 * @return Interface language
+	 */ 
+	language: function(){
+		var urlParams = new URLSearchParams(window.location.search)
+		var lang = urlParams.get('lang')  || navigator.language || navigator.userLanguage 
+		var idx = lang.indexOf('-')
+		if( idx > 0 ) lang = lang.substring(0,idx)
+		return lang
+	}
 }
 
 /* ************************************* PlugIn Methods ****************************************** */
 class PlugIn{
-	static URL( id ){ return "https://konekti.numtseng.com/source/" }
-
-	static build( server, dictionary, callback ){
-		function inner( dict ){
-			var uses = []
-			if( dict!=null && dict.plugin != null ){
-				if( dict.plugin != "" ){
-					uses.push(dict.plugin);
-					for( var c in dict ){
-						uses = uses.concat(inner(dict[c]))
-					}
-				}else{
-					for( var c in dict ){
-						uses = uses.concat(inner(dict[c]))
-					}
-				}
-			}
-			return uses
-		}
-
-		function inner_replace( dict, id ){
-			if( dict!=null && dict.plugin != null ){
-				if( dict.id == null ) dict.id = id
-				if( dict.plugin != "" ){
-					dict.root = dictionary.id
-					if( dictionary.client != null && dict.client == null ) dict.client = dictionary.client
-					window.plugin[dict.plugin].replaceWith(dict)
-					for( var c in dict ){
-						inner_replace(dict[c], c)
-					}
-				}else{
-					for( var c in dict ){
-						inner_replace(dict[c], c)
-					}
-				}
-			}
-		}
-
-		PlugIn.uses(server, inner(dictionary), 
-			function(){ 
-				inner_replace(dictionary, dictionary.id) 
-				if( callback != null ) callback()
-			}
-		)
-	}
+	static URL(id){ return "https://konekti.numtseng.com/source/" }
 
 	/**
 	 * Creates a PlugIn with the given <i>id</i>, loading its resources from the given <i>server</i> and 
 	 * runs the <i>next</i> function after loaded
-	 * @param server Server used for getting the resources associated to the PlugIn
 	 * @param id Id of the PlugIn
 	 * @param next Function that will be executed after loading the PlugIn  
 	 */
-	constructor( server, id, next ){
+	constructor(id, next){
 		this.id = id
-		this.server = server
+		var server = Konekti.server
 		
 		var js
 		var css 
@@ -404,7 +425,7 @@ class PlugIn{
 				if( css ){ server.loadCSS(x.path+id, backCSS) }
 				else{ cssLoaded = true }
 			}else{
-				Util.addCSS(css) 
+				Konekti.util.addCSS(css) 
 				backCSS(css)
 			}
 
@@ -435,12 +456,12 @@ class PlugIn{
 				function step(){
 					i++
 					if(i<n){
-						if( window.plugin[uses[i]]==null ) new PlugIn( server, uses[i], step )
+						if( Konekti.plugin[uses[i]]==null ) new PlugIn(uses[i], step)
 						else step()
 					}else init2()
 				}
-				while( i<uses.length && window.plugin[uses[i]]!=null ){ i++ }
-				if( i<uses.length ) new PlugIn( server, uses[i], step ) 
+				while( i<uses.length && Konekti.plugin[uses[i]]!=null ){ i++ }
+				if( i<uses.length ) new PlugIn(uses[i], step) 
 				else init2()
 			}else init2()
 		}
@@ -450,18 +471,17 @@ class PlugIn{
 				x.path = PlugIn.URL(x.id)
 				init(obj)
 			}else{
-				x.path = this.server.pluginPath(id)
-				x.server.getJSON( x.path+x.id, init )
+				x.path = server.pluginPath(id)
+				server.getJSON( x.path+x.id, init )
 			}
 
 		}
 
-		if( window.plugin == null ) window.plugin = {}
-		window.plugin[id] = this
+		if( Konekti.plugin == null ) Konekti.plugin = {}
+		Konekti.plugin[id] = this
 		this.next = next
-		this.server = server
 		this.id = id
-		this.server.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
+		server.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
 	}
 	
 	/**
@@ -475,7 +495,7 @@ class PlugIn{
 	 * @param dictionary Information of the instance of the PlugIn
 	 * @return The HTML resource of an instance of the PlugIn.
 	 */
-	htmlCode( dictionary ){	return Util.fromTemplate( this.htmlTemplate, dictionary, '·' ) }
+	htmlCode( dictionary ){	return Konekti.util.fromTemplate( this.htmlTemplate, dictionary, '·' ) }
 
 	/**
 	 * Creates a DOM node for an instance of the PlugIn
@@ -484,7 +504,7 @@ class PlugIn{
 	 */
 	instance( dictionary ){
 		var code = this.htmlCode( dictionary ) 
-		var node = Util.html( code )
+		var node = Konekti.util.html( code )
 		return node
 	}
 
@@ -497,7 +517,7 @@ class PlugIn{
 	 */
 	appendAsChild( parent, dictionary ){
 		var node = this.instance( dictionary )
-		var parentNode = Util.vc( parent )
+		var parentNode = Konekti.util.vc( parent )
 		parentNode.appendChild( node )
 		this.connect( dictionary )
 	}
@@ -511,7 +531,7 @@ class PlugIn{
 	 */
 	insertBefore( sister, dictionary ){
 		var node = this.instance( dictionary )
-		var sisterNode = Util.vc( sister )
+		var sisterNode = Konekti.util.vc( sister )
 		var parentNode = sisterNode.parentElement
 		parentNode.insertBefore( node, sisterNode )
 		this.connect( dictionary )
@@ -525,7 +545,7 @@ class PlugIn{
 	 */
 	replaceWith( dictionary ){
 		var node = this.instance( dictionary )
-		var c = Util.vc( dictionary.id )
+		var c = Konekti.util.vc( dictionary.id )
 		if( c!=null ) c.parentElement.replaceChild(node, c)
 		this.connect( dictionary )
 	}
@@ -536,15 +556,15 @@ class PlugIn{
 	 * @param plugins Name of the PlugIns to be loaded
 	 * @param next Function that will be executed after loading the set of PlugIns
 	 */
-	static uses( server, plugins, next ){
-		if( window.plugin == null ) window.plugin = {}
+	static uses(plugins, next){
+		if( Konekti.plugin == null ) Konekti.plugin = {}
 		var i=0
 		function step(){
 			if( i<plugins.length ){
 				var p = plugins[i]
 				i++
-				if( window.plugin[p] != null ) step()
-				else new PlugIn( server, p, step )
+				if( Konekti.plugin[p] != null ) step()
+				else new PlugIn(p, step)
 			}else next()
 		}
 		step()
@@ -566,9 +586,12 @@ class Package{
 
 /* ************************************* A server ****************************************** */
 class Server{
-	constructor(){ this.plugin_path = 'plugin/' }
+	constructor(){
+		this.plugin_path = 'plugin/' 
+		this.client = {}
+	}
 
-	getConfigFile(file, next){ server.getJSON(file, next) } 
+	getConfigFile(file, next){ this.getJSON(file, next) } 
 
 	multiLanguage(id, lang, callback){
 		var server = this
@@ -630,7 +653,7 @@ class Server{
 	 */
 	loadScript( type, id, next ){
 		function back( code ){
-			Script.add( type, id, code )
+			Konekti.script.add( type, id, code )
 			if( next != null ) next()
 		}
 
@@ -645,7 +668,7 @@ class Server{
 	loadCSS( id, next ){ 
 		var x = this
 		function addCSS( cssCode ){ 
-			Util.addCSS( cssCode )
+			Konekti.util.addCSS( cssCode )
 			if( next != null ) next()
 		}
 		this.getResource(this.makeResourceID(id,'css'), addCSS )
@@ -664,7 +687,7 @@ class Server{
 	 * @param next Function that will be called if the JSON was loaded
 	 */
 	getJSON( id, next ){
-		function backJSON( json ){ next( JSON.parse( json ) ) }
+		function backJSON( json ){ next( json.length>0?JSON.parse( json ):null ) }
 		this.getResource(this.makeResourceID(id,'json'), backJSON) 
 	}
 
