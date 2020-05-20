@@ -26,9 +26,20 @@ Konekti = {
 	 * @param callback Function that will be called after initializing the konekti framework
 	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
 	 */
-	init: function( servlet ){
+	init: function(servlet){
 		if( servlet == null ){ Konekti.server = new Server() }
 		else{ Konekti.server = new ServletServer(servlet) }
+	},
+
+	component_id(dictionary, plugin){
+		if( dictionary!=null && typeof dictionary.plugin != "undefined" ){
+			if( dictionary.plugin == plugin ) return dictionary.id
+			for( var c in dictionary ){
+				var x = Konekti.component_id(dictionary[c], plugin)
+				if(x != null) return x
+			}
+		}
+		return null
 	},
 
 	build(dictionary, client, callback){
@@ -382,6 +393,11 @@ Konekti.util = {
 
 /* ************************************* PlugIn Methods ****************************************** */
 class PlugIn{
+	/**
+	 * Gets the Konekti plugins path
+	 * @param id PlugIn id
+	 * @return Konekti plugins path
+	 */
 	static URL(id){ return "https://konekti.numtseng.com/source/" }
 
 	/**

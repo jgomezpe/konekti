@@ -13,13 +13,9 @@ class App{
 		client.dictionary = client.config(file)
 		document.body.innerHTML = client.html(file)
 		
-		function callbackDictionary(){
-console.log('[App]callbackDictionary')
-			client.goto(client.id) 
-		}
+		function callbackDictionary(){ client.goto(client.id) }
 
 		function callbackLanguage(){
-console.log('[App]callbackLang')
 			client.languages = Konekti.server.languages[client.id]
 			client.dictionary.id = client.id
 			Konekti.build(client.dictionary, client.id, callbackDictionary)
@@ -30,12 +26,13 @@ console.log('[App]callbackLang')
 		server.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
 	}
 
+	connect( dictionary, cid ){ Konekti.build(dictionary, cid) }
+
 	goto(topic){
 		var client = this
 		function callback(dictionary){ 
-console.log('[App.callbackgoto]'+dictionary.id)
 			dictionary.client = client.id
-			Konekti.build(dictionary, client.id) 
+			client.connect(dictionary, client.id)
 		}
 		Konekti.server.getConfigFile(topic, callback)
 	}
@@ -88,27 +85,36 @@ console.log('[App.callbackgoto]'+dictionary.id)
 	}
 
 
-	select(id){
-console.log('[application]'+id)
-		this.goto(id) 
-	}
+	select(id){ this.goto(id) }
 
-	paused(id){
-		if( this.media[id] == null ) this.media[id] = {}
-	}
+	paused(id){ if( this.media[id] == null ) this.media[id] = {} }
 
 	playing(id, time){
 		if( this.media[id] == null ) this.media[id] = {}
 		this.media[id].time = time
-		var scripts = application.dictionary.content.scripts
+		var scripts = this.dictionary.content.scripts
 		for( var i=0; i<scripts.length; i++ ){
 			var script = scripts[i]
-			var i=script.mark.length-1
-			while( i>=0 && script.mark[i].time>time ){ i-- }
-			if(i>=0){
+			if(typeof this.edit[script.target] != 'undefined'){
 				if( typeof script.text == "undefined" || script.text == null ) script.text = this.edit[script.target].getText()
-				var text = script.text.substring(0,script.mark[i].end) + script.mark[i].add
-				this.edit[script.target].setText(text)
+				if( typeof script.current == "undefined" ) script.current = -1
+				var k=script.mark.length-1
+				while( k>=0 && script.mark[k].time>time ){ k-- }
+				if(k!=script.current){
+					var text;
+					if(k>=0 ){
+						var start = 0
+						if(typeof script.mark[k].start!='undefined') start = script.mark[k].start
+						var end = script.text.length
+						if(typeof script.mark[k].end!='undefined') end = script.mark[k].end
+						var add=''
+						if(typeof script.mark[k].add!='undefined') add = script.mark[k].add 
+						text = script.text.substring(start,end) + add
+					}else text = script.text
+					this.edit[script.target].setText(text)
+					if( k>=0 ) this.edit[script.target].scrollTop()
+					script.current = k
+				}
 			}
 		}
 	}
@@ -128,14 +134,19 @@ console.log('[application]'+id)
 		this.media[id].seek = f
 	}
 
-	editor(id, get, set){
+	editor(id, get, set, scrollTop){
 		if( this.edit[id] == null ) this.edit[id] = {}
 		this.edit[id].getText = get
 		this.edit[id].setText = set
+		if(scrollTop != null) this.edit[id].scrollTop = scrollTop
+		else this.edit[id].scrollTop = function(pos){
+			var ui = Konekti.util.vc(id)
+			if(pos==null) pos = ui.scrollHeight
+			ui.scrollTop = pos
+		}
 	}
 
 	setLanguage(id, lang){
-console.log('[app]'+lang)
 		Konekti.server.getConfigFile = function(file, next){ Konekti.server.getJSON('language/'+lang+'/'+file, next) } 
 		this.goto(id)
 	}
