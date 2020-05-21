@@ -829,3 +829,30 @@ class ServletServer extends Server{
 		}else super.registerCommand(object, method, arg)
 	}
 }
+
+/* ************************************* Components ****************************************** */
+
+class KonektiEditor{
+	constructor( dictionary ){
+		this.id = dictionary.id
+		this.gui = Konekti.util.vc(this.id)
+	}
+
+	getText(){ return null }
+
+	setText(txt){}
+
+	locateCursor(row, column){}
+	cursorLocation(){ return [0,0] }
+
+	highlight(row){}
+
+
+	cursorIndex(){ return 0 }
+	locateCursorIndex(pos){}
+
+	scrollTop(pos){
+		if(pos==null) pos = this.gui.scrollHeight
+		this.gui.scrollTop = pos
+	}
+}

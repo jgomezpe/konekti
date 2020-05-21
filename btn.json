@@ -1,5 +1,3 @@
 {
 	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
-	"js":"Konekti.script.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )",
-	"html":"<button id='·id·' class='w3-button w3-bar-item ·align· w3-xlarge' onclick='·run·'><i class='·fa·'></i></button>"
-}
+"html":"<button id='·id·' class='w3-button w3-bar-item ·align· w3-xlarge' onclick='·run·'><i class='·fa·'>·txt·</i></button>","js":"Konekti.script.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )\n\nKonekti.plugin.btn.htmlCode = function(dictionary){\n    if(typeof dictionary.txt == 'undefined') dictionary.txt=''\n    return Konekti.util.fromTemplate( this.htmlTemplate, dictionary, '·' ) \n}"}

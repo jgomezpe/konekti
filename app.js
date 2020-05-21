@@ -134,20 +134,12 @@ class App{
 		this.media[id].seek = f
 	}
 
-	editor(id, get, set, scrollTop){
-		if( this.edit[id] == null ) this.edit[id] = {}
-		this.edit[id].getText = get
-		this.edit[id].setText = set
-		if(scrollTop != null) this.edit[id].scrollTop = scrollTop
-		else this.edit[id].scrollTop = function(pos){
-			var ui = Konekti.util.vc(id)
-			if(pos==null) pos = ui.scrollHeight
-			ui.scrollTop = pos
-		}
-	}
+	editor(e){ this.edit[e.id] = e }
 
 	setLanguage(id, lang){
 		Konekti.server.getConfigFile = function(file, next){ Konekti.server.getJSON('language/'+lang+'/'+file, next) } 
 		this.goto(id)
 	}
 }
+
+
