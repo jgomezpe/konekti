@@ -11,232 +11,231 @@
 * @version 1.0
 */
 
+
+class CanvasEditor extends KonektiEditor{
+	constructor(dictionary){
+		super(dictionary)
+		var id = this.id
+		this.gui = Konekti.util.vc(id+'canvas')
+		if( typeof dictionary.commands != 'undefined' ) this.commands = dictionary.commands
+		else this.commands = {}
+		this.wunit = 100
+		if( typeof dictionary.wunit != 'undefined' ) this.wunit = dictionary.wunit
+		this.hunit = 100
+		if( typeof dictionary.hunit != 'undefined' ) this.hunit = dictionary.hunit
+		this.units(this.wunit, this.hunit)
+	}
+
+	getContext(){ 
+//		this.gui = Konekti.util.vc('canvas'+this.id)
+		return this.gui.getContext('2d') 
+	}
+
+	clear(){ this.getContext().strokeRect(0,0,this.gui.width,this.gui.height) }
+
+	redraw(){
+		this.resize()
+		this.draw(this.commands) 
+	}
+
+	resize(){
+		var used = this.commands
+		var ctx = this.getContext()
+		ctx.canvas.width = this.gui.offsetWidth
+		ctx.canvas.height = this.gui.offsetHeight
+		var wC = ctx.canvas.width 
+		var hC = ctx.canvas.height 
+		var wU = this.wunit 
+		var hU = this.hunit
+		if( wC/wU < hC/hU ) this.scale = wC/wU; else this.scale = hC/hU
+	}
+
+	units(wunit, hunit){
+		this.wunit = wunit
+		this.hunit = hunit
+		this.redraw()
+	}
+
+	// Drawing functions 
+	image(obj){
+		var img = Konekti.util.vc(obj.id)
+		if( img==undefined || img==null ){
+			img = component.new('img', obj.id)
+			img.src = obj.src
+			img.alt = 'Undefined'
+		}   
+     
+		var rotate
+		if( obj.rotate!=undefined && obj.rotate!=null && obj.rotate!=0 ) rotate = obj.rotate
+		else rotate=0
+
+		var s = this.scale
+
+		var x = obj.x * s
+		var y = obj.y * s
+		var width = obj.width * s
+		var height = obj.height * s
+
+		var ctx = this.getContext()
+	     
+		if( rotate!=0 ){
+			ctx.save()
+			var rx = x + width/2
+			var ry = y + height/2
+			ctx.translate(rx, ry)
+			ctx.rotate(rotate * Math.PI/2)
+			ctx.drawImage(img, -width/2, -height/2, width, height)
+			ctx.restore()
+		}else ctx.drawImage(img, x, y, width, height)
+	}
+
+	compound(obj){
+		var objs = obj.commands
+		for( var i=0; i<objs.length; i++ ) this.draw(objs[i])
+	}
+
+	beginPath(obj){ this.getContext().beginPath() }
+
+	closePath(obj){ this.getContext().closePath() }
+
+	moveTo(obj){
+		var ctx = this.getContext()
+		var s = this.scale
+		var x = obj.x * s
+		var y = obj.y * s
+		ctx.moveTo(x,y)
+	}
+
+	lineTo(obj){
+		var ctx = this.getContext()
+		var s = this.scale
+		var x = obj.x * s
+		var y = obj.y * s
+		ctx.lineTo(x,y)
+	}
+
+	quadTo(obj){
+		var ctx = this.getContext()
+		var s = this.scale
+		var cp1x = obj.x[0] * s
+		var cp1y = obj.y[0] * s
+		var x = obj.x[1] * s
+		var y = obj.y[1] * s
+		ctx.quadraticCurveTo(cp1x, cp1y, x, y) 
+	}
+
+	curveTo(obj){
+		var ctx = this.getContext()
+		var s = this.scale
+		var cp1x = obj.x[0] * s
+		var cp1y = obj.y[0] * s
+		var cp2x = obj.x[1] * s
+		var cp2y = obj.y[1] * s
+		var x = obj.x[2] * s
+		var y = obj.y[2] * s
+		ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+	}
+
+	line(obj){
+		this.beginPath(obj)
+		this.moveTo({x:obj.x[0],y:obj.y[0]})
+		this.lineTo({x:obj.x[1],y:obj.y[1]})
+		this.stroke(obj)
+	}
+
+	poly(obj){
+		this.beginPath(obj)
+		var px = obj.x
+		var py = obj.y
+		this.moveTo({x:px[0],y:py[0]})
+		for( var i=1; i<px.length; i++) this.lineTo({x:px[i],y:py[i]})
+	}
+
+	polyline(obj){
+		this.poly(obj)
+		this.stroke(obj)
+	}
+
+	polygon(obj){
+		this.poly(obj)
+		this.fill(obj)
+	}
+
+	style(obj){
+		var canvas = Konekti.plugin.canvas
+		if( obj.color != null )	return canvas.rgb(obj.color)
+		if( obj.startcolor == null ) return null
+		var c1 = canvas.rgb(obj.startcolor)
+		var c2 = canvas.rgb(obj.endcolor)
+		var s = this.scale
+		var ctx = this.getContext()
+		var gradient
+		if( obj.r != null ){
+			var r = obj.r * s
+			var x = obj.x * s
+			var y = obj.y * s
+			gradient = ctx.createRadialGradient(x, y, 1, x, y, r)
+		}else{
+			var x1 = obj.x[0] * s
+			var y1 = obj.y[0] * s
+			var x2 = obj.x[1] * s
+			var y2 = obj.y[1] * s
+			gradient = ctx.createLinearGradient(x1, y1, x2, y2)
+		}
+		gradient.addColorStop("0", c1)
+		gradient.addColorStop("1", c2)
+		return gradient
+	}
+
+	strokeStyle(obj){
+		var ctx = this.getContext() 
+		ctx.strokeStyle = this.style(obj)
+		if( obj.lineWidth != null ) ctx.lineWidth = obj.lineWidth
+	}
+
+	fillStyle(obj){
+		var ctx = this.getContext()
+		ctx.fillStyle = this.style(obj)
+	}
+
+	stroke(obj){ this.getContext().stroke() }
+
+	fill(obj){
+		var ctx = this.getContext()
+		ctx.closePath()
+		ctx.fill()
+	}
+
+	draw(obj){
+		var type = obj.command
+		if( type != null ) this[type](obj)
+	}
+
+	getText(){ return JSON.stringify(commands) }
+
+	setText(txt){ 
+		this.commands = JSON.parse(txt)
+		this.redraw()
+	}
+}
+
 // Canvas functions
-var canvas = window.plugin.canvas
+Konekti.plugin.canvas.client = {}
 
-commandsByCanvas = {}
+Konekti.plugin.canvas.rgb = function( obj ){ return "rgb("+obj.red+","+obj.green+","+obj.blue+")"; }
 
-canvas.clear = function ( id ){
-	var c, ctx, w, h;
-	c = Util.vc(id);
-	w = c.width;
-	h = c.height;
-	ctx = c.getContext("2d");
-	ctx.strokeRect(0,0,w,h);
-}
-	
-canvas.redraw = function (id){
-	if( id==null ) for( id in commandsByCanvas) canvas.redraw(id)
-	else canvas.command(id, commandsByCanvas[id].command)
-}
-	
-canvas.scale = function ( id ){
-	var used = commandsByCanvas[id]
-	var container = Util.vc(id)
-	var ctx = canvas.getContext(id)
-	ctx.canvas.width = container.offsetWidth
-	ctx.canvas.height = container.offsetHeight
-	var wC = ctx.canvas.width 
-	var hC = ctx.canvas.height 
-	var wU = used.wunit 
-	var hU = used.hunit
-	if( wC/wU < hC/hU ) used.scale = wC/wU; else used.scale = hC/hU
-}
-	
-canvas.resize = function () {
-	for (var id in commandsByCanvas){
-		canvas.scale(id)
-		canvas.redraw(id)
+Konekti.plugin.canvas.resize = function () {
+	var canvas = Konekti.plugin.canvas
+	for (var cc in canvas.client){
+		canvas.client[cc].redraw()
 	}
 }
 	
-canvas.getContext = function ( id ){
-	var c = Util.vc('canvas'+id)
-	return c.getContext("2d");
-}
-
-canvas.units = function( id, wunit, hunit ){
-	commandsByCanvas[id].wunit = wunit
-	commandsByCanvas[id].hunit = hunit
-	canvas.scale(id)
-	canvas.redraw(id)
-}
-
-canvas.connect = function ( dictionary ){
-	var id = dictionary.id
-	commandsByCanvas[id] = { wunit:(dictionary.wunit!=null)?dictionary.wunit:100, hunit:(dictionary.hunit!=null)?dictionary.hunit:100 }
+Konekti.plugin.canvas.connect = function ( dictionary ){
+	Konekti.client[dictionary.client].editor(new CanvasEditor( dictionary))
 } 
 	
-// Drawing functions 
-
-canvas.image = function ( id, obj ){
-	var img = Util.vc(obj.id);
-	if( img==undefined || img==null ){
-		img = component.new('img', obj.id);
-		img.src = obj.src;
-		img.alt = 'Undefined';
-	}   
-     
-	var rotate
-	if( obj.rotate!=undefined && obj.rotate!=null && obj.rotate!=0 ) rotate = obj.rotate;
-	else rotate=0;
-
-	var s = commandsByCanvas[id].scale;
-
-	var x = obj.x * s;
-	var y = obj.y * s;
-	var width = obj.width * s;
-	var height = obj.height * s;
-
-	var ctx = canvas.getContext( id );	
-     
-	if( rotate!=0 ){
-		ctx.save(); 
- 
-		var rx = x + width/2;
-		var ry = y + height/2;
-		ctx.translate(rx, ry);
-
-		ctx.rotate(rotate * Math.PI/2);
- 
-		ctx.drawImage(img, -width/2, -height/2, width, height);
- 
-		ctx.restore();      
-	}else ctx.drawImage(img, x, y, width, height);
-}
-
-canvas.compound = function (id, obj){
-	var objs = obj.commands;
-	for( var i=0; i<objs.length; i++ ) canvas.command( id, objs[i] );
-}
-
-canvas.beginPath = function (id, obj){ canvas.getContext( id ).beginPath(); }
-
-canvas.closePath = function (id, obj){ canvas.getContext( id ).closePath(); }
-
-canvas.moveTo = function (id, obj){
-	var ctx = canvas.getContext( id ); 
-	var s = commandsByCanvas[id].scale;
-	var x = obj.x * s;
-	var y = obj.y * s;
-	ctx.moveTo(x,y);
-}
-
-canvas.lineTo = function (id, obj){
-	var ctx = canvas.getContext( id ); 
-	var s = commandsByCanvas[id].scale;
-	var x = obj.x * s;
-	var y = obj.y * s;
-	ctx.lineTo(x,y);
-}
-
-canvas.quadTo = function ( id, obj ){
-	var ctx = canvas.getContext( id ); 
-	var s = commandsByCanvas[id].scale;
-	var cp1x = obj.x[0] * s;
-	var cp1y = obj.y[0] * s;
-	var x = obj.x[1] * s;
-	var y = obj.y[1] * s;
-	ctx.quadraticCurveTo(cp1x, cp1y, x, y); 
-}
-
-canvas.curveTo = function ( id, obj ){
-	var ctx = canvas.getContext( id ); 
-	var s = commandsByCanvas[id].scale;
-	var cp1x = obj.x[0] * s;
-	var cp1y = obj.y[0] * s;
-	var cp2x = obj.x[1] * s;
-	var cp2y = obj.y[1] * s;
-	var x = obj.x[2] * s;
-	var y = obj.y[2] * s;
-	ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y); 
-}
-
-canvas.line = function( id, obj ){
-	canvas.beginPath(id, obj);
-	canvas.moveTo(id, {x:obj.x[0],y:obj.y[0]});
-	canvas.lineTo(id, {x:obj.x[1],y:obj.y[1]});
-	canvas.stroke(id,obj);
-}
-
-canvas.poly = function( id, obj ){
-	canvas.beginPath(id, obj);
-	var px = obj.x;
-	var py = obj.y;
-	canvas.moveTo(id, {x:px[0],y:py[0]});
-	for( var i=1; i<px.length; i++) canvas.lineTo(id, {x:px[i],y:py[i]});		
-}
-
-canvas.polyline = function( id, obj ){
-	canvas.poly(id, obj);
-	canvas.stroke(id,obj);
-}
-
-canvas.polygon = function( id, obj ){
-	canvas.poly(id, obj);
-	canvas.fill(id,obj);
-}
-
-canvas.rgb = function( obj ){ return "rgb("+obj.red+","+obj.green+","+obj.blue+")"; }
-
-canvas.style = function( id, obj ){
-	if( obj.color != null )	return canvas.rgb(obj.color);
-	if( obj.startcolor == null ) return null;
-	var c1 = canvas.rgb(obj.startcolor);
-	var c2 = canvas.rgb(obj.endcolor);
-	var s = commandsByCanvas[id].scale;
-	var ctx = canvas.getContext( id );
-	var gradient
-	if( obj.r != null ){
-		var r = obj.r * s;
-		var x = obj.x * s;
-		var y = obj.y * s;
-		gradient = ctx.createRadialGradient(x, y, 1, x, y, r);
-	}else{
-		var x1 = obj.x[0] * s;
-		var y1 = obj.y[0] * s;
-		var x2 = obj.x[1] * s;
-		var y2 = obj.y[1] * s;
-		gradient = ctx.createLinearGradient(x1, y1, x2, y2);	
-	}
-	gradient.addColorStop("0", c1);			
-	gradient.addColorStop("1", c2);
-	return gradient;
-}
-
-canvas.strokeStyle = function( id, obj ){
-	var ctx = canvas.getContext( id ); 
-	ctx.strokeStyle = canvas.style(id, obj);
-	if( obj.lineWidth != null ) ctx.lineWidth = obj.lineWidth;
-}
-
-canvas.fillStyle = function( id, obj ){
-	var ctx = canvas.getContext( id ); 
-	ctx.fillStyle = canvas.style(id, obj);
-}
-
-canvas.stroke = function( id, obj ){ canvas.getContext( id ).stroke(); }
-
-canvas.fill = function( id, obj ){
-	var ctx = canvas.getContext( id );
-	ctx.closePath();
-	ctx.fill(); 
-}
-
-canvas.command = function ( id, obj ){
-	var type = obj.command;
-	if( type != null ) canvas[type](id, obj);
-}
-
-canvas.draw = function ( id, objText ){
-	var json = JSON.parse(objText); 
-	if( json.wunit != null ) commandsByCanvas[id] = json
-	else commandsByCanvas[id].command = json
-	canvas.scale(id)
-	canvas.command(id, commandsByCanvas[id].command); 
-}
-
-window.addEventListener("resize", canvas.resize);
+window.addEventListener("resize", Konekti.plugin.canvas.resize);
 
 /*
 

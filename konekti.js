@@ -13,13 +13,7 @@
 * @version 1.0
 */
 
-/* ************************************* Script Methods ****************************************** */
-
-
-/**
- * Script Management
- * @param getResource A function that brings the resource from the server
- */
+/* ************************************* Konekti Methods ****************************************** */
 Konekti = {
 	/**
 	 * Inits the konekti framework
@@ -42,6 +36,8 @@ Konekti = {
 		return null
 	},
 
+	client : {},
+
 	build(dictionary, client, callback){
 		function inner( dict ){
 			var uses = []
@@ -55,6 +51,10 @@ Konekti = {
 					for( var c in dict ){
 						uses = uses.concat(inner(dict[c]))
 					}
+				}
+			}else if(Array.isArray(dict) ){
+				for( var i=0; i<dict.length; i++ ){
+					uses = uses.concat(inner(dict[i]))
 				}
 			}
 			return uses
@@ -72,6 +72,10 @@ Konekti = {
 					for( var c in dict ){
 						inner_replace(dict[c])
 					}
+				}
+			}if(Array.isArray(dict) ){
+				for( var i=0; i<dict.length; i++ ){
+					inner_replace(dict[i])
 				}
 			}
 		}
@@ -193,8 +197,6 @@ Konekti.script={
 	 */
 	stylesheet: function( url ){ Konekti.script.link( url, "stylesheet" ) },
 }
-
-
 
 /* ************************************* Util Methods ****************************************** */
 Konekti.util = {
@@ -388,6 +390,29 @@ Konekti.util = {
 		var idx = lang.indexOf('-')
 		if( idx > 0 ) lang = lang.substring(0,idx)
 		return lang
+	},
+
+	previousFont: function( font ){
+		if( font == 'small' ) return 'tiny'
+		if( font == 'medium' ) return 'small'
+		if( font == 'large' ) return 'medium'
+		if( font == 'xlarge' ) return 'large'
+		if( font == 'xxlarge' ) return 'xlarge'
+		if( font == 'xxxlarge' ) return 'xxlarge'
+		if( font == 'jumbo' ) return 'xxxlarge'
+		return font	
+	},
+
+	fontSize: function( font ){
+		if( font == 'tiny' ) return 10
+		if( font == 'small' ) return 12
+		if( font == 'medium' ) return 15
+		if( font == 'large' ) return 18
+		if( font == 'xlarge' ) return 24
+		if( font == 'xxlarge' ) return 36
+		if( font == 'xxxlarge' ) return 48
+		if( font == 'jumbo' ) return 64
+		return 15	
 	}
 }
 
@@ -409,7 +434,6 @@ class PlugIn{
 	constructor(id, next){
 		this.id = id
 		var server = Konekti.server
-		
 		var js
 		var css 
 		var html 
@@ -430,6 +454,7 @@ class PlugIn{
 			cssLoaded = true
 			done()
 		}
+
 		function backJS(){
 			jsLoaded = true
 			done()
@@ -560,9 +585,11 @@ class PlugIn{
 	 * the document with the same id
 	 */
 	replaceWith( dictionary ){
-		var node = this.instance( dictionary )
 		var c = Konekti.util.vc( dictionary.id )
-		if( c!=null ) c.parentElement.replaceChild(node, c)
+		if( typeof this.replace == 'string' && this.replace == 'strict' ){
+			var node = this.instance( dictionary )
+			if( c!=null ) c.parentElement.replaceChild(node, c)
+		}else{ if(c!=null) c.innerHTML = this.htmlCode(dictionary) }
 		this.connect( dictionary )
 	}
 
@@ -602,10 +629,7 @@ class Package{
 
 /* ************************************* A server ****************************************** */
 class Server{
-	constructor(){
-		this.plugin_path = 'plugin/' 
-		this.client = {}
-	}
+	constructor(){ this.plugin_path = 'plugin/' }
 
 	getConfigFile(file, next){ this.getJSON(file, next) } 
 
@@ -631,7 +655,6 @@ class Server{
 	 */ 
 	getResource( resource, next ){
 		if( resource==null ) return;
-
 		var xhttp = new XMLHttpRequest()
 		xhttp.onreadystatechange = function (){ 
 			if (xhttp.readyState==4 ){
@@ -672,7 +695,6 @@ class Server{
 			Konekti.script.add( type, id, code )
 			if( next != null ) next()
 		}
-
 		this.getResource(id, back )
 	}
 
@@ -751,7 +773,6 @@ class ServletServer extends Server{
 	 */
 	web(object, method, arg, value, next){
 		command = new Package({'object':object, 'method':method, 'args':arg, 'navigator':navigator.appName}, value)
-		
 		var xhttp = new XMLHttpRequest()
 		xhttp.onreadystatechange = function (){
 			if (xhttp.readyState==4 && xhttp.status == 200){
@@ -831,7 +852,9 @@ class ServletServer extends Server{
 }
 
 /* ************************************* Components ****************************************** */
-
+/**
+ * An editor (text) manager
+ */
 class KonektiEditor{
 	constructor( dictionary ){
 		this.id = dictionary.id
@@ -847,12 +870,151 @@ class KonektiEditor{
 
 	highlight(row){}
 
-
 	cursorIndex(){ return 0 }
 	locateCursorIndex(pos){}
 
 	scrollTop(pos){
-		if(pos==null) pos = this.gui.scrollHeight
+		if(typeof pos=='undefined') pos = this.gui.scrollHeight
 		this.gui.scrollTop = pos
 	}
+}
+
+/**
+ * A media manager.
+ */
+class KonektiMedia{
+	constructor( dictionary ){
+		this.id = dictionary.id
+		this.gui = Konekti.util.vc(this.id)
+	}
+
+	pause(){}
+
+	play(){}
+
+	seek(time){}
+}
+
+/**
+ * A client for the application. Connection point between interfzse and server
+ */
+class KonektiClient{
+	/**
+	 * Creates a client with the given id
+	 * @param id Client id
+	 */	
+	constructor(id){
+		Konekti.init()
+		var client = this
+		client.id = id
+		client.media={}
+		client.edit={}
+		Konekti.client[id] = this
+	}
+
+	/**
+	 * Connects the given object to the given client
+	 */
+	connect( dictionary, cid, callback ){ Konekti.build(dictionary, cid, callback) }
+
+	/**
+	 * Paused event manager for media components
+	 * @param id Media component that generates the paused event
+	 */
+	paused(id){}
+
+	/**
+	 * Playing event manager for media components
+	 * @param id Media component that generates the playing event
+	 * @param time Current time
+	 */
+	playing(id, time){}
+
+	media(m){ this.media[m.id] = m }
+
+	editor(e){ this.edit[e.id] = e }
+}
+
+/**
+ * application javascript
+ */
+
+class App extends KonektiClient{
+	constructor( main, topic ){
+		super(main)
+		var client = this
+		this.topic = topic
+		
+		function callbackLanguage(){
+			client.languages = Konekti.server.languages[client.id]
+			client.firstTime = true
+			client.init(main)
+		}
+
+		Konekti.server.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
+	}
+
+	setLanguage(id, lang){
+		Konekti.server.getConfigFile = function(file, next){ Konekti.server.getJSON('language/'+lang+'/'+file, next) }
+		this.languageChange = true
+		this.init(id)
+	}
+
+	init(main){
+		var client = this
+		function callbackMain(dictionary){ 
+			dictionary.client = client.id
+			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
+			client.connect(dictionary, client.id, function(){ client.goto(client.topic) } )			
+		}
+		Konekti.server.getConfigFile(main, callbackMain)
+	}
+
+	goto(topic){
+		var client = this
+		function callback(dictionary){ 
+			dictionary.client = client.id
+			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
+			client.topic = topic
+			client.connect(dictionary, client.id)
+		}
+		Konekti.server.getConfigFile(topic, callback)
+	}
+	
+	select(id){ this.goto(id) }
+
+	playing(id, time){
+		if( this.media[id] == null ) this.media[id] = {}
+		this.media[id].time = time
+		var scripts = this.scripts
+		for( var i=0; i<scripts.length; i++ ){
+			var script = scripts[i]
+			if(typeof this.edit[script.target] != 'undefined'){
+				if( typeof script.text == "undefined" || script.text == null ) script.text = this.edit[script.target].getText()
+				if( typeof script.current == "undefined" ) script.current = -1
+				var k=script.mark.length-1
+				while( k>=0 && script.mark[k].time>time ){ k-- }
+				if(k!=script.current){
+					var text;
+					if(k>=0 ){
+						if(typeof script.mark[k].txt!='undefined') text = script.mark[k].txt
+						else{
+							var start = 0
+							if(typeof script.mark[k].start!='undefined') start = script.mark[k].start
+							var end = script.text.length
+							if(typeof script.mark[k].end!='undefined') end = script.mark[k].end
+							var add=''
+							if(typeof script.mark[k].add!='undefined') add = script.mark[k].add 
+							text = script.text.substring(start,end) + add
+						}
+					}else text = script.text
+					this.edit[script.target].setText(text)
+					if( k>=0 ) this.edit[script.target].scrollTop()
+					script.current = k
+				}
+			}
+		}
+	}
+
+	editor(e){ this.edit[e.id] = e }
 }
