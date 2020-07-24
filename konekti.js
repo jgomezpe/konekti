@@ -20,10 +20,7 @@ Konekti = {
 	 * @param callback Function that will be called after initializing the konekti framework
 	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
 	 */
-	init: function(servlet){
-		if( servlet == null ){ Konekti.server = new Server() }
-		else{ Konekti.server = new ServletServer(servlet) }
-	},
+	init: function(){},
 
 	component_id(dictionary, plugin){
 		if( dictionary!=null && typeof dictionary.plugin != "undefined" ){
@@ -36,29 +33,34 @@ Konekti = {
 		return null
 	},
 
+	plugin : {},
+
 	client : {},
 
-	build(dictionary, client, callback){
-		function inner( dict ){
-			var uses = []
-			if( dict!=null && dict.plugin != null ){
-				if( dict.plugin != "" ){
-					uses.push(dict.plugin);
-					for( var c in dict ){
-						uses = uses.concat(inner(dict[c]))
-					}
-				}else{
-					for( var c in dict ){
-						uses = uses.concat(inner(dict[c]))
-					}
+	module : {},
+
+	inner_uses( dict ){
+		var uses = []
+		if( dict!=null && dict.plugin != null ){
+			if( dict.plugin != "" ){
+				uses.push(dict.plugin);
+				for( var c in dict ){
+					uses = uses.concat(Konekti.inner_uses(dict[c]))
 				}
-			}else if(Array.isArray(dict) ){
-				for( var i=0; i<dict.length; i++ ){
-					uses = uses.concat(inner(dict[i]))
+			}else{
+				for( var c in dict ){
+					uses = uses.concat(Konekti.inner_uses(dict[c]))
 				}
 			}
-			return uses
+		}else if(Array.isArray(dict) ){
+			for( var i=0; i<dict.length; i++ ){
+				uses = uses.concat(Konekti.inner_uses(dict[i]))
+			}
 		}
+		return uses
+	},
+
+	build(dictionary, client, callback){
 
 		function inner_replace(dict){
 			if( dict!=null && dict.plugin != null ){
@@ -80,13 +82,114 @@ Konekti = {
 			}
 		}
 
-		PlugIn.uses(inner(dictionary), 
+		PlugIn.uses(Konekti.inner_uses(dictionary), 
 			function(){ 
 				inner_replace(dictionary) 
 				if( callback != null ) callback()
 			}
 		)	
-	}
+	},
+
+	getConfigFile(file, next){ Konekti.getJSON(file, next) },
+
+	multiLanguage(id, lang, callback){
+		function back(languages){
+			if( Konekti.languages == null ) Konekti.languages = {}
+			Konekti.languages[id] = languages
+			var found = false;
+			for(var i = 0; i < languages.supported.length && !found; i++) 
+			    found = (languages.supported[i].id == lang )
+			if( !found ) lang = languages['default']
+			Konekti.getConfigFile = function(file, next){ Konekti.getJSON('language/'+lang+'/'+file, next) } 
+			callback()
+		}
+		Konekti.getJSON( 'language/supported', back )
+	},
+
+	/**
+	 * Reads a resource from the server
+	 * @param resource Id of the resource to be read from the server
+	 * @param next Function that will be called after the resource is read from the server (it must has an argument that correspond to the resource that has been read)
+	 */ 
+	getResource( resource, next ){
+		if( resource==null ) return;
+		var xhttp = new XMLHttpRequest()
+		xhttp.onreadystatechange = function (){ 
+			if (xhttp.readyState==4 ){
+				var response = ""
+				if( next != null )
+					if( xhttp.status == 200 ) next(xhttp.response)
+					else next('')
+			}
+		}
+		xhttp.open('GET', resource, true)
+		xhttp.setRequestHeader("Cache-Control", "max-age=0")
+		xhttp.send()
+	},
+	
+	/**
+	 * Gets the path to the plugIn
+	 * @param id PlugIn id 
+	 * @return The plugIns Path
+	 */
+	pluginPath(id){ return 'plugin/' },
+
+	/**
+	 * Loads the given script (if possible)
+	 * @param type Type of the script to be loaded
+	 * @param id Script id
+	 * @param next Function that will be called if the script was loaded
+	 */
+	loadScript( type, id, next ){
+		function back( code ){
+			Konekti.script.add( type, id, code )
+			if( next != null ) next()
+		}
+		Konekti.getResource(id, back )
+	},
+
+	/**
+	 * Loads a CSS resource (if possible)
+	 * @param id CSS id
+	 * @param next Function that will be called if the CSS was loaded
+	 */
+	loadCSS( id, next ){ 
+		function addCSS( cssCode ){ 
+			Konekti.util.addCSS( cssCode )
+			if( next != null ) next()
+		}
+		Konekti.getResource(id+'.css', addCSS )
+	},
+
+	/**
+	 * Loads a HTML resource (if possible)
+	 * @param id HTML id
+	 * @param next Function that will be called if the HTML was loaded
+	 */
+	getHTML( id, next ){ Konekti.getResource(id+'.html', next) },
+
+	/**
+	 * Loads a JSON resource (if possible)
+	 * @param id JSON id
+	 * @param next Function that will be called if the JSON was loaded
+	 */
+	getJSON( id, next ){
+		function backJSON( json ){ next( json.length>0?JSON.parse( json ):null ) }
+		this.getResource(id+'.json', backJSON) 
+	},
+
+	/**
+	 * Loads a Java Script resource (if possible)
+	 * @param id Java Script id
+	 * @param next Function that will be called if the Java Script was loaded
+	 */
+	loadJS( id, next ){ Konekti.loadScript('text/javascript', id+'.js', next) },
+
+	/**
+	 * Resets the application
+	 */
+	reset(){ window.location.reload(true) }
+
 }
 
 Konekti.script={
@@ -200,6 +303,13 @@ Konekti.script={
 
 /* ************************************* Util Methods ****************************************** */
 Konekti.util = {
+	/**
+	 * Creates a url from a http response
+	 * @param response Response provided by the http connection
+	 * @return A URL version of the provided response
+	 */
+	downloadURL: function( response ){ return URL.createObjectURL(new Blob([response], {type: 'application/octet-stream'})) },
+
 	/**
 	 * Creates a string from string (id function)
 	 * @param str String to be converted to a String
@@ -423,67 +533,25 @@ class PlugIn{
 	 * @param id PlugIn id
 	 * @return Konekti plugins path
 	 */
-	static URL(id){ return "https://konekti.numtseng.com/source/" }
+	static URL(id){ return "https://konekti.numtseng.com/source/plugin/" }
 
 	/**
-	 * Creates a PlugIn with the given <i>id</i>, loading its resources from the given <i>server</i> and 
-	 * runs the <i>next</i> function after loaded
+	 * Creates a PlugIn with the given <i>id</i>, and runs the <i>next</i> function after loaded
 	 * @param id Id of the PlugIn
 	 * @param next Function that will be executed after loading the PlugIn  
 	 */
 	constructor(id, next){
 		this.id = id
-		var server = Konekti.server
 		var js
 		var css 
-		var html 
-		var htmlLoaded = false
-		var jsLoaded = false
-		var cssLoaded = false
-
-		function done(){ if(htmlLoaded && cssLoaded && jsLoaded) next() }
-
+		var html
 		var x = this
-		
-		function backHTML( html ){
-			htmlLoaded = true
-			x.htmlTemplate = html
-			done()
-		}
-		function backCSS( css ){
-			cssLoaded = true
-			done()
-		}
-
-		function backJS(){
-			jsLoaded = true
-			done()
-		}
 
 		function init2(){
-			if( typeof css == 'undefined' ){ cssLoaded = true }
-			else if( typeof css == 'boolean' ){
-				if( css ){ server.loadCSS(x.path+id, backCSS) }
-				else{ cssLoaded = true }
-			}else{
-				Konekti.util.addCSS(css) 
-				backCSS(css)
-			}
-
-			if( typeof html == 'undefined' ){ htmlLoaded = true }
-			else if( typeof html == 'boolean' ){
-				if( html ){ server.getHTML(x.path+id, backHTML) }
-				else{ htmlLoaded = true }
-			}else{ backHTML( html ) }
-
-			if( typeof js == 'undefined' ){ backJS() }
-			else if( typeof js == 'boolean' ){
-				if( js ){ server.loadJS(x.path+id, backJS) }
-				else{ backJS() }
-			}else{
-				eval(js)
-				backJS()
-			}
+			if( typeof css === 'string' ) Konekti.util.addCSS(css) 
+			if( typeof html === 'string' ) x.htmlTemplate = html
+			if( typeof js === 'string' ) eval(js)
+			next()
 		}
 
 		function init( obj ){
@@ -512,18 +580,19 @@ class PlugIn{
 				x.path = PlugIn.URL(x.id)
 				init(obj)
 			}else{
-				x.path = server.pluginPath(id)
-				server.getJSON( x.path+x.id, init )
+				x.path = Konekti.pluginPath(id)
+				Konekti.getJSON( x.path+x.id, init )
 			}
-
 		}
 
 		if( Konekti.plugin == null ) Konekti.plugin = {}
 		Konekti.plugin[id] = this
 		this.next = next
 		this.id = id
-		server.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
+		Konekti.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
 	}
+
+	get_uses( uses ){ return uses }
 	
 	/**
 	 * Performs additional JS tasks for the PlugIn that has just been inserted in the document hierarchy
@@ -595,7 +664,6 @@ class PlugIn{
 
 	/**
 	 * Loads a set of PlugIns
-	 * @param server Server containing the set of PlugIns
 	 * @param plugins Name of the PlugIns to be loaded
 	 * @param next Function that will be executed after loading the set of PlugIns
 	 */
@@ -614,240 +682,72 @@ class PlugIn{
 	}
 }
 
-/* ************************************* Package for sending and returning data to and from the server ****************************************** */
-class Package{
-	/**
-	 * Creates a Package for sending and returning data to and from the server
-	 * @param header Header of the package
-	 * @param data Data sent to or received from the server 
-	 */
-	constructor( header, data ){
-		this.header = header
-		this.data = data!=null?data:''
+class KonektiModule{
+
+	constructor( dictionary ){
+		this.dictionary = dictionary
+		this.listener = []
+	}
+
+	id(){ return this.dictionary.id }
+
+	vc( submodule ){
+		if( typeof submodule == 'string' ) return Konekti.util.vc(this.id()+submodule)
+		else return Konekti.util.vc(this.id())
+	}
+
+	addListener( listener ){ this.listener.push(listener) }
+
+	delListener( listener ){
+		
 	}
 }
 
-/* ************************************* A server ****************************************** */
-class Server{
-	constructor(){ this.plugin_path = 'plugin/' }
-
-	getConfigFile(file, next){ this.getJSON(file, next) } 
-
-	multiLanguage(id, lang, callback){
-		var server = this
-		function back(languages){
-			if( server.languages == null ) server.languages = {}
-			server.languages[id] = languages
-			var found = false;
-			for(var i = 0; i < languages.supported.length && !found; i++) 
-			    found = (languages.supported[i].id == lang )
-			if( !found ) lang = languages['default']
-			server.getConfigFile = function(file, next){ server.getJSON('language/'+lang+'/'+file, next) } 
-			callback()
-		}
-		server.getJSON( 'language/supported', back )
-	}
-
+/* ************************************* A Web Server EndPoint ****************************************** */
+class KonektiEndPoint{
 	/**
-	 * Reads a resource from the server
-	 * @param resource Id of the resource to be read from the server
-	 * @param next Function that will be called after the resource is read from the server (it must has an argument that correspond to the resource that has been read)
-	 */ 
-	getResource( resource, next ){
-		if( resource==null ) return;
-		var xhttp = new XMLHttpRequest()
-		xhttp.onreadystatechange = function (){ 
-			if (xhttp.readyState==4 ){
-				var response = ""
-				if( next != null )
-					if( xhttp.status == 200 ) next(xhttp.response)
-					else next('')
-			}
-		}
-		xhttp.open('GET', resource, true)
-		xhttp.setRequestHeader("Cache-Control", "max-age=0")
-		xhttp.send()
+	 * Creates a web server end-point
+	 * @param url End-point's URL 
+	 * @param header Optional Header information for connecting to the end-point. 
+	 * @param method Optional 'GET' or 'POST' method to use. If not provided, the end-point will use 'POST'.
+	 */
+	constructor( url, header, method ){
+		this.url = url
+		if( typeof header != 'undefined' ) this.header = header
+		else this.header = {}
+		if( typeof method == 'undefined' ) this.method = 'POST'
+		else this.method = method 
 	}
 	
 	/**
-	 * Gets the path to the plugIn
-	 * @param id PlugIn id 
-	 * @return The plugIns Path
+	 * Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
+	 * xhttp XMLHttpRequest object with the response and request.
 	 */
-	pluginPath(id){ return this.plugin_path }
-
-	/**
-	 * Creates a server based id for the given resource
-	 * @param id Id of the resource
-	 * @param type Type of the resource
-	 * @return A server based id for the given resource
-	 */
-	makeResourceID( id, type ){ return id+'.'+type }
-
-	/**
-	 * Loads the given script (if possible)
-	 * @param type Type of the script to be loaded
-	 * @param id Script id
-	 * @param next Function that will be called if the script was loaded
-	 */
-	loadScript( type, id, next ){
-		function back( code ){
-			Konekti.script.add( type, id, code )
-			if( next != null ) next()
-		}
-		this.getResource(id, back )
-	}
-
-	/**
-	 * Loads a CSS resource (if possible)
-	 * @param id CSS id
-	 * @param next Function that will be called if the CSS was loaded
-	 */
-	loadCSS( id, next ){ 
-		var x = this
-		function addCSS( cssCode ){ 
-			Konekti.util.addCSS( cssCode )
-			if( next != null ) next()
-		}
-		this.getResource(this.makeResourceID(id,'css'), addCSS )
-	}
-
-	/**
-	 * Loads a HTML resource (if possible)
-	 * @param id HTML id
-	 * @param next Function that will be called if the HTML was loaded
-	 */
-	getHTML( id, next ){ this.getResource(this.makeResourceID(id,'html'), next) }
-
-	/**
-	 * Loads a JSON resource (if possible)
-	 * @param id JSON id
-	 * @param next Function that will be called if the JSON was loaded
-	 */
-	getJSON( id, next ){
-		function backJSON( json ){ next( json.length>0?JSON.parse( json ):null ) }
-		this.getResource(this.makeResourceID(id,'json'), backJSON) 
-	}
-
-	/**
-	 * Loads a Java Script resource (if possible)
-	 * @param id Java Script id
-	 * @param next Function that will be called if the Java Script was loaded
-	 */
-	loadJS( id, next ){ this.loadScript('text/javascript', this.makeResourceID(id,'js'), next) }
-
-	/**
-	 * Registers a command in the Server
-	 * @param object Object that will execute the command
-	 * @param method Command (method of the object) that will be executed
-	 */
-	registerCommand( object, method ){
-		if( typeof object == "string" ){
-			if( this[object] == null ) this[object] = {}
-			this[object][method.id] = method.value
-		}else{
-			this[object.id] = object.value
-		}
-	}
-
-	/**
-	 * Resets the application
-	 */
-	reset(){ window.location.reload(true) }
-}
-
-/* ************************************* A Server based on a Servlet ****************************************** */
-class ServletServer extends Server{
-	constructor( servlet ){
-		super()
-		this.servlet = servlet!=null?servlet:'maya'
-	}
+	callback( xhttp ){}
 
 	/**
 	 * Runs a command of the web server
-	 * @param object Object that will execute the command
-	 * @param method Command (method of the object) that will be executed
-	 * @param arg Arguments of the command that have been sent (A command can be sent to the server in chunks)
-	 * @param value Values of the arguments that have been sent
-	 * @param next Function that will be called when receiving the response of the server (must process one argument)
+	 * @param arg Main argument for connecting with the end-point
+	 * @param header Header information for connecting to the end-point. 
+	 * If not provided, the end-point will use the header provided in the constructor method
+	 * @param callback Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
+	 * If not provided, the end-point will use the callback provided its defined callback function
 	 */
-	web(object, method, arg, value, next){
-		command = new Package({'object':object, 'method':method, 'args':arg, 'navigator':navigator.appName}, value)
+	request( arg, header, callback ){
+		if( typeof callback == 'undefined' ) callback = this.callback
+		if( typeof header == 'undefined' ) header = this.header
+		
 		var xhttp = new XMLHttpRequest()
 		xhttp.onreadystatechange = function (){
 			if (xhttp.readyState==4 && xhttp.status == 200){
-						//xhttp.responseType = xhttp.getResponseHeader('Content-Type')
-				var response = new Package( xhttp.getResponseHeader('header'), xhttp.response )
-				next(response)
+				callback( xhttp )
 			}
 		}
-		xhttp.open('POST', this.servlet , true)
-		xhttp.setRequestHeader("Cache-Control", "max-age=0")
-		xhttp.setRequestHeader("header", JSON.stringify(command.header))
-		xhttp.send(command.arg)
-	}
-
-	/**
-	 * Reads a resource from the server
-	 * @param resource Id of the resource to be read from the server
-	 * @param next Function that will be called after the resource is read from the server (it must has an argument that correspond to the resource that has been read)
-	 */ 
-	getResource( resource, next ){
-		if( resource==null ) return;
-		this.web('resource', 'download', '[txt]', '['+resource+']', function( response ){ next( response.data ) }) 
-	}
-
-	/**
-	 * Gets the path to the plugIn
-	 * @param id PlugIn id 
-	 * @return The plugIns Path
-	 */
-	pluginPath(id){ return '' }
-
-	/**
-	 * Registers a command in the Server
-	 * @param object Object that will execute the command
-	 * @param method Command (method of the object) that will be executed
-	 */
-	registerCommand(object, method){
-		if( typeof object == "string" && typeof method == "string" ){
-			if( this[object] == null ) this[object] = {}
-			var x = this
-			this[object][method] = function( next ){
-				switch( arguments.length ){
-					case 0:
-						x.web(object, method, '*', '', next) 
-					break;
-					case 1:
-						x.web(object, method, '*', '', next) 
-					break;
-					case 2:
-						x.web(object, method, '*', arguments[1], next) 
-					break;
-					default:
-						// Getting the type of arguments required by the service
-						var non_blob = []
-						var blob = []
-						var i
-						for( i=1; i<arguments.length; i++ ){
-							if( arguments[i] instanceof Blob ) blob.push(i-1)
-							else non_blob.push(i-1)
-						}
-						var values = []
-						for( i=0; i<non_blob.length; i++ ){ values.push(arguments[non_blob[i]])	}
-						if( values.length == arguments.length-1 ) x.web(object, method, '*', JSON.stringify(values), next)
-						else{
-							function merge( response ){	if( response != "command.builder.incomplete()" ) next(response)	}
-							non_blob.push(object)
-							non_blob.push(method)
-							x.web('command', 'builder', non_blob, JSON.stringify(values), merge)
-							for( i=0; i<blob.length; i++ ){
-								x.web('command', 'builder', [object, method, blob[i]], arguments[blob[i]], merge)
-							}
-						}
-				}
-			}
-		}else super.registerCommand(object, method, arg)
+		xhttp.open(this.method, this.url, true)
+		//xhttp.setRequestHeader("Cache-Control", "max-age=0")
+		for( var x in header )
+			xhttp.setRequestHeader(x, header[x])
+		xhttp.send(arg)
 	}
 }
 
@@ -896,7 +796,7 @@ class KonektiMedia{
 }
 
 /**
- * A client for the application. Connection point between interfzse and server
+ * A client for the application. Connection point between front and back
  */
 class KonektiClient{
 	/**
@@ -946,16 +846,16 @@ class App extends KonektiClient{
 		this.topic = topic
 		
 		function callbackLanguage(){
-			client.languages = Konekti.server.languages[client.id]
+			client.languages = Konekti.languages[client.id]
 			client.firstTime = true
 			client.init(main)
 		}
 
-		Konekti.server.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
+		Konekti.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
 	}
 
 	setLanguage(id, lang){
-		Konekti.server.getConfigFile = function(file, next){ Konekti.server.getJSON('language/'+lang+'/'+file, next) }
+		Konekti.getConfigFile = function(file, next){ Konekti.getJSON('language/'+lang+'/'+file, next) }
 		this.languageChange = true
 		this.init(id)
 	}
@@ -967,7 +867,7 @@ class App extends KonektiClient{
 			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
 			client.connect(dictionary, client.id, function(){ client.goto(client.topic) } )			
 		}
-		Konekti.server.getConfigFile(main, callbackMain)
+		Konekti.getConfigFile(main, callbackMain)
 	}
 
 	goto(topic){
@@ -978,7 +878,7 @@ class App extends KonektiClient{
 			client.topic = topic
 			client.connect(dictionary, client.id)
 		}
-		Konekti.server.getConfigFile(topic, callback)
+		Konekti.getConfigFile(topic, callback)
 	}
 	
 	select(id){ this.goto(id) }
@@ -1017,4 +917,126 @@ class App extends KonektiClient{
 	}
 
 	editor(e){ this.edit[e.id] = e }
+}
+
+class LocalStorageFileManager extends KonektiClient{
+    constructor(id, owner, root){
+        super(id)
+        this.owner = owner
+        this.tree = {"id":root, "caption":root, "plugin":"accordion", "children":[]}
+        for( var i=0; i<window.localStorage.length; i++ ){
+            var key = window.localStorage.key(i)
+            if( key.startsWith(root+'/') ){
+                var k = key
+                var c = this.tree
+                var idx
+                k = k.substring(root.length+1)
+                while((idx=k.indexOf('/'))>=0){
+                    var folder = k.substring(0,idx)
+                    var nc = this.child(c, c.id+'/'+folder)
+                    if( nc==null ){ 
+                        nc = {"id":c.id+'/'+folder, "caption":folder, "children":[]}
+                        c.children.push(nc)
+                    }
+                    c = nc
+                    k = k.substring(idx+1)
+                }
+                if(k.length>0){ c.children.push({"id":c.id+'/'+k, "caption":k}) }
+            }
+        }
+    }
+
+	child( comp, child ){
+	    var i=0
+	    while( i<comp.children.length && comp.children[i].id!=child ) i++
+	    if(i<comp.children.length) return comp.children[i]
+	    else return null
+	}
+
+    getTree( callback ){ callback(this.tree) }
+    
+	addFile(file, isFolder ){
+console.log(file)
+	    if( isFolder ){ window.localStorage.setItem(file+'/', '/') }
+		else{ window.localStorage.setItem(file, Konekti.client[this.owner].getFile(this.id)) }
+	}
+	
+	removeFile(file){
+	    if( file.endsWith('/') ){
+            for( var i=window.localStorage.length-1; i>=0; i-- ){
+                var key = window.localStorage.key(i)
+                if( key.startsWith(file) ){
+                    window.localStorage.removeItem(key)
+                }
+            }    
+	    }else{
+            window.localStorage.removeItem(file)
+	    }
+	}
+
+	readFile(file){
+		Konekti.client[this.owner].setFile(window.localStorage.getItem(file))
+	}
+}
+
+class CloudFileManager extends KonektiClient{
+	constructor(id, owner, url){
+		super(id)
+		this.owner = owner
+		this.url = url
+	}
+
+	getTree( callback ){ 
+console.log('addFile'+JSON.stringify(Konekti.client[this.owner].user))
+		var header = {'user':JSON.stringify(Konekti.client[this.owner].user),'oper':'folder'}
+console.log('getTree')
+		var endpoint = new KonektiEndPoint(this.url,header)
+		endpoint.callback = function( xhttp ){
+			var code = xhttp.getResponseHeader('code')
+console.log('code...'+code)
+console.log('response...'+xhttp.response)
+			if( code=='valid' ) callback(JSON.parse(xhttp.response))
+		}
+		endpoint.request()   
+	}
+    
+	addFile(file, isFolder ){
+console.log('addFile'+file)
+console.log('addFile'+JSON.stringify(Konekti.client[this.owner].user))
+		if( isFolder ) file = file+'/' 
+		var header = {'user':JSON.stringify(Konekti.client[this.owner].user), 'name':file, 'oper':'store'}
+		var endpoint = new KonektiEndPoint(this.url,header)
+		endpoint.callback = function( xhttp ){
+			var code = xhttp.getResponseHeader('code')
+			if( code=='valid' && !isFolder ) this.file = file
+		}
+		endpoint.request(Konekti.client[this.owner].getFile(this.id))   
+	}
+	
+	removeFile(file){
+		var header = {'user':JSON.stringify(user), 'name':file, 'oper':'del'}
+		var endpoint = new KonektiEndPoint(this.url,header)
+		endpoint.callback = function( xhttp ){
+			var code = xhttp.getResponseHeader('code')
+			if( code=='valid' ){
+				if( file.endsWith('/') && this.file.startsWith(file) ) this.file = 'noname'
+			}
+		}
+		endpoint.request(Konekti.client[this.owner].getFile(this.id))
+	}
+
+	readFile(file){
+		if( file.endsWith('/') ) return 
+		var header = {'user':JSON.stringify(user), 'name':file, 'oper':'read'}
+		var endpoint = new KonektiEndPoint(this.url,header)
+		endpoint.callback = function( xhttp ){
+			var code = xhttp.getResponseHeader('code')
+			if( code=='valid' ){
+				Konekti.client[this.owner].setFile(xhttp.response)
+				this.file = file
+			}
+		}
+		endpoint.request(Konekti.client[this.owner].getFile(this.id))
+	}
+    
 }
