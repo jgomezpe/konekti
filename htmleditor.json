@@ -1,5 +1,0 @@
-{
-	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
-	"js":"var htmleditor = Konekti.plugin.htmleditor\n\nhtmleditor.view = []\nhtmleditor.loaded = false\nhtmleditor.callback = function (){\n htmleditor.loaded = true\n while( htmleditor.view.length > 0 ){\n  var dictionary = htmleditor.view[0]\n  htmleditor.view.shift()\n  htmleditor.connect( dictionary )\n }\n}\n\nhtmleditor.connect = function( dictionary ){\n if( htmleditor.loaded ) tinymce.init({ 'selector':dictionary.id })\n else{\n  if( htmleditor.view.length == 0 ) Konekti.script.loadJS('https://cloud.tinymce.com/5/tinymce.min.js?apiKey='+dictionary.apiKey, htmleditor.callback)\n  htmleditor.view.push( dictionary )\n }\n}",
-	"html":"<·id· id='·id·' style='position:relative; width:100%; padding-bottom:56.25%' ></·id·>"
-}

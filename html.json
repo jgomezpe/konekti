@@ -1,4 +1,0 @@
-{
-	"copyright":"Copyright (c) 2019 by Jonatan Gomez-Perdomo. All rights reserved. See <A HREF='https://github.com/jgomezpe/konekti'>License</A>.",
-"html":"<div id='·id·' class='w3-rest'>\n·initial·\n</div>","js":"class DIVEditor extends KonektiEditor{\n    constructor(dictionary){\n        super(dictionary)\n        if(typeof dictionary.client != 'undefined'){\n            Konekti.client[dictionary.client].editor(this)\n        }\n    }\n    \n    getText(){ return this.gui.innerHTML }\n\n    setText(txt){ this.gui.innerHTML = txt }\n}\n\n\nKonekti.plugin.html.connect = function( dictionary ){\n    new DIVEditor(dictionary)\n}"
-}
