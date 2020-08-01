@@ -14,97 +14,126 @@
 */
 
 /* ************************************* Konekti Methods ****************************************** */
-Konekti = {
+class KonektiFrameWork{
 	/**
 	 * Inits the konekti framework
 	 * @param callback Function that will be called after initializing the konekti framework
 	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
 	 */
-	init: function(){},
+	constructor(){
+		this.script = new KonektiScript()
+		this.util = new KonektiUtil()
+		this.plugin = {}
+		this.client = {}
+		this.module = {}
+		this.languages = {}
+	}
 
-	component_id(dictionary, plugin){
-		if( dictionary!=null && typeof dictionary.plugin != "undefined" ){
-			if( dictionary.plugin == plugin ) return dictionary.id
-			for( var c in dictionary ){
-				var x = Konekti.component_id(dictionary[c], plugin)
-				if(x != null) return x
-			}
-		}
-		return null
-	},
-
-	plugin : {},
-
-	client : {},
-
-	module : {},
-
-	inner_uses( dict ){
+	/**
+	 * Computes a list of required plugins for creating a thing instance
+	 * @param thig JSON information of the object to be instantiated 
+	 * @return List of required plugins for creating a thing instance
+	 */
+	imports(thing){
 		var uses = []
-		if( dict!=null && dict.plugin != null ){
-			if( dict.plugin != "" ){
-				uses.push(dict.plugin);
-				for( var c in dict ){
-					uses = uses.concat(Konekti.inner_uses(dict[c]))
-				}
-			}else{
-				for( var c in dict ){
-					uses = uses.concat(Konekti.inner_uses(dict[c]))
-				}
-			}
-		}else if(Array.isArray(dict) ){
-			for( var i=0; i<dict.length; i++ ){
-				uses = uses.concat(Konekti.inner_uses(dict[i]))
-			}
+		if( thing!=null && thing.plugin != null ){
+			if( thing.plugin != "" ) uses.push(thing.plugin);
+			for( var c in thing ) uses = uses.concat(this.imports(thing[c]))
+		}else if(Array.isArray(thing) ){
+			for( var i=0; i<thing.length; i++ ) uses = uses.concat(this.imports(thing[i]))
 		}
 		return uses
-	},
+	}
+
+	/**
+	 * Connects a thing instance with its view components and control component 
+	 * @param thig JSON information of the object to be connected 
+	 * @param control_id Id of the control component for the thing
+	 */
+	connect(thing, control_id){
+		if( thing!=null && thing.plugin != null ){
+			if( thing.plugin != "" ){
+				if( typeof thing.client === "undefined" || thing.client==null ) thing.client = control_id
+				this.plugin[thing.plugin].replaceWith(thing)
+			}
+			for( var c in thing ) this.connect(thing[c], control_id)
+		}if(Array.isArray(thing) ){
+			for( var i=0; i<thing.length; i++ ) this.connect(thing[i], control_id)
+		}
+	}
 
 	build(dictionary, client, callback){
-
-		function inner_replace(dict){
-			if( dict!=null && dict.plugin != null ){
-				if( dict.plugin != "" ){
-					if( typeof dict.client == "undefined" || dict.client==null ) dict.client = client
-					Konekti.plugin[dict.plugin].replaceWith(dict)
-					for( var c in dict ){
-						inner_replace(dict[c])
-					}
-				}else{
-					for( var c in dict ){
-						inner_replace(dict[c])
-					}
-				}
-			}if(Array.isArray(dict) ){
-				for( var i=0; i<dict.length; i++ ){
-					inner_replace(dict[i])
-				}
-			}
-		}
-
-		PlugIn.uses(Konekti.inner_uses(dictionary), 
+		var x = this
+		this.plugins_loader(x.imports(dictionary), 
 			function(){ 
-				inner_replace(dictionary) 
+				x.connect(dictionary,client) 
 				if( callback != null ) callback()
 			}
 		)	
-	},
+	}
 
-	getConfigFile(file, next){ Konekti.getJSON(file, next) },
+	plugin_loader(id, next){
+		var x = this
+		var js
+		var html
+
+		function init2(){
+			x.plugin[id]= new KonektiPlugIn(id)
+			if( typeof js === 'string' ) eval(js)
+			if( typeof html === 'string' ) x.plugin[id].htmlTemplate = html
+			next()
+		}
+
+		function init( obj ){
+			js = obj.js
+			html = obj.html
+			if( typeof obj.css === 'string' ) x.util.addCSS(obj.css) 
+			if( typeof obj.uses !== 'undefined' ){ x.plugins_loader(obj.uses, init2) }
+			else init2()
+		}
+
+		function checkKonektiFirst( obj ){
+			if( obj != null ){ init(obj) }
+			else{ x.getJSON( x.pluginPath(id)+id, init ) }
+		}
+
+		this.getJSON(KonektiPlugIn.URL(id)+id, checkKonektiFirst)
+	}
+	
+	/**
+	 * Loads a set of PlugIns
+	 * @param plugins Name of the Plugins to be loaded
+	 * @param next Function that will be executed after loading the set of Plugins
+	 */
+	plugins_loader(plugins, next){
+		var x=this
+		var i=0
+		function step(){
+			if( i<plugins.length ){
+				var p = plugins[i]
+				i++
+				if( typeof x.plugin[p] === 'undefined' ) x.plugin_loader(p, step)
+				else step()
+			}else next()
+		}
+		step()
+	}
+
+	getConfigFile(file, next){ this.getJSON(file, next) }
 
 	multiLanguage(id, lang, callback){
+		var x = this
 		function back(languages){
-			if( Konekti.languages == null ) Konekti.languages = {}
-			Konekti.languages[id] = languages
+			x.languages[id] = languages
 			var found = false;
 			for(var i = 0; i < languages.supported.length && !found; i++) 
 			    found = (languages.supported[i].id == lang )
 			if( !found ) lang = languages['default']
-			Konekti.getConfigFile = function(file, next){ Konekti.getJSON('language/'+lang+'/'+file, next) } 
+			x.getConfigFile = function(file, next){ x.getJSON('language/'+lang+'/'+file, next) } 
 			callback()
 		}
-		Konekti.getJSON( 'language/supported', back )
-	},
+		this.getJSON( 'language/supported', back )
+	}
 
 	/**
 	 * Reads a resource from the server
@@ -125,14 +154,14 @@ Konekti = {
 		xhttp.open('GET', resource, true)
 		xhttp.setRequestHeader("Cache-Control", "max-age=0")
 		xhttp.send()
-	},
+	}
 	
 	/**
 	 * Gets the path to the plugIn
 	 * @param id PlugIn id 
 	 * @return The plugIns Path
 	 */
-	pluginPath(id){ return 'plugin/' },
+	pluginPath(id){ return 'plugin/' }
 
 	/**
 	 * Loads the given script (if possible)
@@ -141,12 +170,13 @@ Konekti = {
 	 * @param next Function that will be called if the script was loaded
 	 */
 	loadScript( type, id, next ){
+		var x = this
 		function back( code ){
-			Konekti.script.add( type, id, code )
+			x.script.add( type, id, code )
 			if( next != null ) next()
 		}
-		Konekti.getResource(id, back )
-	},
+		this.getResource(id, back )
+	}
 
 	/**
 	 * Loads a CSS resource (if possible)
@@ -154,19 +184,20 @@ Konekti = {
 	 * @param next Function that will be called if the CSS was loaded
 	 */
 	loadCSS( id, next ){ 
+		var x = this
 		function addCSS( cssCode ){ 
-			Konekti.util.addCSS( cssCode )
+			x.util.addCSS( cssCode )
 			if( next != null ) next()
 		}
-		Konekti.getResource(id+'.css', addCSS )
-	},
+		this.getResource(id+'.css', addCSS )
+	}
 
 	/**
 	 * Loads a HTML resource (if possible)
 	 * @param id HTML id
 	 * @param next Function that will be called if the HTML was loaded
 	 */
-	getHTML( id, next ){ Konekti.getResource(id+'.html', next) },
+	getHTML( id, next ){ this.getResource(id+'.html', next) }
 
 	/**
 	 * Loads a JSON resource (if possible)
@@ -176,35 +207,35 @@ Konekti = {
 	getJSON( id, next ){
 		function backJSON( json ){ next( json.length>0?JSON.parse( json ):null ) }
 		this.getResource(id+'.json', backJSON) 
-	},
+	}
 
 	/**
 	 * Loads a Java Script resource (if possible)
 	 * @param id Java Script id
 	 * @param next Function that will be called if the Java Script was loaded
 	 */
-	loadJS( id, next ){ Konekti.loadScript('text/javascript', id+'.js', next) },
+	loadJS( id, next ){ this.loadScript('text/javascript', id+'.js', next) }
 
 	/**
 	 * Resets the application
 	 */
 	reset(){ window.location.reload(true) }
-
 }
 
-Konekti.script={
-	loaded : [],
+/* ************************************* Util Methods ****************************************** */
+class KonektiScript{
+	constructor(){ this.loaded=[] }
 
 	/** 
 	 * Gets the position of the script <i>x</i> in the array of loaded scripts. If the script has not been loaded, this method returns the size of the array of loaded scripts.
 	 * @param x Script to be located
 	 * @return Position of the script if it was previously loaded, <i>n=size(src)</i> otherwise
 	 */
-	index: function( id ){
+	index( id ){
 		var i=0;
-		while(i<Konekti.script.loaded.length && id!=Konekti.script.loaded[i].id){ i++ }
+		while(i<this.loaded.length && id!=this.loaded[i].id){ i++ }
 		return i
-	},
+	}
 
 	/**
 	 * Adds a script to the client from its source code 
@@ -213,19 +244,19 @@ Konekti.script={
 	 * @param code Source code of the script
 	 * @param next Function that will be called after loading the script
 	 */
-	add: function( type, id, code ){
-		var index = Konekti.script.index(id)
-		if( index == Konekti.script.loaded.length ){ 
+	add( type, id, code ){
+		var index = this.index(id)
+		if( index == this.loaded.length ){ 
 			var element = document.createElement( 'script' )
 			element.defer = true
 			element.charset="utf-8"
 			if( type!=null ) element.type = type
-			Konekti.script.loaded.push({"id":id})
+			this.loaded.push({"id":id})
 			element.innerHTML = code
 			var b = document.getElementsByTagName('script')[0]
 			b.parentNode.insertBefore(element, b)
 		}
-	},
+	}
 
 	/**
 	 * Adds a script to the client from a cloud url
@@ -234,9 +265,9 @@ Konekti.script={
 	 * @param next Function that will be called after loading the script
 	 * @param error Function that will be called if the script cold not be loaded
 	 */
-	load : function( type, url, next ){
-		var index = Konekti.script.index(url)
-		if( index == Konekti.script.loaded.length ){ 
+	load( type, url, next ){
+		var index = this.index(url)
+		if( index == this.loaded.length ){ 
 			var element = document.createElement( 'script' )
 			if( type!=null ) element.type = type
 			element.async = true
@@ -265,13 +296,13 @@ Konekti.script={
 			var b = document.getElementsByTagName('script')[0]
 			b.parentNode.insertBefore(element, b)
 		}else{
-			myScript = Konekti.script.loaded[index]
+			myScript = this.loaded[index]
 			var state = myScript.state
 			var queue = myScript.queue
 			if( state==1 ) next()
 			if( state==0 ) queue.push( next )
 		}
-	},
+	}
 
 	/**
 	 * Adds a javascript to the client from a cloud url
@@ -279,93 +310,94 @@ Konekti.script={
 	 * @param next Function that will be called after loading the script
 	 * @param error Function that will be called if the script cold not be loaded
 	 */
-	loadJS: function( url, next ){ Konekti.script.load( 'text/javascript', url, next ) },
+	loadJS( url, next ){ this.load( 'text/javascript', url, next ) }
 
 	/**
 	 * Adds a link to the client from a cloud url
 	 * @param url URLs of the link
 	 * @param rel 
 	 */
-	link: function( url, rel ){
+	link( url, rel ){
 		var l = document.createElement('link')
 		l.rel = rel
 		l.href = url
 		l.crossorigin="anonymous"
 		document.getElementsByTagName('head')[0].appendChild(l)
-	},
+	}
 
 	/**
 	 * Adds a style sheet to the client from a cloud url
 	 * @param url URLs of the style sheet
 	 */
-	stylesheet: function( url ){ Konekti.script.link( url, "stylesheet" ) },
+	stylesheet( url ){ this.link( url, "stylesheet" ) }
 }
 
+
 /* ************************************* Util Methods ****************************************** */
-Konekti.util = {
+class KonektiUtil{
 	/**
 	 * Creates a url from a http response
 	 * @param response Response provided by the http connection
 	 * @return A URL version of the provided response
 	 */
-	downloadURL: function( response ){ return URL.createObjectURL(new Blob([response], {type: 'application/octet-stream'})) },
+	downloadURL( response ){ return URL.createObjectURL(new Blob([response], {type: 'application/octet-stream'})) }
 
 	/**
 	 * Creates a string from string (id function)
 	 * @param str String to be converted to a String
 	 * @return A String version of the String
 	 */
-	txt: function(str){ return str },
+	txt(str){ return str }
 
 	/**
 	 * Creates a XML object from a string, if possible
 	 * @param str String to be converted to a XML object
 	 * @return A XML version of the String
 	 */
-	xml: function(str){ return new DOMutilr().utilFromString(str,"text/xml") },
+	xml(str){ return new DOMutilr().utilFromString(str,"text/xml") }
 
 	/**
 	 * Creates a JSON object from a string, if possible
 	 * @param str String to be converted to a JSON object
 	 * @return A JSON version of the String
 	 */
-	json: function(str){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null },
+	json(str){ return ((str!=null)&&(str.length>0))?JSON.parse(str):null }
 
 	/**
 	 * Creates a HTML element from a string, if possible
 	 * @param str String representing a single HTML element
 	 * @return A HTML version of the string
 	 */
-	html: function(str) {
+	html(str) {
 	    var template = document.createElement('template')
 	    str = str.trim()
 	    template.innerHTML = str
 	    return template.content.firstChild
-	},
+	}
 
 	/**
 	 * Creates a CSS node from a string, if possible
 	 * @param str String representing a CSS file
 	 * @return A CSS node version of the string
 	 */
-	css: function(str){
+	css(str){
 		if(str!=null){
-			str = str.trim();
+			str = str.trim()
 			var d = document.createElement('style')
 			d.innerHTML = str
 			return d
 		}
 		return null;
-	},
+	}
 
 	/**
 	 * Adds a CSS file (as String) to the client, if possible
 	 * @param str String representing a CSS file
 	 */
-	addCSS: function(str){
-		var d = Konekti.util.css( str )
+	addCSS(str){
+		var d = this.css( str )
 		if( d != null ) document.getElementsByTagName('head')[0].appendChild(d)
-	},
+	}
 
 	/**
 	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
@@ -376,7 +408,7 @@ Konekti.util = {
 	 * @param c Enclosing tag character
 	 * @return A String from a template by replacing the set of tags with their associated values. 
 	 */
-	fromTemplate: function(str, dictionary, c){
+	fromTemplate(str, dictionary, c){
 		var x = str.split(c)
 		var state = 0
 		var res = ""
@@ -411,7 +443,7 @@ Konekti.util = {
 			}
 		}
 		return res
-	},
+	}
 
 	/**
 	 * Obtains the set of tags defined in a String template. A tag is limited both sides by a character <i>c</i>. For example, if <i>str='lorem·X·ipsum·haha· quia'</i>
@@ -420,7 +452,7 @@ Konekti.util = {
 	 * @param c Enclosing tag character
 	 * @return A dictionary, set of pairs <i>(TAG,value)</i>, containing each <i>TAG</> in the template
 	 */
-	templateTags: function(str, c){
+	templateTags(str, c){
 		var array = []
 		var x = str.split(c)
 		var state = 0
@@ -451,24 +483,24 @@ Konekti.util = {
 			}
 		}
 		return array
-	},
+	}
 
 	/**
 	 * Obtains a JSON version of a String
 	 * @param str String to be stored as JSON String
 	 * @return A JSON version of the String
 	 */
-	encode: function(str){ return '"' + str.replace(/\\/g, '\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n').replace(/\t/g,'\\t') +'"' },
+	encode(str){ return '"' + str.replace(/\\/g, '\\\\').replace(/"/g,'\\"').replace(/\n/g,'\\n').replace(/\t/g,'\\t') +'"' }
 
 	/**
 	 * Obtains a String from a JSON version
 	 * @param str String to be recovered from a JSON String
 	 * @return The String from a JSON version
 	 */
-	decode: function(str){
+	decode(str){
 		var s = str.replace(/\\\\/g, '\\').replace(/\\"/g,'"').replace(/\\n/g,'\n').replace(/\\t/g,'\t')
 		return s.substring(1,s.length-1)
-	},
+	}
 
 	/**
 	 * Obtains the child node (starting with <i>node</i> as parent) with the given id
@@ -476,33 +508,33 @@ Konekti.util = {
 	 * @param childId Id of the node being located
 	 * @return The child node (starting with <i>node</i> as parent) with the given id
 	 */
-	findChild: function(node, childId){
+	findChild(node, childId){
 		var components = node.getElementsByTagName("*")
 		var c = null
 		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
 		return c
-	},
+	}
 
 	/**
 	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
 	 * @param id Id of the element being located
 	 * @return The node with the given id (A shortcut of the <i>document.getElementById</i> method
 	 */
-	vc: function(id){ return document.getElementById(id) },
+	vc(id){ return document.getElementById(id) }
 
 	/**
 	 * Determines the interface language
 	 * @return Interface language
 	 */ 
-	language: function(){
+	language(){
 		var urlParams = new URLSearchParams(window.location.search)
 		var lang = urlParams.get('lang')  || navigator.language || navigator.userLanguage 
 		var idx = lang.indexOf('-')
 		if( idx > 0 ) lang = lang.substring(0,idx)
 		return lang
-	},
+	}
 
-	previousFont: function( font ){
+	previousFont( font ){
 		if( font == 'small' ) return 'tiny'
 		if( font == 'medium' ) return 'small'
 		if( font == 'large' ) return 'medium'
@@ -511,9 +543,9 @@ Konekti.util = {
 		if( font == 'xxxlarge' ) return 'xxlarge'
 		if( font == 'jumbo' ) return 'xxxlarge'
 		return font	
-	},
+	}
 
-	fontSize: function( font ){
+	fontSize( font ){
 		if( font == 'tiny' ) return 10
 		if( font == 'small' ) return 12
 		if( font == 'medium' ) return 15
@@ -527,7 +559,7 @@ Konekti.util = {
 }
 
 /* ************************************* PlugIn Methods ****************************************** */
-class PlugIn{
+class KonektiPlugIn{
 	/**
 	 * Gets the Konekti plugins path
 	 * @param id PlugIn id
@@ -540,56 +572,8 @@ class PlugIn{
 	 * @param id Id of the PlugIn
 	 * @param next Function that will be executed after loading the PlugIn  
 	 */
-	constructor(id, next){
+	constructor(id){
 		this.id = id
-		var js
-		var css 
-		var html
-		var x = this
-
-		function init2(){
-			if( typeof css === 'string' ) Konekti.util.addCSS(css) 
-			if( typeof html === 'string' ) x.htmlTemplate = html
-			if( typeof js === 'string' ) eval(js)
-			next()
-		}
-
-		function init( obj ){
-			var uses = obj.uses
-			js = obj.js
-			css = obj.css
-			html = obj.html
-			if( uses != null ){
-				var i = 0
-				var n = uses.length
-				function step(){
-					i++
-					if(i<n){
-						if( Konekti.plugin[uses[i]]==null ) new PlugIn(uses[i], step)
-						else step()
-					}else init2()
-				}
-				while( i<uses.length && Konekti.plugin[uses[i]]!=null ){ i++ }
-				if( i<uses.length ) new PlugIn(uses[i], step) 
-				else init2()
-			}else init2()
-		}
-
-		function checkKonektiFirst( obj ){
-			if( obj != null ){
-				x.path = PlugIn.URL(x.id)
-				init(obj)
-			}else{
-				x.path = Konekti.pluginPath(id)
-				Konekti.getJSON( x.path+x.id, init )
-			}
-		}
-
-		if( Konekti.plugin == null ) Konekti.plugin = {}
-		Konekti.plugin[id] = this
-		this.next = next
-		this.id = id
-		Konekti.getJSON(PlugIn.URL(this.id)+this.id, checkKonektiFirst)
 	}
 
 	get_uses( uses ){ return uses }
@@ -660,25 +644,6 @@ class PlugIn{
 			if( c!=null ) c.parentElement.replaceChild(node, c)
 		}else{ if(c!=null) c.innerHTML = this.htmlCode(dictionary) }
 		this.connect( dictionary )
-	}
-
-	/**
-	 * Loads a set of PlugIns
-	 * @param plugins Name of the PlugIns to be loaded
-	 * @param next Function that will be executed after loading the set of PlugIns
-	 */
-	static uses(plugins, next){
-		if( Konekti.plugin == null ) Konekti.plugin = {}
-		var i=0
-		function step(){
-			if( i<plugins.length ){
-				var p = plugins[i]
-				i++
-				if( Konekti.plugin[p] != null ) step()
-				else new PlugIn(p, step)
-			}else next()
-		}
-		step()
 	}
 }
 
@@ -804,11 +769,9 @@ class KonektiClient{
 	 * @param id Client id
 	 */	
 	constructor(id){
-		Konekti.init()
-		var client = this
-		client.id = id
-		client.media={}
-		client.edit={}
+		this.id = id
+		this.media={}
+		this.edit={}
 		Konekti.client[id] = this
 	}
 
@@ -870,11 +833,16 @@ class App extends KonektiClient{
 		Konekti.getConfigFile(main, callbackMain)
 	}
 
-	goto(topic){
+	goto(topic, extra){
 		var client = this
 		function callback(dictionary){ 
 			dictionary.client = client.id
 			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
+			if( typeof extra !== 'undefined' ){
+				for( var field in extra ){
+					dictionary[field] = extra[field]
+				}
+			}
 			client.topic = topic
 			client.connect(dictionary, client.id)
 		}
@@ -956,7 +924,6 @@ class LocalStorageFileManager extends KonektiClient{
     getTree( callback ){ callback(this.tree) }
     
 	addFile(file, isFolder ){
-console.log(file)
 	    if( isFolder ){ window.localStorage.setItem(file+'/', '/') }
 		else{ window.localStorage.setItem(file, Konekti.client[this.owner].getFile(this.id)) }
 	}
@@ -986,57 +953,33 @@ class CloudFileManager extends KonektiClient{
 		this.url = url
 	}
 
-	getTree( callback ){ 
-console.log('addFile'+JSON.stringify(Konekti.client[this.owner].user))
-		var header = {'user':JSON.stringify(Konekti.client[this.owner].user),'oper':'folder'}
-console.log('getTree')
+	link( oper, arg, name, callback ){
+		var header = {'user':JSON.stringify(Konekti.client[this.owner].user),'oper':oper, 'name':name}
 		var endpoint = new KonektiEndPoint(this.url,header)
 		endpoint.callback = function( xhttp ){
 			var code = xhttp.getResponseHeader('code')
-console.log('code...'+code)
-console.log('response...'+xhttp.response)
-			if( code=='valid' ) callback(JSON.parse(xhttp.response))
+			if( code=='valid' ) callback(xhttp.response)
 		}
-		endpoint.request()   
-	}
-    
-	addFile(file, isFolder ){
-console.log('addFile'+file)
-console.log('addFile'+JSON.stringify(Konekti.client[this.owner].user))
-		if( isFolder ) file = file+'/' 
-		var header = {'user':JSON.stringify(Konekti.client[this.owner].user), 'name':file, 'oper':'store'}
-		var endpoint = new KonektiEndPoint(this.url,header)
-		endpoint.callback = function( xhttp ){
-			var code = xhttp.getResponseHeader('code')
-			if( code=='valid' && !isFolder ) this.file = file
-		}
-		endpoint.request(Konekti.client[this.owner].getFile(this.id))   
+		endpoint.request(arg)   
 	}
 	
-	removeFile(file){
-		var header = {'user':JSON.stringify(user), 'name':file, 'oper':'del'}
-		var endpoint = new KonektiEndPoint(this.url,header)
-		endpoint.callback = function( xhttp ){
-			var code = xhttp.getResponseHeader('code')
-			if( code=='valid' ){
-				if( file.endsWith('/') && this.file.startsWith(file) ) this.file = 'noname'
-			}
-		}
-		endpoint.request(Konekti.client[this.owner].getFile(this.id))
+	getTree( callback ){ this.link( 'folder', null, '', function( response ){ callback(JSON.parse(response)) } ) }
+    
+	addFile(file, isFolder ){
+		var fm = this
+		if( isFolder ) file = file+'/' 
+		this.link( 'store', Konekti.client[fm.owner].getFile(file), file, function (response){ Konekti.client[fm.owner].storeFile(file) } )
 	}
+	
+	removeFile(file){ 
+		var fm = this
+		this.link( 'del', null, file, function(response){ Konekti.client[fm.owner].delFile(file) } ) }
 
 	readFile(file){
+		var fm = this		
 		if( file.endsWith('/') ) return 
-		var header = {'user':JSON.stringify(user), 'name':file, 'oper':'read'}
-		var endpoint = new KonektiEndPoint(this.url,header)
-		endpoint.callback = function( xhttp ){
-			var code = xhttp.getResponseHeader('code')
-			if( code=='valid' ){
-				Konekti.client[this.owner].setFile(xhttp.response)
-				this.file = file
-			}
-		}
-		endpoint.request(Konekti.client[this.owner].getFile(this.id))
-	}
-    
+		this.link( 'read', null, file, function (response){ Konekti.client[fm.owner].readFile(response) } )
+	}   
 }
+
+Konekti = new KonektiFrameWork()
