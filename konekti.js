@@ -24,6 +24,7 @@ class KonektiFrameWork{
 		this.script = new KonektiScript()
 		this.util = new KonektiUtil()
 		this.plugin = {}
+		this.user = {"credential":"anonymous"}
 		this.client = {}
 		this.module = {}
 		this.languages = {}
@@ -78,6 +79,7 @@ class KonektiFrameWork{
 		var html
 
 		function init2(){
+console.log('Konekti..init...'+id)
 			x.plugin[id]= new KonektiPlugIn(id)
 			if( typeof js === 'string' ) eval(js)
 			if( typeof html === 'string' ) x.plugin[id].htmlTemplate = html
@@ -556,6 +558,70 @@ class KonektiUtil{
 		if( font == 'jumbo' ) return 64
 		return 15	
 	}
+
+	base64ToBlob(base64) {
+	    var binary_string = window.atob(base64)
+	    var len = binary_string.length
+	    var bytes = new Uint8Array(len)
+	    for (var i = 0; i < len; i++) {
+		bytes[i] = binary_string.charCodeAt(i)
+	    }
+	    return bytes.buffer
+	}
+
+	base64ToString(base64){
+		return new TextDecoder("utf-8").decode(this.base64ToBlob(base64))
+	}
+
+	blobToBase64(blob){
+		function getChar( b ) {
+        		if( b < 26 ) return String.fromCharCode('A'.charCodeAt(0) + b)
+       			b -= 26
+        		if( b < 26 ) return String.fromCharCode('a'.charCodeAt(0) + b)
+        		b -= 26
+        		if( b < 10 ) return String.fromCharCode('0'.charCodeAt(0) + b)
+            		b -= 10
+        		if( b == 0 ) return '+'
+        		return '/'
+        	}
+    
+        	function code(blob, begin) {
+            		var a,b,c
+            		var txt = ""
+            		var x = blob.length-begin
+            		if( x<=0 ) return ""
+			switch(x) {
+		       		case 1:
+					a = blob[begin] & 0xFF 
+					txt += getChar(a>>2)
+					txt += getChar((a&3)<<4)
+					return txt + "=="
+				case 2:
+					a = blob[begin] & 0xFF
+					b = blob[begin+1] & 0xFF
+					txt += getChar(a>>2)
+					txt += getChar(((a&3)<<4)+(b>>4))
+					txt += getChar((b&15)<<2)
+					return txt + "="
+				default:
+					a = blob[begin] & 0xFF
+					b = blob[begin+1] & 0xFF
+					c = blob[begin+2] & 0xFF
+					txt += getChar(a>>2)
+					txt += getChar(((a&3)<<4)+(b>>4))
+					txt += getChar(((b&15)<<2)+(c>>6))
+					txt += getChar(c&63)
+					return txt
+			}
+		}    
+		var sb = ""
+		for( var i=0; i<blob.length; i+=3 ) sb += code(blob,i)
+		return sb
+	}
+
+	stringToBase64(str){
+		return this.blobToBase64(new TextEncoder("utf-8").encode(str))
+	}
 }
 
 /* ************************************* PlugIn Methods ****************************************** */
@@ -647,83 +713,52 @@ class KonektiPlugIn{
 	}
 }
 
-class KonektiModule{
-
-	constructor( dictionary ){
-		this.dictionary = dictionary
+/* ************************************* Components ****************************************** */
+/**
+ * A client for the application. Connection point between front and back
+ */
+class KonektiClient{
+	/**
+	 * Creates a client with the given id
+	 * @param id Client id
+	 */	
+	constructor(id){
+		if( typeof id == 'string' ){
+			this.id = id
+		}else{
+			this.dictionary = id
+			this.id = this.dictionary.id
+		}
+		this.gui = this.vc()
 		this.listener = []
+		Konekti.client[this.id] = this
 	}
 
-	id(){ return this.dictionary.id }
-
 	vc( submodule ){
-		if( typeof submodule == 'string' ) return Konekti.util.vc(this.id()+submodule)
-		else return Konekti.util.vc(this.id())
+		if( typeof submodule == 'string' ) return Konekti.util.vc(this.id+submodule)
+		else return Konekti.util.vc(this.id)
 	}
 
 	addListener( listener ){ this.listener.push(listener) }
 
 	delListener( listener ){
-		
+	    var i=0
+		while(i<this.listener.length && this.listener[i] !== listener) i++
+		if( i<this.listener.length ) this.listener.splice(i,1)
 	}
+
+	/**
+	 * Connects the given object to the given client
+	 */
+	connect( dictionary, cid, callback ){ Konekti.build(dictionary, cid, callback) }
 }
 
-/* ************************************* A Web Server EndPoint ****************************************** */
-class KonektiEndPoint{
-	/**
-	 * Creates a web server end-point
-	 * @param url End-point's URL 
-	 * @param header Optional Header information for connecting to the end-point. 
-	 * @param method Optional 'GET' or 'POST' method to use. If not provided, the end-point will use 'POST'.
-	 */
-	constructor( url, header, method ){
-		this.url = url
-		if( typeof header != 'undefined' ) this.header = header
-		else this.header = {}
-		if( typeof method == 'undefined' ) this.method = 'POST'
-		else this.method = method 
-	}
-	
-	/**
-	 * Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
-	 * xhttp XMLHttpRequest object with the response and request.
-	 */
-	callback( xhttp ){}
-
-	/**
-	 * Runs a command of the web server
-	 * @param arg Main argument for connecting with the end-point
-	 * @param header Header information for connecting to the end-point. 
-	 * If not provided, the end-point will use the header provided in the constructor method
-	 * @param callback Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
-	 * If not provided, the end-point will use the callback provided its defined callback function
-	 */
-	request( arg, header, callback ){
-		if( typeof callback == 'undefined' ) callback = this.callback
-		if( typeof header == 'undefined' ) header = this.header
-		
-		var xhttp = new XMLHttpRequest()
-		xhttp.onreadystatechange = function (){
-			if (xhttp.readyState==4 && xhttp.status == 200){
-				callback( xhttp )
-			}
-		}
-		xhttp.open(this.method, this.url, true)
-		//xhttp.setRequestHeader("Cache-Control", "max-age=0")
-		for( var x in header )
-			xhttp.setRequestHeader(x, header[x])
-		xhttp.send(arg)
-	}
-}
-
-/* ************************************* Components ****************************************** */
 /**
  * An editor (text) manager
  */
-class KonektiEditor{
+class KonektiEditor extends KonektiClient{
 	constructor( dictionary ){
-		this.id = dictionary.id
-		this.gui = Konekti.util.vc(this.id)
+		super(dictionary)
 	}
 
 	getText(){ return null }
@@ -747,38 +782,10 @@ class KonektiEditor{
 /**
  * A media manager.
  */
-class KonektiMedia{
+class KonektiMedia extends KonektiClient{
 	constructor( dictionary ){
-		this.id = dictionary.id
-		this.gui = Konekti.util.vc(this.id)
+		super(dictionary)
 	}
-
-	pause(){}
-
-	play(){}
-
-	seek(time){}
-}
-
-/**
- * A client for the application. Connection point between front and back
- */
-class KonektiClient{
-	/**
-	 * Creates a client with the given id
-	 * @param id Client id
-	 */	
-	constructor(id){
-		this.id = id
-		this.media={}
-		this.edit={}
-		Konekti.client[id] = this
-	}
-
-	/**
-	 * Connects the given object to the given client
-	 */
-	connect( dictionary, cid, callback ){ Konekti.build(dictionary, cid, callback) }
 
 	/**
 	 * Paused event manager for media components
@@ -793,9 +800,11 @@ class KonektiClient{
 	 */
 	playing(id, time){}
 
-	media(m){ this.media[m.id] = m }
+	pause(){}
 
-	editor(e){ this.edit[e.id] = e }
+	play(){}
+
+	seek(time){}
 }
 
 /**
@@ -851,14 +860,18 @@ class App extends KonektiClient{
 	
 	select(id){ this.goto(id) }
 
+	/**
+	 * Playing event manager for media components
+	 * @param id Media component that generates the playing event
+	 * @param time Current time
+	 */
 	playing(id, time){
-		if( this.media[id] == null ) this.media[id] = {}
-		this.media[id].time = time
+		this.client[id].time = time
 		var scripts = this.scripts
 		for( var i=0; i<scripts.length; i++ ){
 			var script = scripts[i]
-			if(typeof this.edit[script.target] != 'undefined'){
-				if( typeof script.text == "undefined" || script.text == null ) script.text = this.edit[script.target].getText()
+			if(typeof this.client[script.target] != 'undefined'){
+				if( typeof script.text == "undefined" || script.text == null ) script.text = this.client[script.target].getText()
 				if( typeof script.current == "undefined" ) script.current = -1
 				var k=script.mark.length-1
 				while( k>=0 && script.mark[k].time>time ){ k-- }
@@ -876,110 +889,13 @@ class App extends KonektiClient{
 							text = script.text.substring(start,end) + add
 						}
 					}else text = script.text
-					this.edit[script.target].setText(text)
-					if( k>=0 ) this.edit[script.target].scrollTop()
+					this.client[script.target].setText(text)
+					if( k>=0 ) this.client[script.target].scrollTop()
 					script.current = k
 				}
 			}
 		}
 	}
-
-	editor(e){ this.edit[e.id] = e }
-}
-
-class LocalStorageFileManager extends KonektiClient{
-    constructor(id, owner, root){
-        super(id)
-        this.owner = owner
-        this.tree = {"id":root, "caption":root, "plugin":"accordion", "children":[]}
-        for( var i=0; i<window.localStorage.length; i++ ){
-            var key = window.localStorage.key(i)
-            if( key.startsWith(root+'/') ){
-                var k = key
-                var c = this.tree
-                var idx
-                k = k.substring(root.length+1)
-                while((idx=k.indexOf('/'))>=0){
-                    var folder = k.substring(0,idx)
-                    var nc = this.child(c, c.id+'/'+folder)
-                    if( nc==null ){ 
-                        nc = {"id":c.id+'/'+folder, "caption":folder, "children":[]}
-                        c.children.push(nc)
-                    }
-                    c = nc
-                    k = k.substring(idx+1)
-                }
-                if(k.length>0){ c.children.push({"id":c.id+'/'+k, "caption":k}) }
-            }
-        }
-    }
-
-	child( comp, child ){
-	    var i=0
-	    while( i<comp.children.length && comp.children[i].id!=child ) i++
-	    if(i<comp.children.length) return comp.children[i]
-	    else return null
-	}
-
-    getTree( callback ){ callback(this.tree) }
-    
-	addFile(file, isFolder ){
-	    if( isFolder ){ window.localStorage.setItem(file+'/', '/') }
-		else{ window.localStorage.setItem(file, Konekti.client[this.owner].getFile(this.id)) }
-	}
-	
-	removeFile(file){
-	    if( file.endsWith('/') ){
-            for( var i=window.localStorage.length-1; i>=0; i-- ){
-                var key = window.localStorage.key(i)
-                if( key.startsWith(file) ){
-                    window.localStorage.removeItem(key)
-                }
-            }    
-	    }else{
-            window.localStorage.removeItem(file)
-	    }
-	}
-
-	readFile(file){
-		Konekti.client[this.owner].setFile(window.localStorage.getItem(file))
-	}
-}
-
-class CloudFileManager extends KonektiClient{
-	constructor(id, owner, url){
-		super(id)
-		this.owner = owner
-		this.url = url
-	}
-
-	link( oper, arg, name, callback ){
-		var header = {'user':JSON.stringify(Konekti.client[this.owner].user),'oper':oper, 'name':name}
-		var endpoint = new KonektiEndPoint(this.url,header)
-		endpoint.callback = function( xhttp ){
-			var code = xhttp.getResponseHeader('code')
-			if( code=='valid' ) callback(xhttp.response)
-		}
-		endpoint.request(arg)   
-	}
-	
-	getTree( callback ){ this.link( 'folder', null, '', function( response ){ callback(JSON.parse(response)) } ) }
-    
-	addFile(file, isFolder ){
-		var fm = this
-		if( isFolder ) file = file+'/' 
-		this.link( 'store', Konekti.client[fm.owner].getFile(file), file, function (response){ Konekti.client[fm.owner].storeFile(file) } )
-	}
-	
-	removeFile(file){ 
-		var fm = this
-		this.link( 'del', null, file, function(response){ Konekti.client[fm.owner].delFile(file) } ) }
-
-	readFile(file){
-		var fm = this		
-		if( file.endsWith('/') ) return 
-		this.link( 'read', null, file, function (response){ Konekti.client[fm.owner].readFile(response) } )
-	}   
 }
 
 Konekti = new KonektiFrameWork()
