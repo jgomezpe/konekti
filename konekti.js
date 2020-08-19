@@ -28,6 +28,7 @@ class KonektiFrameWork{
 		this.client = {}
 		this.module = {}
 		this.languages = {}
+		this.client['console'] = console
 	}
 
 	/**
@@ -79,7 +80,6 @@ class KonektiFrameWork{
 		var html
 
 		function init2(){
-console.log('Konekti..init...'+id)
 			x.plugin[id]= new KonektiPlugIn(id)
 			if( typeof js === 'string' ) eval(js)
 			if( typeof html === 'string' ) x.plugin[id].htmlTemplate = html

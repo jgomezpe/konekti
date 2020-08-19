@@ -80,7 +80,7 @@ class CloudFileManager extends KonektiClient{
 	}
 
 	folder(tree){
-	    this.treecall( JSON.parse(tree) )
+	    this.treecall( tree )
 	}
 	
 	getTree( callback ){ 

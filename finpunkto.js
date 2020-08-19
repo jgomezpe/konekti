@@ -9,7 +9,7 @@ class KonektiEndPoint{
 	constructor( url, header, method ){
 		this.url = url
 		if( typeof header != 'undefined' ) this.header = header
-		else this.header = {}
+		else this.header = null
 		if( typeof method == 'undefined' ) this.method = 'POST'
 		else this.method = method 
 	}
@@ -39,10 +39,8 @@ class KonektiEndPoint{
 			}
 		}
 		xhttp.open(this.method, this.url, true)
-		//xhttp.setRequestHeader("Cache-Control", "max-age=0")
-		for( var x in header )
-			xhttp.setRequestHeader(x, header[x])
-		xhttp.send(arg)
+		if( header != null ) for( var x in header ) xhttp.setRequestHeader(x, header[x])
+        xhttp.send(arg)
 	}
 }
 
@@ -64,11 +62,15 @@ class AplikigoEndPoint extends KonektiEndPoint{
     request( object, method, args ){
         var nargs = []
         for( var i=0; i<args.length; i++ ){
-            if( args[i].byteLength !== undefined ) nargs.push(btoa(args[i]))
+            if( args[i] != null && args[i].byteLength !== undefined ) nargs.push(btoa(args[i]))
             else nargs.push(args[i])
         }
         var c = {"object":object, "method":method, "args":nargs}
-        var pack = {"command":[c], "credential":Konekti.user}
+        var user = {}
+        if( typeof Konekti.user.id === 'string' ) user.id = Konekti.user.id
+        if( typeof Konekti.user.credential === 'string' ) user.credential = Konekti.user.credential
+        if( typeof Konekti.user.password === 'string' ) user.password = Konekti.user.password
+        var pack = {"command":[c], "credential":user}
         super.request(JSON.stringify(pack))
     }
 }
