@@ -29,6 +29,10 @@ class KonektiFrameWork{
 		this.module = {}
 		this.languages = {}
 		this.client['console'] = console
+		this.konektiPluginPath = "https://konekti.numtseng.com/source/plugin/"
+		this.pluginPath = "plugin/"
+		this.modulePath = "module/"
+		this.languagePath = "language/"
 	}
 
 	/**
@@ -64,17 +68,17 @@ class KonektiFrameWork{
 		}
 	}
 
-	build(dictionary, client, callback){
+	build(thing, client, callback){
 		var x = this
-		this.plugins_loader(x.imports(dictionary), 
+		this.getPlugins(x.imports(thing), 
 			function(){ 
-				x.connect(dictionary,client) 
+				x.connect(thing,client) 
 				if( callback != null ) callback()
 			}
 		)	
 	}
 
-	plugin_loader(id, next){
+	getPlugin(id, next){
 		var x = this
 		var js
 		var html
@@ -90,16 +94,16 @@ class KonektiFrameWork{
 			js = obj.js
 			html = obj.html
 			if( typeof obj.css === 'string' ) x.util.addCSS(obj.css) 
-			if( typeof obj.uses !== 'undefined' ){ x.plugins_loader(obj.uses, init2) }
+			if( typeof obj.uses !== 'undefined' ){ x.getPlugins(obj.uses, init2) }
 			else init2()
 		}
 
 		function checkKonektiFirst( obj ){
 			if( obj != null ){ init(obj) }
-			else{ x.getJSON( x.pluginPath(id)+id, init ) }
+			else{ x.getJSON( x.pluginPath+id, init ) }
 		}
 
-		this.getJSON(KonektiPlugIn.URL(id)+id, checkKonektiFirst)
+		this.getJSON(this.konektiPluginPath+id, checkKonektiFirst)
 	}
 	
 	/**
@@ -107,34 +111,76 @@ class KonektiFrameWork{
 	 * @param plugins Name of the Plugins to be loaded
 	 * @param next Function that will be executed after loading the set of Plugins
 	 */
-	plugins_loader(plugins, next){
+	getPlugins(plugins, next){
 		var x=this
 		var i=0
 		function step(){
 			if( i<plugins.length ){
 				var p = plugins[i]
 				i++
-				if( typeof x.plugin[p] === 'undefined' ) x.plugin_loader(p, step)
+				if( typeof x.plugin[p] === 'undefined' ) x.getPlugin(p, step)
 				else step()
 			}else next()
 		}
 		step()
 	}
 
-	getConfigFile(file, next){ this.getJSON(file, next) }
-
-	multiLanguage(id, lang, callback){
+	getDictionary( lang, topic, next ){
 		var x = this
-		function back(languages){
-			x.languages[id] = languages
-			var found = false;
-			for(var i = 0; i < languages.supported.length && !found; i++) 
-			    found = (languages.supported[i].id == lang )
-			if( !found ) lang = languages['default']
-			x.getConfigFile = function(file, next){ x.getJSON('language/'+lang+'/'+file, next) } 
-			callback()
+		function callbackDict( dictionary ){
+			if( typeof dictionary.uses !== 'undefined' )
+				x.getDictionarys(lang, dictionary, next)
+			else next(dictionary)
 		}
-		this.getJSON( 'language/supported', back )
+		this.getJSON(this.languagePath+lang+'/'+topic, callbackDict)
+	}
+
+	/**
+	 * Loads a set of PlugIns
+	 * @param plugins Name of the Plugins to be loaded
+	 * @param next Function that will be executed after loading the set of Plugins
+	 */
+	getDictionarys(lang, dictionary, next){
+		var topics = dictionary.uses
+		var x=this
+		var i=0
+		function step(){
+			function merge( dict ){
+				for( var i=0; i<dict.translate.length; i++ ){
+					var j=0;
+					while( j<dictionary.translate.length && (dictionary.translate[j].component != dict.translate[i].component ||
+						dictionary.translate[j].attribute != dict.translate[i].attribute) ) j++
+					if( j==dictionary.translate.length ) dictionary.translate.push(dict.translate[i])
+				}
+				dictionary.onload = {...dict.onload, ...dictionary.onload}
+				step()
+			}
+			if( i<topics.length ){
+				var inner_topic = topics[i]
+				i++
+				x.getDictionary(lang,inner_topic,merge) 
+			}else next(dictionary)
+		}
+		step()
+	}
+
+
+	getModule(module, next, language){
+		var client = this
+		var dict = null
+		function callbackMain(json){
+			if( dict != null ) json = Konekti.util.fromTemplate(json,dict.onload,'·')
+			var object = json.length>0?JSON.parse( json ):null
+			next(object)	
+		}
+		function callbackDict(lang){ 
+			dict = lang
+			client.getResource(client.modulePath+module+'.json', callbackMain)
+		}
+		if( typeof language === 'string' ) 
+			Konekti.getDictionary(language, module, callbackDict)
+		else 
+			this.getResource(this.modulePath+module+'.json', callbackMain)
 	}
 
 	/**
@@ -627,13 +673,6 @@ class KonektiUtil{
 /* ************************************* PlugIn Methods ****************************************** */
 class KonektiPlugIn{
 	/**
-	 * Gets the Konekti plugins path
-	 * @param id PlugIn id
-	 * @return Konekti plugins path
-	 */
-	static URL(id){ return "https://konekti.numtseng.com/source/plugin/" }
-
-	/**
 	 * Creates a PlugIn with the given <i>id</i>, and runs the <i>next</i> function after loaded
 	 * @param id Id of the PlugIn
 	 * @param next Function that will be executed after loading the PlugIn  
@@ -646,24 +685,24 @@ class KonektiPlugIn{
 	
 	/**
 	 * Performs additional JS tasks for the PlugIn that has just been inserted in the document hierarchy
-	 * @param dictionary Information of the PlugIn that has been just inserted in the document hierarchy  
+	 * @param thing Information of the PlugIn that has been just inserted in the document hierarchy  
 	 */
-	connect( dictionary ){}
+	connect( thing ){}
 
 	/**
 	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance <i>dictionary</i>
-	 * @param dictionary Information of the instance of the PlugIn
+	 * @param thing Information of the instance of the PlugIn
 	 * @return The HTML resource of an instance of the PlugIn.
 	 */
-	htmlCode( dictionary ){	return Konekti.util.fromTemplate( this.htmlTemplate, dictionary, '·' ) }
+	htmlCode( thing ){	return Konekti.util.fromTemplate( this.htmlTemplate, thing, '·' ) }
 
 	/**
 	 * Creates a DOM node for an instance of the PlugIn
-	 * @param dictionary Information of the PlugIn instance
+	 * @param thing Information of the PlugIn instance
 	 * @return A DOM node for an instance of the PlugIn
 	 */
-	instance( dictionary ){
-		var code = this.htmlCode( dictionary ) 
+	instance( thing ){
+		var code = this.htmlCode( thing ) 
 		var node = Konekti.util.html( code )
 		return node
 	}
@@ -672,44 +711,44 @@ class KonektiPlugIn{
 	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and appends it as child of the component
 	 * in the document with the given id, if possible
 	 * @param parent Id of the element in the document that will include the new node
-	 * @param dictionary PlugIn information for creating the HTML element that will be appended as child in the 
+	 * @param thing PlugIn information for creating the HTML element that will be appended as child in the 
 	 * HTML element in the document with the given id
 	 */
-	appendAsChild( parent, dictionary ){
-		var node = this.instance( dictionary )
+	appendAsChild( parent, thing ){
+		var node = this.instance( thing )
 		var parentNode = Konekti.util.vc( parent )
 		parentNode.appendChild( node )
-		this.connect( dictionary )
+		this.connect( thing )
 	}
 	
 	/**
 	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and inserts it as previous brother of the component
 	 * in the document with the given id <i>sister</i>, if possible
 	 * @param sister Id of the element in the document that will be the younger (next) sister of the new node
-	 * @param dictionary PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
+	 * @param thing PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	insertBefore( sister, dictionary ){
-		var node = this.instance( dictionary )
+	insertBefore( sister, thing ){
+		var node = this.instance( thing )
 		var sisterNode = Konekti.util.vc( sister )
 		var parentNode = sisterNode.parentElement
 		parentNode.insertBefore( node, sisterNode )
-		this.connect( dictionary )
+		this.connect( thing )
 	}
 
 	/**
 	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and replaces with it the HTML element
 	 * in the document with the same id, if possible
-	 * @param dictionary PlugIn information for creating the HTML element that will replace the HTML element in
+	 * @param thing PlugIn information for creating the HTML element that will replace the HTML element in
 	 * the document with the same id
 	 */
-	replaceWith( dictionary ){
-		var c = Konekti.util.vc( dictionary.id )
+	replaceWith( thing ){
+		var c = Konekti.util.vc( thing.id )
 		if( typeof this.replace == 'string' && this.replace == 'strict' ){
-			var node = this.instance( dictionary )
+			var node = this.instance( thing )
 			if( c!=null ) c.parentElement.replaceChild(node, c)
-		}else{ if(c!=null) c.innerHTML = this.htmlCode(dictionary) }
-		this.connect( dictionary )
+		}else{ if(c!=null) c.innerHTML = this.htmlCode(thing) }
+		this.connect(thing)
 	}
 }
 
@@ -812,11 +851,13 @@ class KonektiMedia extends KonektiClient{
  */
 
 class App extends KonektiClient{
-	constructor( main, topic ){
-		super(main)
+	constructor( id, main, lang ){
+		super(id)
+		this.topic = main
+		this.lang = lang || null
+
+		/*
 		var client = this
-		this.topic = topic
-		
 		function callbackLanguage(){
 			client.languages = Konekti.languages[client.id]
 			client.firstTime = true
@@ -824,40 +865,33 @@ class App extends KonektiClient{
 		}
 
 		Konekti.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
+		*/
+		this.goto(this.topic)
 	}
 
-	setLanguage(id, lang){
-		Konekti.getConfigFile = function(file, next){ Konekti.getJSON('language/'+lang+'/'+file, next) }
-		this.languageChange = true
-		this.init(id)
-	}
-
-	init(main){
-		var client = this
-		function callbackMain(dictionary){ 
-			dictionary.client = client.id
-			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
-			client.connect(dictionary, client.id, function(){ client.goto(client.topic) } )			
-		}
-		Konekti.getConfigFile(main, callbackMain)
-	}
-
-	goto(topic, extra){
-		var client = this
-		function callback(dictionary){ 
-			dictionary.client = client.id
-			if( typeof dictionary.id == 'undefined' ) dictionary.id = client.id
-			if( typeof extra !== 'undefined' ){
-				for( var field in extra ){
-					dictionary[field] = extra[field]
-				}
+	setLanguage(language){
+		function callbackDict(lang){ 
+			for( var i=0; i<lang.translate.length; i++ ){
+				var x = lang.translate[i]
+				Konekti.util.vc(x.component)[x.attribute] = x.value
 			}
-			client.topic = topic
-			client.connect(dictionary, client.id)
 		}
-		Konekti.getConfigFile(topic, callback)
+		this.lang = language
+		Konekti.getDictionary(language,this.topic, callbackDict)
 	}
-	
+
+	goto(topic){
+		var client = this
+		var dict = null
+		function callbackMain(object){
+			object.client = client.id
+			if( typeof object.id == 'undefined' ) object.id = client.id
+			client.connect(object, client.id)
+			client.topic = topic	
+		}
+		Konekti.getModule(topic, callbackMain, this.lang )
+	}
+
 	select(id){ this.goto(id) }
 
 	/**
