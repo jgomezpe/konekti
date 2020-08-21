@@ -146,13 +146,7 @@ class KonektiFrameWork{
 		var i=0
 		function step(){
 			function merge( dict ){
-				for( var i=0; i<dict.translate.length; i++ ){
-					var j=0;
-					while( j<dictionary.translate.length && (dictionary.translate[j].component != dict.translate[i].component ||
-						dictionary.translate[j].attribute != dict.translate[i].attribute) ) j++
-					if( j==dictionary.translate.length ) dictionary.translate.push(dict.translate[i])
-				}
-				dictionary.onload = {...dict.onload, ...dictionary.onload}
+				dictionary.content = {...dict.content, ...dictionary.content}
 				step()
 			}
 			if( i<topics.length ){
@@ -169,7 +163,11 @@ class KonektiFrameWork{
 		var client = this
 		var dict = null
 		function callbackMain(json){
-			if( dict != null ) json = Konekti.util.fromTemplate(json,dict.onload,'·')
+			if( dict != null ){
+				var content = {}
+				for( var x in dict.content ) content[x] = dict.content[x].value
+				json = Konekti.util.fromTemplate(json,content,'·')
+			}
 			var object = json.length>0?JSON.parse( json ):null
 			next(object)	
 		}
@@ -466,7 +464,7 @@ class KonektiUtil{
 				case  0:
 					res += x[i]
 					state = 1
-				break;    
+				break;
 				case 1:
 					if( x[i].length > 0 ){
 						tag = x[i]
@@ -478,7 +476,10 @@ class KonektiUtil{
 				break;
 			    	case 2:
 				    	if( x[i].length > 0 || i==x.length-1 ){
-						res += ((dictionary[tag]!=null)?dictionary[tag]:tag) + x[i]
+						if( typeof dictionary[tag] === 'undefined' ) res += tag
+						else if( typeof dictionary[tag] === 'string' ) res += dictionary[tag]
+						else res += JSON.stringify(dictionary[tag])
+						res += x[i]
 						state = 1
 					}else{
 			    			tag += c
@@ -871,9 +872,14 @@ class App extends KonektiClient{
 
 	setLanguage(language){
 		function callbackDict(lang){ 
-			for( var i=0; i<lang.translate.length; i++ ){
-				var x = lang.translate[i]
-				Konekti.util.vc(x.component)[x.attribute] = x.value
+			for( var y in lang.content ){
+				if( typeof lang.content[y].component !== 'undefined' ){
+					var x = lang.content[y].component
+					for( var i=0; i<x.length; i++ ){
+						if( typeof x[i].client === 'boolean' && x[i].client ) Konekti.client[x[i].id][x[i].attr] = lang.content[y].value
+						else Konekti.util.vc(x[i].id)[x[i].attr] = lang.content[y].value
+					}
+				}
 			}
 		}
 		this.lang = language
