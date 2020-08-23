@@ -165,7 +165,13 @@ class KonektiFrameWork{
 		function callbackMain(json){
 			if( dict != null ){
 				var content = {}
-				for( var x in dict.content ) content[x] = dict.content[x].value
+				for( var x in dict.content ){
+					var c = dict.content[x].value
+					if( typeof c === 'string' ){				
+						c = JSON.stringify(c)
+						content[x] = c.substring(1,c.length-1)
+					}else content[x] = c
+				}
 				json = Konekti.util.fromTemplate(json,content,'·')
 			}
 			var object = json.length>0?JSON.parse( json ):null
@@ -852,7 +858,7 @@ class KonektiMedia extends KonektiClient{
  */
 
 class App extends KonektiClient{
-	constructor( id, main, lang ){
+	constructor( id, main, lang, secondary ){
 		super(id)
 		this.topic = main
 		this.lang = lang || null
@@ -867,7 +873,7 @@ class App extends KonektiClient{
 
 		Konekti.multiLanguage(client.id, Konekti.util.language(), callbackLanguage)
 		*/
-		this.goto(this.topic)
+		this.goto(this.topic, secondary)
 	}
 
 	setLanguage(language){
@@ -876,8 +882,17 @@ class App extends KonektiClient{
 				if( typeof lang.content[y].component !== 'undefined' ){
 					var x = lang.content[y].component
 					for( var i=0; i<x.length; i++ ){
-						if( typeof x[i].client === 'boolean' && x[i].client ) Konekti.client[x[i].id][x[i].attr] = lang.content[y].value
-						else Konekti.util.vc(x[i].id)[x[i].attr] = lang.content[y].value
+						if( typeof x[i].client === 'boolean' && x[i].client ){
+							if( typeof x[i].attr === 'string' )
+								Konekti.client[x[i].id][x[i].attr] = lang.content[y].value
+							if( typeof x[i].mth === 'string' )
+								Konekti.client[x[i].id][x[i].mth](lang.content[y].value)
+						}else{
+							if( typeof x[i].attr === 'string' )
+								Konekti.util.vc(x[i].id)[x[i].attr] = lang.content[y].value
+							if( typeof x[i].mth === 'string' )
+								Konekti.util.vc(x[i].id)[x[i].mth](lang.content[y].value)
+						}
 					}
 				}
 			}
@@ -886,14 +901,15 @@ class App extends KonektiClient{
 		Konekti.getDictionary(language,this.topic, callbackDict)
 	}
 
-	goto(topic){
+	goto(topic, subtopic){
 		var client = this
 		var dict = null
 		function callbackMain(object){
 			object.client = client.id
 			if( typeof object.id == 'undefined' ) object.id = client.id
-			client.connect(object, client.id)
-			client.topic = topic	
+			client.topic = topic
+			if( typeof subtopic === 'string' ) client.connect(object, client.id, function(){client.goto(subtopic)})
+			else client.connect(object, client.id)
 		}
 		Konekti.getModule(topic, callbackMain, this.lang )
 	}
@@ -906,12 +922,12 @@ class App extends KonektiClient{
 	 * @param time Current time
 	 */
 	playing(id, time){
-		this.client[id].time = time
+		Konekti.client[id].time = time
 		var scripts = this.scripts
 		for( var i=0; i<scripts.length; i++ ){
 			var script = scripts[i]
-			if(typeof this.client[script.target] != 'undefined'){
-				if( typeof script.text == "undefined" || script.text == null ) script.text = this.client[script.target].getText()
+			if(typeof Konekti.client[script.target] != 'undefined'){
+				if( typeof script.text == "undefined" || script.text == null ) script.text = Konekti.client[script.target].getText()
 				if( typeof script.current == "undefined" ) script.current = -1
 				var k=script.mark.length-1
 				while( k>=0 && script.mark[k].time>time ){ k-- }
@@ -929,8 +945,8 @@ class App extends KonektiClient{
 							text = script.text.substring(start,end) + add
 						}
 					}else text = script.text
-					this.client[script.target].setText(text)
-					if( k>=0 ) this.client[script.target].scrollTop()
+					Konekti.client[script.target].setText(text)
+					if( k>=0 ) Konekti.client[script.target].scrollTop()
 					script.current = k
 				}
 			}
