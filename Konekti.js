@@ -409,6 +409,33 @@ class KonektiAPI{
 	}
 
 	/**
+	 * Replaces a components attribute with the given value (or an array of components)
+	 * @param id Id of the component to change (change to introduce or array of changes to introduce)
+	 * @param attribute Attribute to change 
+	 * @param value New value for the component attribute
+	 */
+	replace( id, attribute, value ){
+		if( attribute !== undefined ){
+			var c = Konekti.vc(id+'-icon')
+
+			if( c===undefined || c===null ) return  
+			if( attribute == 'text' ){
+				var i = Konekti.vc(id+'-icon')
+				if( i != null ) i.nextSibling.data = " "+value
+				else c.textContent = value
+			}else{ c.attribute = value }
+		}else{
+			if( id.id !== undefined ){
+				this.replace(id.id, id.attribute, id.value)
+			}else{
+				for( var i=0; i<id.length; i++ ){
+					this.replace( id[i] )
+				}
+			}
+		}
+	}
+
+	/**
 	 * Gets the component with the given id
 	 * @param id Id of the component to get 
 	 * @return the component with the given id
