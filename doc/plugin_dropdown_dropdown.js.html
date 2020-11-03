@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: plugin/dropdown/dropdown.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: plugin/dropdown/dropdown.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Konekti Plugin for DropDown components */
+class DropDownPlugIn extends KonektiPlugIn{
+    /** Creates a Plugin for Dropdown components */
+    constructor(){
+        super('dropdown')
+        this.replace = 'strict'
+    }
+    
+    splitTemplate(){
+        var k = this.htmlTemplate.indexOf("&lt;/div>\n&lt;div") + 7
+        this.itemTemplate = this.htmlTemplate.substring(0,k)
+        this.htmlTemplate = this.htmlTemplate.substring(k)
+    }
+
+    /**
+     * Fills the html template with the specific dropdown information
+     * @param thing Dropdown information
+     * @return Html code associated to the dropdown
+     */
+    fillLayout(thing){
+        if( this.itemTemplate === undefined ) this.splitTemplate()
+        thing.caption = thing.caption || ''
+        thing.style = thing.style || 'w3-bar-item w3-xlarge'
+        thing.icon = thing.icon || ''
+        var optTemplate = ''
+        var option = thing.options
+        for( var i=0; i&lt;option.length; i++ ){
+            if( typeof option[i] == 'string'){
+                option[i] = {"id":option[i], "caption":option[i]}
+            }
+            option[i].client = thing.id
+            optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
+        }
+        thing.drop = optTemplate
+        return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+    }
+}
+
+new DropDownPlugIn()
+
+/** A Dropdown component */
+class DropDown extends KonektiClient{
+	/**
+	 * Creates a dropdown component
+	 * @param thing Dropdown configuration
+	 */
+	constructor( thing ){
+		super(thing)
+		thing.select = thing.select || 'select'
+		thing.client = thing.client || 'client'
+	}
+	
+	/**
+	 * Shows/hides the drop option list
+	 */
+	drop(){
+		var x = Konekti.vc(this.thing.id+'-drop')
+		if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
+		else x.className = x.className.replace(" w3-show", "")
+	}
+	
+	/**
+	 * Runs the code associated to the selected option
+	 * @param option Seleted option
+	 */
+	select( option ){
+		this.drop()
+		var c = Konekti.client(this.thing.client)
+		if( typeof c != 'undefined' &amp;&amp; c[this.thing.select] !== undefined ) 
+			c[this.thing.select](this.thing.id, option)
+	}
+}
+
+/**
+ * @function
+ * Konekti dropdown
+ * @param thing Dropdown configuration
+ */
+Konekti.dropdown = function(thing){
+	Konekti.plugin.dropdown.connect(thing)
+	return new DropDown(thing)
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AceEditor.html">AceEditor</a></li><li><a href="AcePlugIn.html">AcePlugIn</a></li><li><a href="ButtonPlugIn.html">ButtonPlugIn</a></li><li><a href="DIVEditor.html">DIVEditor</a></li><li><a href="DropDown.html">DropDown</a></li><li><a href="DropDownPlugIn.html">DropDownPlugIn</a></li><li><a href="HeaderPlugIn.html">HeaderPlugIn</a></li><li><a href="HTMLPlugIn.html">HTMLPlugIn</a></li><li><a href="IFrameEditor.html">IFrameEditor</a></li><li><a href="IFramePlugIn.html">IFramePlugIn</a></li><li><a href="KonektiAPI.html">KonektiAPI</a></li><li><a href="KonektiClient.html">KonektiClient</a></li><li><a href="KonektiCore.html">KonektiCore</a></li><li><a href="KonektiEditor.html">KonektiEditor</a></li><li><a href="KonektiMedia.html">KonektiMedia</a></li><li><a href="KonektiPlugIn.html">KonektiPlugIn</a></li><li><a href="KonektiResource.html">KonektiResource</a></li><li><a href="LatexEditor.html">LatexEditor</a></li><li><a href="LatexPlugIn.html">LatexPlugIn</a></li><li><a href="Media.html">Media</a></li><li><a href="MediaPlugIn.html">MediaPlugIn</a></li><li><a href="NavBarPlugIn.html">NavBarPlugIn</a></li><li><a href="SideBarPlugIn.html">SideBarPlugIn</a></li><li><a href="Split.html">Split</a></li><li><a href="SplitPlugIn.html">SplitPlugIn</a></li><li><a href="TabClient.html">TabClient</a></li><li><a href="TabPlugIn.html">TabPlugIn</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreePlugIn.html">TreePlugIn</a></li><li><a href="YoutubePlugIn.html">YoutubePlugIn</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Konekti">Konekti</a></li><li><a href="global.html#Konektiace">Konekti ace</a></li><li><a href="global.html#Konektiaudio">Konekti audio</a></li><li><a href="global.html#Konektibtn">Konekti btn</a></li><li><a href="global.html#Konektidropdown">Konekti dropdown</a></li><li><a href="global.html#Konektiheader">Konekti header</a></li><li><a href="global.html#Konektihtml">Konekti html</a></li><li><a href="global.html#Konektiiframe">Konekti iframe</a></li><li><a href="global.html#Konektilatex">Konekti latex</a></li><li><a href="global.html#Konektimedia">Konekti media</a></li><li><a href="global.html#Konektimp4">Konekti mp4</a></li><li><a href="global.html#Konektinavbar">Konekti navbar</a></li><li><a href="global.html#Konektisidebar">Konekti sidebar</a></li><li><a href="global.html#Konektisplit">Konekti split</a></li><li><a href="global.html#Konektitab">Konekti tab</a></li><li><a href="global.html#Konektitree">Konekti tree</a></li><li><a href="global.html#Konektivideo">Konekti video</a></li><li><a href="global.html#Konektiyoutube">Konekti youtube</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Nov 03 2020 17:19:18 GMT-0500 (Colombia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

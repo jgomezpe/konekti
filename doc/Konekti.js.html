@@ -1,15 +1,43 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Konekti.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Konekti.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
 *
 * konekti.js
-* <P>Java Script connection library. This library allows to connect to a server for running command, 
+* &lt;P>Java Script connection library. This library allows to connect to a server for running command, 
 * uploading and downloading resources. Also to add JS/HTML/CSS resources as plug-ins. 
-* It is a wrap of all the konekti components (util, script, plugin and server)</P>
+* It is a wrap of all the konekti components (util, script, plugin and server)&lt;/P>
 *
-* Copyright (c) 2019 by Jonatan Gomez-Perdomo. <br>
-* All rights reserved. See <A HREF="https://github.com/jgomezpe/konekti">License</A>. <br>
+* Copyright (c) 2019 by Jonatan Gomez-Perdomo. &lt;br>
+* All rights reserved. See &lt;A HREF="https://github.com/jgomezpe/konekti">License&lt;/A>. &lt;br>
 *
-* @author <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
-* (E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A> )
+* @author &lt;A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo &lt;/A>
+* (E-mail: &lt;A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co&lt;/A> )
 * @version 1.0
 */
 
@@ -51,7 +79,7 @@ class KonektiResource{
 		xhttp.onreadystatechange = function (){ 
 			if (xhttp.readyState==4 ){
 				var response = ""
-				if( callback !== undefined && callback !== null )
+				if( callback !== undefined &amp;&amp; callback !== null )
 					if( xhttp.status == 200 ) callback(xhttp.response)
 					else callback(null)
 			}
@@ -79,7 +107,7 @@ class KonektiResource{
 	CSS(id, callback){
 	    var x = this
 		function add(str){
-		    if(str!==undefined && str!==null){ x.css(str) }
+		    if(str!==undefined &amp;&amp; str!==null){ x.css(str) }
 			if(callback !== undefined) callback()
 		}
 		this.load(id+'.css', add)
@@ -137,7 +165,7 @@ class KonektiResource{
 /** Plugin class */
 class KonektiPlugIn{
 	/**
-	 * Creates a plugin with the given <i>id</i>, and html template
+	 * Creates a plugin with the given &lt;i>id&lt;/i>, and html template
 	 * @param id Id of the plugin
 	 */
 	constructor(id){
@@ -152,7 +180,7 @@ class KonektiPlugIn{
 	extra(thing){}
 
 	/**
-	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance <i>dictionary</i>
+	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance &lt;i>dictionary&lt;/i>
 	 * @param thing Information of the instance of the PlugIn
 	 * @return The HTML resource of an instance of the PlugIn.
 	 */
@@ -164,7 +192,7 @@ class KonektiPlugIn{
 	 */
 	connect(thing){
 		var c = this.core.vc( thing.id )
-		if( typeof this.replace == 'string' && this.replace == 'strict' ){
+		if( typeof this.replace == 'string' &amp;&amp; this.replace == 'strict' ){
 			var node = this.core.resource.html(this.fillLayout(thing))
 			if( c!=null ) c.parentElement.replaceChild(node, c)
 		}else{ if(c!=null) c.innerHTML = this.fillLayout(thing) }
@@ -172,7 +200,7 @@ class KonektiPlugIn{
 	}
 
 	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and appends it as child of the component
+	 * Creates an instance of the PlugIn with the given &lt;i>dictionary&lt;/i> and appends it as child of the component
 	 * in the document with the given id, if possible
 	 * @param parent Id of the element in the document that will include the new node
 	 * @param thing PlugIn information for creating the HTML element that will be appended as child in the 
@@ -184,11 +212,11 @@ class KonektiPlugIn{
 	}
 	
 	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and inserts it as previous brother of the component
-	 * in the document with the given id <i>sister</i>, if possible
+	 * Creates an instance of the PlugIn with the given &lt;i>dictionary&lt;/i> and inserts it as previous brother of the component
+	 * in the document with the given id &lt;i>sister&lt;/i>, if possible
 	 * @param sister Id of the element in the document that will be the younger (next) sister of the new node
 	 * @param thing PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
-	 * HTML element in the document with the given <i>sister</i> id
+	 * HTML element in the document with the given &lt;i>sister&lt;/i> id
 	 */
 	insertBefore(sister, thing){
 		var node = this.core.div( thing.id )
@@ -252,7 +280,7 @@ class KonektiCore{
 		var n = arguments.length-1
 		var args = arguments
 		var callback = n>0?args[n]:null
-		if(n<=1){
+		if(n&lt;=1){
 			var id = args[0]
 
 			function init(obj){
@@ -281,7 +309,7 @@ class KonektiCore{
 		}else{
 			var i=0
 			function step(){
-				if( i<n ){
+				if( i&lt;n ){
 					var p = args[i]
 					i++
 					if( typeof x.plugin[p] === 'undefined' ) x.load(p, step)
@@ -307,11 +335,11 @@ class KonektiCore{
 	reset(){ window.location.reload(true) }	
 
 	/**
-	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
-	 * For example, if <i>str='lorem ·X· dolor ·haha· amet'</i>, <i>c='·'</i> and <i>dictionary={'X':'ipsum', 'haha':'sit' }
-	 * then this method will return the string <i>lorem ipsum dolor sit amet'</i>
+	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character &lt;i>c&lt;/i>. 
+	 * For example, if &lt;i>str='lorem ·X· dolor ·haha· amet'&lt;/i>, &lt;i>c='·'&lt;/i> and &lt;i>dictionary={'X':'ipsum', 'haha':'sit' }
+	 * then this method will return the string &lt;i>lorem ipsum dolor sit amet'&lt;/i>
 	 * @param str Template used for generating the String
-	 * @param dictionary Set of pairs <i>(TAG,value)</i> used for replacing each <i>TAG</> by its corresponding <i>value</i>
+	 * @param dictionary Set of pairs &lt;i>(TAG,value)&lt;/i> used for replacing each &lt;i>TAG&lt;/> by its corresponding &lt;i>value&lt;/i>
 	 * @param c Enclosing tag character
 	 * @return A String from a template by replacing the set of tags with their associated values. 
 	 */
@@ -321,7 +349,7 @@ class KonektiCore{
 		var state = 0
 		var res = ""
 	  	var tag = ''
-		for( var i = 0; i<x.length; i++ ){
+		for( var i = 0; i&lt;x.length; i++ ){
 			switch( state ){
 				case  0:
 					res += x[i]
@@ -357,9 +385,9 @@ class KonektiCore{
 	}
 	
 	/**
-	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
+	 * Obtains the node with the given id (A shortcut of the &lt;i>document.getElementById&lt;/i> method
 	 * @param id Id of the element being located
-	 * @return The node with the given id (A shortcut of the <i>document.getElementById</i> method
+	 * @return The node with the given id (A shortcut of the &lt;i>document.getElementById&lt;/i> method
 	 */
 	vc(id){ return document.getElementById(id) }
 
@@ -369,7 +397,7 @@ class KonektiCore{
 	 * @param id Id of the element being created
 	 * @return A div HTML node with the given id 
 	 */
-	div(id){ return this.resource.html( "<div id='"+id+"'></div>") }
+	div(id){ return this.resource.html( "&lt;div id='"+id+"'>&lt;/div>") }
 	
 	/**
 	 * Moves a component as child of another component
@@ -394,7 +422,7 @@ class KonektiCore{
 	}
 
 	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and appends it as child of the component
+	 * Creates an instance of the PlugIn with the given &lt;i>dictionary&lt;/i> and appends it as child of the component
 	 * in the document with the given id, if possible
 	 * @param parent Id of the element in the document that will include the new node
 	 * @param thing PlugIn information for creating the HTML element that will be appended as child in the 
@@ -405,11 +433,11 @@ class KonektiCore{
 	}
 	
 	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and inserts it as previous brother of the component
-	 * in the document with the given id <i>sister</i>, if possible
+	 * Creates an instance of the PlugIn with the given &lt;i>dictionary&lt;/i> and inserts it as previous brother of the component
+	 * in the document with the given id &lt;i>sister&lt;/i>, if possible
 	 * @param sister Id of the element in the document that will be the younger (next) sister of the new node
 	 * @param thing PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
-	 * HTML element in the document with the given <i>sister</i> id
+	 * HTML element in the document with the given &lt;i>sister&lt;/i> id
 	 */
 	insertBefore(sister, plugin, thing){
 		return this.plugin[plugin].insertBefore(sister,thing)
@@ -435,7 +463,7 @@ class KonektiCore{
 			if( id.id !== undefined ){
 				this.set(id.id, id.attribute, id.value)
 			}else{
-				for( var i=0; i<id.length; i++ ){
+				for( var i=0; i&lt;id.length; i++ ){
 					this.set( id[i] )
 				}
 			}
@@ -443,15 +471,15 @@ class KonektiCore{
 	}
 
 	/**
-	 * Obtains the child node (starting with <i>node</i> as parent) with the given id
+	 * Obtains the child node (starting with &lt;i>node&lt;/i> as parent) with the given id
 	 * @param node The starting node for the searching process
 	 * @param childId Id of the node being located
-	 * @return The child node (starting with <i>node</i> as parent) with the given id
+	 * @return The child node (starting with &lt;i>node&lt;/i> as parent) with the given id
 	 */
 	findChild(node, childId){
 		var components = node.getElementsByTagName("*")
 		var c = null
-		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
+		for (var i = 0; i &lt; components.length &amp;&amp; c==null; i++) if( components[i].id == childId ) c = components[i]
 		return c
 	}
 	
@@ -547,8 +575,8 @@ class KonektiClient{
 	 */
 	delListener(listener){
 		var i=0
-		while(i<this.listener.length && this.listener[i] !== listener) i++
-		if( i<this.listener.length ) this.listener.splice(i,1)
+		while(i&lt;this.listener.length &amp;&amp; this.listener[i] !== listener) i++
+		if( i&lt;this.listener.length ) this.listener.splice(i,1)
 	}
 }
 
@@ -650,3 +678,26 @@ class KonektiMedia extends KonektiClient{
 	 */
 	seek(time){}
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AceEditor.html">AceEditor</a></li><li><a href="AcePlugIn.html">AcePlugIn</a></li><li><a href="ButtonPlugIn.html">ButtonPlugIn</a></li><li><a href="DIVEditor.html">DIVEditor</a></li><li><a href="DropDown.html">DropDown</a></li><li><a href="DropDownPlugIn.html">DropDownPlugIn</a></li><li><a href="HeaderPlugIn.html">HeaderPlugIn</a></li><li><a href="HTMLPlugIn.html">HTMLPlugIn</a></li><li><a href="IFrameEditor.html">IFrameEditor</a></li><li><a href="IFramePlugIn.html">IFramePlugIn</a></li><li><a href="KonektiAPI.html">KonektiAPI</a></li><li><a href="KonektiClient.html">KonektiClient</a></li><li><a href="KonektiCore.html">KonektiCore</a></li><li><a href="KonektiEditor.html">KonektiEditor</a></li><li><a href="KonektiMedia.html">KonektiMedia</a></li><li><a href="KonektiPlugIn.html">KonektiPlugIn</a></li><li><a href="KonektiResource.html">KonektiResource</a></li><li><a href="LatexEditor.html">LatexEditor</a></li><li><a href="LatexPlugIn.html">LatexPlugIn</a></li><li><a href="Media.html">Media</a></li><li><a href="MediaPlugIn.html">MediaPlugIn</a></li><li><a href="NavBarPlugIn.html">NavBarPlugIn</a></li><li><a href="SideBarPlugIn.html">SideBarPlugIn</a></li><li><a href="Split.html">Split</a></li><li><a href="SplitPlugIn.html">SplitPlugIn</a></li><li><a href="TabClient.html">TabClient</a></li><li><a href="TabPlugIn.html">TabPlugIn</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreePlugIn.html">TreePlugIn</a></li><li><a href="YoutubePlugIn.html">YoutubePlugIn</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Konekti">Konekti</a></li><li><a href="global.html#Konektiace">Konekti ace</a></li><li><a href="global.html#Konektiaudio">Konekti audio</a></li><li><a href="global.html#Konektibtn">Konekti btn</a></li><li><a href="global.html#Konektidropdown">Konekti dropdown</a></li><li><a href="global.html#Konektiheader">Konekti header</a></li><li><a href="global.html#Konektihtml">Konekti html</a></li><li><a href="global.html#Konektiiframe">Konekti iframe</a></li><li><a href="global.html#Konektilatex">Konekti latex</a></li><li><a href="global.html#Konektimedia">Konekti media</a></li><li><a href="global.html#Konektimp4">Konekti mp4</a></li><li><a href="global.html#Konektinavbar">Konekti navbar</a></li><li><a href="global.html#Konektisidebar">Konekti sidebar</a></li><li><a href="global.html#Konektisplit">Konekti split</a></li><li><a href="global.html#Konektitab">Konekti tab</a></li><li><a href="global.html#Konektitree">Konekti tree</a></li><li><a href="global.html#Konektivideo">Konekti video</a></li><li><a href="global.html#Konektiyoutube">Konekti youtube</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Tue Nov 03 2020 17:19:18 GMT-0500 (Colombia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

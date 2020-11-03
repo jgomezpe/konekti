@@ -1,13 +1,22 @@
-# konekti
-Java Script connection library. This library allows to connect to a server for running commands, uploading and downloading resources and adding JS/HTML/CSS resources as plug-ins. 
+# Konekti
+Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents.
 <h3>Version 1.0</h3>
 <h3>Copyright (c)</h3>
 &nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
 &nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
+
+&nbsp;Konekti url: <A HREF="https://konekti.numtseng.com/">https://konekti.numtseng.com</A>
+
+&nbsp;Ready to use: <A HREF="https://konekti.numtseng.com/source/">https://konekti.numtseng.com/source/</A>
+
+&nbsp;Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A>
+
+&nbsp;Online documentation: <A HREF="https://konekti.numtseng.com/source/doc/">https://konekti.numtseng.com/source/doc/</A>
+
 &nbsp;All rights reserved.
 
 <h3>Licence</h3>
-Redistribution and use in source and binary forms, with or without	modification, are permitted provided that the following conditions are met:
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
 <ul>
 	<li> Redistributions of source code must retain the above copyright notice,
