@@ -1,3 +1,5 @@
+Konekti.core.load('navbar')
+
 /** Konekti Plugin for tab components */
 class TabPlugIn extends KonektiPlugIn{
     /** Creates a Plugin for tab components */
@@ -24,28 +26,19 @@ class TabPlugIn extends KonektiPlugIn{
     extra( thing ){
         var mainclient = thing.client
         var id = thing.id
-        var client = id
         var initial = thing.initial || thing.tab[0].id
         var tabs=[]
         for( var i=0; i<thing.tab.length; i++ ){
             tabs.push(thing.tab[i].id)
             var btx = thing.tab[i]
             btx.id += '-tab'
-            btx.run = 'Konekti.client("'+client+'").open("'+tabs[i]+'")'
+            btx.onclick= 'Konekti.client("'+id+'").open("'+tabs[i]+'")'
         }
-        var tabClient = new TabClient(client, tabs)
-	    setTimeout( function(){ tabClient.open(thing.initial) }, 200 )
+        var tabClient = new TabClient(id, tabs)
+	setTimeout( function(){ tabClient.open(thing.initial) }, 200 )
     
         var nav = thing.navbarid || id+'-bar'
-        var navbar = {
-			"id":nav,
-			"client":client,
-			"color":thing.color || "w3-blue-grey",
-			"search":false,
-			"size":'w3-medium',
-			"btn":thing.tab
-        }
-        Konekti.plugin.navbar.connect(navbar)
+        Konekti.navbar(nav, thing.tab, "select", "w3-light-grey w3-medium", id)
     }
 }
 
@@ -84,22 +77,17 @@ class TabClient extends KonektiClient{
 /**
  * @function
  * Konekti tab
- * @param container Id of the tab component
- * @param config Tab configuration 
+ * @param id Id of the tab component
+ * @param tabs Tab configurations 
  */
-Konekti.tab = function(container, config){
-    config.id = container
-    var i
-    var k = 2
-    var btns = []
-    for(i=k; i<arguments.length; i++){
-        if(typeof arguments[i]==='string'){
-            btns.push({'id':arguments[i], 'caption':arguments[i]})
-        }else{
-            btns.push(arguments[i])
-        }
+Konekti.tab = function(id, initial){
+console.log(arguments.length)
+    var btn = []
+    for(var i=2; i<arguments.length; i++){
+        if(typeof arguments[i]==='string') btn.push({'id':arguments[i], 'caption':arguments[i]})
+        else btn.push(arguments[i])
     }
-    config.tab = btns
+    var config = {'id':id, 'initial':initial, 'tab':btn}
     Konekti.plugin.tab.connect(config)
     return Konekti.client(config.id)
 }

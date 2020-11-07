@@ -38,7 +38,6 @@ class LatexEditor extends KonektiEditor{
 	constructor(thing){
 		super(thing) 
 		this.innergui = this.vc('content')
-        //if(typeof thing.client != 'undefined') Konekti.client(thing.client).editor(this)
 		this.setText(thing.initial)
 	}
 	
@@ -78,14 +77,11 @@ class LatexEditor extends KonektiEditor{
 /**
  * @function
  * Konekti latex
- * @param container Id of the latex component
+ * @param id Id of the latex component
  * @param tex Latex code
  * @param client Client of the latex component
  */
-Konekti.latex = function(container, tex, client){
-    var thing = {"id":container}
-    if( tex !== undefined ) thing.initial = tex
-    if( client !== undefined ) thing.client = client
-    Konekti.plugin.latex.connect(thing)
+Konekti.latex = function(id, tex='', client='client'){
+	Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
 }
 

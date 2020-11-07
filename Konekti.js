@@ -355,6 +355,39 @@ class KonektiCore{
 		}
 		return res
 	}
+
+	/**
+	 * Gets the previous font class to the given font class
+	 * @param font Font class (w3-css font class size)
+	 * @return The previous font class to the given one (w3-css font class size)
+	 */
+	previousFont( font ){
+		if( font.includes('w3-small') ) return 'w3-tiny'
+		if( font.includes('w3-medium') ) return 'w3-small'
+		if( font.includes('w3-large') ) return 'w3-medium'
+		if( font.includes('w3-xlarge') ) return 'w3-large'
+		if( font.includes('w3-xxlarge') ) return 'w3-xlarge'
+		if( font.includes('w3-xxxlarge') ) return 'w3-xxlarge'
+		if( font.includes('w3-jumbo') ) return 'w3-xxxlarge'
+		return font	
+	}
+
+	/**
+	 * Gets the size of the given font class 
+	 * @param font Font class (w3-css font class size)
+	 * @return The size of the font class in px (w3-css font class size)
+	 */
+	fontSize( font ){
+		if( font.includes('w3-tiny') ) return 10
+		if( font.includes('w3-small') ) return 12
+		if( font.includes('w3-medium') ) return 15
+		if( font.includes('w3-large') ) return 18
+		if( font.includes('w3-xlarge') ) return 24
+		if( font.includes('w3-xxlarge') ) return 36
+		if( font.includes('w3-xxxlarge') ) return 48
+		if( font.includes('w3-jumbo') ) return 64
+		return 15	
+	}
 	
 	/**
 	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
@@ -518,8 +551,8 @@ class KonektiClient{
 		if( typeof id == 'string' ){
 			this.id = id
 		}else{
-			this.dictionary = id
-			this.id = this.dictionary.id
+			this.thing = id
+			this.id = this.thing.id
 		}
 		this.gui = this.vc()
 		this.listener = []
@@ -619,20 +652,10 @@ class KonektiEditor extends KonektiClient{
  * A media manager.
  */
 class KonektiMedia extends KonektiClient{
-	constructor(id){ super(id) }
-
-	/**
-	 * Paused event manager for media components
-	 * @param id Media component that generates the paused event
-	 */
-	paused(id){}
-
-	/**
-	 * Playing event manager for media components
-	 * @param id Media component that generates the playing event
-	 * @param time Current time
-	 */
-	playing(id, time){}
+	constructor(id, client){
+		super(id)
+		this.client = Konekti.client(client) || null
+	}
 
 	/**
 	 * Pauses the media component

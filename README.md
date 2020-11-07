@@ -1,5 +1,5 @@
 # Konekti
-Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents.
+Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents. It includes split panels, media (video/audio) panels, youtube panels, tab panels, navigation bars, side-bars, latex panels, editor panels, and more.
 <h3>Version 1.0</h3>
 <h3>Copyright (c)</h3>
 &nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
@@ -11,7 +11,7 @@ Konekti is a Java Script connection library that allows to connect JS/HTML/CSS r
 
 &nbsp;Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A>
 
-&nbsp;Online documentation: <A HREF="https://konekti.numtseng.com/source/doc/">https://konekti.numtseng.com/source/doc/</A>
+&nbsp;API documentation: <A HREF="https://konekti.numtseng.com/source/doc/">https://konekti.numtseng.com/source/doc/</A>
 
 &nbsp;All rights reserved.
 

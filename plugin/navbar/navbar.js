@@ -15,18 +15,10 @@ class NavBarPlugIn extends KonektiPlugIn{
      */
     fillLayout( thing ){
         var id = thing.id
-        var client = thing.client 
-        var size = thing.size || 'w3-xlarge'
         var btnsHTML = ''
         var btn = thing.btn
-        if( btn != null ){
-            for( var i=0; i<btn.length; i++ ){
-                btn[i].style = (btn[i].style!==undefined?btn[i].style:'')+" w3-bar-item "+size
-                btn[i].client = btn[i].client || client
-                btn[i].arg = btn[i].arg || thing.arg
-                btnsHTML += Konekti.plugin.btn.fillLayout( btn[i] ) 
-            }
-        }
+	for( var i=0; i<btn.length; i++ )
+		btnsHTML += Konekti.plugin.btn.fillLayout( Konekti.core.plugin.btn.config(btn[i]) ) 
         thing.btnsHTML = btnsHTML
         return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
     }
@@ -34,19 +26,39 @@ class NavBarPlugIn extends KonektiPlugIn{
 
 new NavBarPlugIn()
 
+/** A Navigation Bar manager */
+class NavBar extends KonektiClient{
+	/** 
+	 * Creates a NavBar Manager
+	 * @param thing Configuration of the navbar
+	 */
+	constructor(thing){
+		super(thing.id)
+		var flag = thing.method!==undefined && thing.method=='select'
+		for( var i=0; i<thing.btn.length; i++ ){
+			thing.btn[i].style = (thing.btn[i].style || '')+" w3-bar-item "
+			thing.btn[i].onclick = thing.btn[i].onclick || {'client':thing.client, 'method':flag?'select':thing.btn[i].id}
+		}		
+		Konekti.plugin.navbar.connect(thing)		 
+	}
+	/** Adds a button to the navbar
+	 * @param btn Button to add (configuration information)
+	 */
+	addBtn( btn ){ Konekti.core.append(this.id,'btn',btn) }
+}
+
 /**
  * @function
  * Konekti navbar
- * @param container Id of the navbar component
+ * @param id Id of the navbar component
  * @param btns Array of buttons to maintain by the navbar
- * @param color Color of the navbar
- * @param size Buttons size
- * @param client Client of the media component
+ * @param method Method of the client that will be called when a button is pressed and not 
+ * it does not have associated a run code. 'name' indicates that a method with the same name as the id
+ * of the button will be used. 'Array of buttons to maintain by the navbar
+ * @param style Style of the navbar
+ * @param client Client of the navbar component
+ * @return A NavBar manager
  */
-Konekti.navbar = function(container, btns, color, size, client){
-    var dict = {"id":container, "btn":btns, "color":"w3-blue-grey", "size":"w3-xlarge"}
-    if(color !== undefined && color!==null ) dict.color = color
-    if(size !== undefined && size!==null) dict.size = size
-    if(client!==undefined) dict.client = client
-    Konekti.plugin.navbar.connect(dict)
+Konekti.navbar = function(id, btns=[], method='name', style="w3-blue-grey w3-xlarge", client='client'){
+	return new NavBar( {"id":id, "method":method, "btn":btns, "style":style, "client":client} )
 }

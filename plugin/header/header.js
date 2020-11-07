@@ -24,20 +24,16 @@ new HeaderPlugIn()
 /**
  * @function
  * Konekti header
- * @param container id of the header
- * @param header_config Caption of the header/Configuration of the header
+ * @param id Id of the header/Configuration of the header
+ * @param header Caption of the header
  * @param size Size of the header (1,2,3..) (not required if configuration is provided)
  * @param style Style of the header (not required if configuration is provided)
  * @param icon Icon for the header (not required if configuration is provided)
  */
-Konekti.header = function(container, header_config, size, style, icon ){
-    var dict
-    if(typeof header_config==='string'){
-        size = size || 3
-        style = style || 'w3-center w3-blue'
-        icon = icon || ''
-        dict={"caption":header_config, "size":size, "style":style, "icon":icon}
-    }else dict=header_config
-    dict.id=container
-    Konekti.plugin.header.connect(dict)
+Konekti.header = function(id, header, size=3, style='w3-center w3-blue', icon='' ){
+    var thing
+    if(typeof id==='string'){
+        thing={"id":id, "caption":header, "size":size, "style":style, "icon":icon}
+    }else thing=id
+    Konekti.plugin.header.connect(thing)
 }

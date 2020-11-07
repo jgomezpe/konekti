@@ -24,9 +24,10 @@ class DropDownPlugIn extends KonektiPlugIn{
         thing.icon = thing.icon || ''
         var optTemplate = ''
         var option = thing.options
+	var size = Konekti.core.previousFont(thing.style)
         for( var i=0; i<option.length; i++ ){
             if( typeof option[i] == 'string'){
-                option[i] = {"id":option[i], "caption":option[i]}
+                option[i] = {"id":option[i], "caption":option[i], 'size':size}
             }
             option[i].client = thing.id
             optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
@@ -45,16 +46,16 @@ class DropDown extends KonektiClient{
 	 * @param thing Dropdown configuration
 	 */
 	constructor( thing ){
-		super(thing)
-		thing.select = thing.select || 'select'
-		thing.client = thing.client || 'client'
+		super(thing.id)
+		this.select = thing.select || 'select'
+		this.client = thing.client || 'client'
 	}
 	
 	/**
 	 * Shows/hides the drop option list
 	 */
 	drop(){
-		var x = Konekti.vc(this.thing.id+'-drop')
+		var x = Konekti.vc(this.id+'-drop')
 		if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
 		else x.className = x.className.replace(" w3-show", "")
 	}
@@ -65,9 +66,9 @@ class DropDown extends KonektiClient{
 	 */
 	select( option ){
 		this.drop()
-		var c = Konekti.client(this.thing.client)
-		if( typeof c != 'undefined' && c[this.thing.select] !== undefined ) 
-			c[this.thing.select](this.thing.id, option)
+		var c = Konekti.client(this.client)
+		if( typeof c != 'undefined' && c[this.select] !== undefined ) 
+			c[this.thing.select](this.id, option)
 	}
 }
 

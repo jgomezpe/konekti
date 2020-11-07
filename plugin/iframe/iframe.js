@@ -46,13 +46,10 @@ class IFrameEditor extends KonektiEditor{
 /**
  * @function
  * Konekti iframe
- * @param container Id of the iframe container
+ * @param id Id of the iframe container
  * @param url Url for the iframe component
  * @param client Client of the iframe component
  */
-Konekti.iframe = function(container, url, client){
-    var dict = {"id":container, "src":url}
-    if(client!==undefined && client !==null) dic.client = client
-    else dict.client = 'client'
-    Konekti.plugin.iframe.connect(dict)
+Konekti.iframe = function(id, url='', client='client'){
+	Konekti.plugin.iframe.connect({"id":id, "src":url, 'client':client})
 }

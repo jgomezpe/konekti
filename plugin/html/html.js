@@ -7,7 +7,7 @@ class HTMLPlugIn extends KonektiPlugIn{
      * Connects (extra steps) the html component with the GUI component
      * @param thing Html component configuration
      */
-    extra( thing ){ new DIVEditor(thing) }
+    extra( thing ){ new DIVEditor(thing.id) }
 }
 
 new HTMLPlugIn()
@@ -37,13 +37,10 @@ class DIVEditor extends KonektiEditor{
 /**
  * @function
  * Konekti html
- * @param container Id of the html container
+ * @param id Id of the html container
  * @param code Code for the html component
  * @param client Client of the html component
  */
-Konekti.html = function(container, code, client){
-    var dict = {"id":container, "initial":code} 
-    if(client!==undefined) dict.client = client
-    else dict.client = 'client'
-    Konekti.plugin.html.connect( dict )
+Konekti.html = function(id, code, client='client'){
+	Konekti.plugin.html.connect( {'id':id, 'initial':code, 'client':client} )
 }

@@ -104,11 +104,11 @@ class Split extends KonektiClient{
 /**
  * @function
  * Konekti split
- * @param container Id of the split component
+ * @param id Id of the split component
  * @param type Type of split 'col' Vertical, 'row' Horixontal
  * @param percentage Percentage of the first subcomponent
  */
-Konekti.split = function(container, type, percentage){
+Konekti.split = function(container, type='col', percentage='50%'){
     var d = {"id":container, "type":type, "start":percentage}
     var c = new Split(d)
     Konekti.plugin.split.connect(d)

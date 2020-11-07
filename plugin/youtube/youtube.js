@@ -26,34 +26,24 @@ class YoutubePlugIn extends KonektiPlugIn{
     extra( thing ){
         if( this.APILoaded ){
             var id = thing.id
-            function onPlayerReady(event){
-                var video = event.target.playerInfo.videoData.video_id
-                var comp = Konekti.vc(video)
-                var clientId = thing.client
-                if( clientId !== undefined ){
-                    var client = Konekti.client(clientId)
-                    client.pause(id, function(){ window[id].pauseVideo() } )
-                    client.play(id, function(){ window[id].playVideo() })
-                    client.seek(id, function(time){ window[id].seekTo(time,true) })
-                }
-            }
+            function onPlayerReady(event){ new YoutubeMedia(thing.id, thing.client) }
 
             function onPlayerStateChange(event){
                 var video = event.target.playerInfo.videoData.video_id
                 var comp = Konekti.vc(video)
-                var client = Konekti.client(thing.client)
+                var client = Konekti.client(thing.id).client
                 if( client != null ){
                     if (event.data == YT.PlayerState.PLAYING) {
                         function updatePlaying() {
                             if (YT.PlayerState.PLAYING) {
-                                client.playing(id, event.target.playerInfo.currentTime)
+                                if( client.play !== null ) client.seek(id, event.target.playerInfo.currentTime)
                                 comp.setAttribute('timeout', setTimeout(updatePlaying,100))
                             }
                         }
                         updatePlaying()
                     }else{
                         clearTimeout(comp.getAttribute('timeout'))
-                        client.paused(id)
+                        if( client.pause !== null ) client.pause(id)
                     }
                 }
             }
@@ -76,15 +66,46 @@ Konekti.core.resource.script(null,'https://www.youtube.com/iframe_api', null)
 
 window.onYouTubeIframeAPIReady = function(){ Konekti.plugin.youtube.done() }
 
+
+class YoutubeMedia extends KonektiMedia{
+	constructor(id, client){ super(id, client) }
+
+	/**
+	 * Pauses the media component
+	 */
+	pause(){ 
+		window[this.id].pauseVideo()
+		var c = this.client
+		if( c!==null && c.pause !== undefined ) c.pause(this.id)
+	}
+
+	/**
+	 * Plays the media component
+	 */
+	play(){
+		window[this.id].playVideo() 
+		var c = this.client
+		if( c!==null && c.play !== undefined ) c.play(this.id)
+	}
+
+	/**
+	 * Locates the media component at the given time
+	 * @param time Time position for the media component
+	 */
+	seek(time){
+		window[this.id].seekTo(time,true) 
+		var c = this.client
+		if( c!==null && c.seek !== undefined ) c.seek(this.id, time)
+	}
+}
+
 /**
  * @function
  * Konekti youtube
- * @param container Id of the youtube component
+ * @param id Id of the youtube component
  * @param video youtube id of the video
  * @param client Client of the latex component
  */
-Konekti.youtube = function(container, video, client){
-    var dict = {"id":container, "video":video}
-    if(client !== undefined ) dict.client=client
-    Konekti.plugin.youtube.connect(dict)
+Konekti.youtube = function(id, video, client='client'){
+	Konekti.plugin.youtube.connect({"id":id, "video":video, 'client':client})
 }

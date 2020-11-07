@@ -192,7 +192,7 @@ class AceEditor extends KonektiEditor{
 	 * @param thing Ace editor configuration
 	 */
     constructor(thing){
-        super(thing)
+        super(thing.id)
         if( typeof thing.client !== 'undefined' && thing.client != null )
             this.listener.push(thing.client)
         var id = this.id
