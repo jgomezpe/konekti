@@ -106,6 +106,13 @@ class TreePlugIn extends KonektiPlugIn{
         thing.inner = this.fillInner(id, thing.tree, icon, options )
         return Konekti.core.fromTemplate(this.htmlTemplate, thing)
     }
+
+    	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new Tree(thing) }
+
 }
 
 new TreePlugIn()
@@ -202,6 +209,5 @@ class Tree extends KonektiClient{
  * @param t Tree configuration 
  */
 Konekti.tree = function(t){
-    Konekti.plugin.tree.connect(t)
-    return new Tree(t)
+    return Konekti.plugin.tree.connect(t)
 }

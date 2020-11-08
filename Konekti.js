@@ -143,14 +143,15 @@ class KonektiPlugIn{
 	constructor(id){
 		this.core = Konekti.core
 		this.core.plugin[id] = this
+		this.child_style = ''
 	}
-	
-	/**
-	 * Performs additional JS tasks for the PlugIn that has just been inserted in the document hierarchy
-	 * @param thing Information of the PlugIn that has been just inserted in the document hierarchy  
-	 */
-	extra(thing){}
 
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new KonektiClient(thing) }
+	
 	/**
 	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance <i>dictionary</i>
 	 * @param thing Information of the instance of the PlugIn
@@ -159,43 +160,27 @@ class KonektiPlugIn{
 	fillLayout(thing){ return this.core.fromTemplate( this.htmlTemplate, thing ) }
 
 	/**
-	 * Ptovides to a visual component the plugin's functionality 
+	 * Connects instance with html document
 	 * @param thing Plugin instance information
 	 */
-	connect(thing){
+	html(thing){
 		var c = this.core.vc( thing.id )
-		if( typeof this.replace == 'string' && this.replace == 'strict' ){
-			var node = this.core.resource.html(this.fillLayout(thing))
-			if( c!=null ) c.parentElement.replaceChild(node, c)
-		}else{ if(c!=null) c.innerHTML = this.fillLayout(thing) }
-		return this.extra(thing)
+		if( c!==null ){
+			if( typeof this.replace == 'string' && this.replace == 'strict' ){
+				var node = this.core.resource.html(this.fillLayout(thing))
+				c.parentElement.replaceChild(node, c)
+			}else{ c.innerHTML = this.fillLayout(thing) }
+		}
+		return c
 	}
 
 	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and appends it as child of the component
-	 * in the document with the given id, if possible
-	 * @param parent Id of the element in the document that will include the new node
-	 * @param thing PlugIn information for creating the HTML element that will be appended as child in the 
-	 * HTML element in the document with the given id
+	 * Provides to a visual component the plugin's functionality 
+	 * @param thing Plugin instance information
 	 */
-	append(parent, thing){
-		this.core.vc( parent ).appendChild( this.core.div(thing.id) )
-		this.connect(thing)
-	}
-	
-	/**
-	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and inserts it as previous brother of the component
-	 * in the document with the given id <i>sister</i>, if possible
-	 * @param sister Id of the element in the document that will be the younger (next) sister of the new node
-	 * @param thing PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
-	 * HTML element in the document with the given <i>sister</i> id
-	 */
-	insertBefore(sister, thing){
-		var node = this.core.div( thing.id )
-		var sisterNode = this.core.vc( sister )
-		var parentNode = sisterNode.parentElement
-		parentNode.insertBefore( node, sisterNode )
-		this.connect( thing )
+	connect(thing){
+		thing.gui = this.html(thing)
+		return this.client(thing)
 	}
 }
 
@@ -211,8 +196,7 @@ class KonektiCore{
 	constructor(){
 		this.resource = new KonektiResource()
 		this.plugin = {}
-		this.client = {}
-		this.client['console'] = console
+		this.client = {'console':console}
 		this.konektiPluginPath = "https://konekti.numtseng.com/source/plugin/"
 		this.pluginPath = "plugin/"
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
@@ -400,9 +384,10 @@ class KonektiCore{
 	/**
 	 * Creates a div HTML node with the given id
 	 * @param id Id of the element being created
+	 * @param class_style Style (class) of the div
 	 * @return A div HTML node with the given id 
 	 */
-	div(id){ return this.resource.html( "<div id='"+id+"'></div>") }
+	div(id, class_style=''){ return this.resource.html( "<div id='"+id+"' class='"+class_style+"'></div>") }
 	
 	/**
 	 * Moves a component as child of another component
@@ -413,6 +398,15 @@ class KonektiCore{
 		var t = this.vc(id)
 		t.parentElement.removeChild(t)
 		this.vc(parent).appendChild(t)
+	}
+
+	/**
+	 * Removes a component of the document
+	 * @param id Id of the component to remove 
+	 */
+	remove(id){
+		var t = this.vc(id)
+		t.parentElement.removeChild(t)
 	}
 
 	/**
@@ -434,7 +428,9 @@ class KonektiCore{
 	 * HTML element in the document with the given id
 	 */
 	append(parent, plugin, thing){
-		return this.plugin[plugin].append(parent,thing)
+		plugin = this.plugin[plugin] 
+		this.vc( parent ).appendChild( this.div(thing.id, plugin.child_style) )
+		return plugin.connect(thing)
 	}
 	
 	/**
@@ -445,7 +441,12 @@ class KonektiCore{
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
 	insertBefore(sister, plugin, thing){
-		return this.plugin[plugin].insertBefore(sister,thing)
+		plugin = this.plugin[plugin] 
+		var node = this.div( thing.id, plugin.child_style )
+		var sisterNode = this.vc( sister )
+		var parentNode = sisterNode.parentElement
+		parentNode.insertBefore( node, sisterNode )
+		return plugin.connect(thing)
 	}
 
 	/**
@@ -652,9 +653,9 @@ class KonektiEditor extends KonektiClient{
  * A media manager.
  */
 class KonektiMedia extends KonektiClient{
-	constructor(id, client){
-		super(id)
-		this.client = Konekti.client(client) || null
+	constructor(thing){
+		super(thing)
+		this.client = Konekti.client(thing.client) || null
 	}
 
 	/**

@@ -3,11 +3,11 @@ class IFramePlugIn extends KonektiPlugIn{
     /** Creates a Plugin for iframe components */
     constructor(){ super('iframe') }
 
-    /** 
-     * Connects (extra steps) the iframe component with the GUI component
-     * @param thing Iframe component configuration
-     */
-    extra ( thing ){ new IFrameEditor(thing) }
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new IFrameEditor(thing) }
 }
 
 new IFramePlugIn()
@@ -51,5 +51,5 @@ class IFrameEditor extends KonektiEditor{
  * @param client Client of the iframe component
  */
 Konekti.iframe = function(id, url='', client='client'){
-	Konekti.plugin.iframe.connect({"id":id, "src":url, 'client':client})
+	return Konekti.plugin.iframe.connect({"id":id, "src":url, 'client':client})
 }

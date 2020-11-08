@@ -2,11 +2,11 @@
 class MediaPlugIn extends KonektiPlugIn{
     /** Creates a Plugin for media components */
     constructor(){ super('media') }
-    /** 
-     * Connects (extra steps) the media component with the GUI component
-     * @param thing media component configuration
-     */
-    extra( thing ){ new Media(thing.id, thing.client) }
+        /**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new Media(thing) }
 }
 
 new MediaPlugIn()
@@ -21,8 +21,7 @@ new MediaPlugIn()
  * @param client Client of the media component
  */
 Konekti.media = function(id, media, type, src, client='client'){
-    var dict = {"id":id, "media":media, "type":type, "src":src}
-    Konekti.plugin.media.connect(dict)
+    return Konekti.plugin.media.connect({"id":id, "media":media, "type":type, "src":src})
 }
 
 /**
@@ -34,7 +33,7 @@ Konekti.media = function(id, media, type, src, client='client'){
  * @param client Client of the video component
  */
 Konekti.video = function(id, type, src, client){
-    this.media(container, "video", type, src, client)
+    return this.media(container, "video", type, src, client)
 }
 
 /**
@@ -45,7 +44,7 @@ Konekti.video = function(id, type, src, client){
  * @param client Client of the video component
  */
 Konekti.mp4 = function(id, src, client){
-    this.media(id, "video", "mp4", src, client)
+    return this.media(id, "video", "mp4", src, client)
 }
 
 /**
@@ -57,7 +56,7 @@ Konekti.mp4 = function(id, src, client){
  * @param client Client of the audio component
  */
 Konekti.audio = function(id, type, src, client){
-    this.media(id, "audio", type, src, client)
+    return this.media(id, "audio", type, src, client)
 }
 
 /**
@@ -68,7 +67,7 @@ Konekti.audio = function(id, type, src, client){
  * @param client Client of the audio component
  */
 Konekti.mp3 = function(container, src, client){
-    this.media(container, "audio", "mp3", src, client)
+    return this.media(container, "audio", "mp3", src, client)
 }
 
 /**
@@ -79,8 +78,8 @@ class Media extends KonektiMedia{
 	 * Creates a media component
 	 * @param thing Media component configuration
 	 */
-	constructor( id, client ){
-		super(id, client)
+	constructor( thing ){
+		super(thing)
 		this.media = this.vc('Content')
 		var c = this.client
 		if( c !== null ){

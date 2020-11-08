@@ -27,10 +27,26 @@ class ButtonPlugIn extends KonektiPlugIn{
 		}
 		return thing
 	}
+
+        /**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new Btn(thing) }
 }
 
 /** Creates and registers the button plugin */
 new ButtonPlugIn()
+
+/** A Button manager */
+class Btn extends KonektiClient{
+	/** 
+	 * Creates a Button Manager
+	 * @param thing Configuration of the navbar
+	 */
+	constructor(thing){ super(thing) }
+}
+
 
 /**
  * @function
@@ -44,5 +60,5 @@ new ButtonPlugIn()
  */
 Konekti.btn = function(id, caption='', onclick={'client':'client'}, 
 			style='w3-bar-item w3-xlarge', icon='', title=''){
-	Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
+	return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
 }

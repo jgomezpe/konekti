@@ -8,18 +8,6 @@ class AcePlugIn extends KonektiPlugIn{
     }
     
     /**
-     * Connects components as soon as the ACE library is loaded
-     */
-    done(){
-        this.loaded = true
-        while( this.view.length > 0 ){
-            var thing = this.view[0]
-            this.view.shift()
-            this.connect( thing )
-        }
-    }
-    
-    /**
      * Defines a dynamic language mode taking as basis the OOP mode
      * @param lang Cinfiguration information for the defined language
      */
@@ -168,6 +156,18 @@ class AcePlugIn extends KonektiPlugIn{
     }
     
     /**
+     * Connects components as soon as the ACE library is loaded
+     */
+    done(){
+        this.loaded = true
+        while( this.view.length > 0 ){
+            var thing = this.view[0]
+            this.view.shift()
+        	Konekti.client(thing.id).load(thing)    
+        }
+    }
+    
+    /**
      * Load an ACE editor 
      * @param id If of the ACE editor
      */
@@ -176,13 +176,16 @@ class AcePlugIn extends KonektiPlugIn{
         if( this.loaded ) this.done()
     }
 
-    /** 
-     * Connects (extra steps) the ACE editor with the GUI component
-     * @param thing ACE editor configuration
-     */
-    extra( thing ){
-        if( this.loaded ){ new AceEditor(thing) }else this.view.push( thing )
-    }
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ 
+		var editor = new AceEditor(thing) 
+		if( this.loaded ) editor.load(thing)
+		else this.view.push( thing )
+		return editor
+	}
 }
 
 /** An Ace Editor */
@@ -191,8 +194,13 @@ class AceEditor extends KonektiEditor{
 	 * Creates an Ace Editor
 	 * @param thing Ace editor configuration
 	 */
-    constructor(thing){
-        super(thing.id)
+    constructor(thing){ super(thing) }
+	
+	/**
+	 * Loads an Ace Editor
+	 * @param thing Ace editor configuration
+	 */
+    load(thing){
         if( typeof thing.client !== 'undefined' && thing.client != null )
             this.listener.push(thing.client)
         var id = this.id
@@ -231,6 +239,8 @@ class AceEditor extends KonektiEditor{
                     if( x.listener[i] != null && Konekti.client(x.listener[i]) != null ) Konekti.client(x.listener[i]).onchange(id)
             })
     }
+
+	
 	
     /**
      * Gets current text in the editor
@@ -308,12 +318,11 @@ class AceEditor extends KonektiEditor{
 /**
  * @function
  * Konekti ace
- * @param container Id of the component that will contain the ace editor
+ * @param id Id of the component that will contain the ace editor
  * @param config Configuration of the ace editor
  */
-Konekti.ace = function(container, config ){
-    if( config===undefined || config===null ) config = {'client':'client'}
-    config.id = container
+Konekti.ace = function(id, config = {'client':'client'}){
+    config.id = id
     return Konekti.plugin.ace.connect(config)
 }
 

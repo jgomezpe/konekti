@@ -20,11 +20,11 @@ class LatexPlugIn extends KonektiPlugIn{
         return Konekti.core.fromTemplate( this.htmlTemplate, thing )
     }
 
-    /** 
-     * Connects (extra steps) the latex component with the GUI component
-     * @param thing Latex component configuration
-     */
-    extra( thing ){ new LatexEditor(thing) }
+    	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new LatexEditor(thing) }
 }
 
 new LatexPlugIn()
@@ -82,6 +82,6 @@ class LatexEditor extends KonektiEditor{
  * @param client Client of the latex component
  */
 Konekti.latex = function(id, tex='', client='client'){
-	Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
+	return Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
 }
 

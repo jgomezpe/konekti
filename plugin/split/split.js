@@ -30,20 +30,11 @@ class SplitPlugIn extends KonektiPlugIn{
         return Konekti.core.fromTemplate(this.htmlTemplate, thing)
     }
     
-    /** 
-     * Connects (extra steps) the split component with the GUI component
-     * @param thing Split component configuration
-     */
-    extra( thing ){
-        var id = thing.id
-        var c = Konekti.vc(id+'-drag')
-        c.addEventListener("mousedown", function(e){ Konekti.client(id).dragstart(e);} )
-        c.addEventListener("touchstart", function(e){ Konekti.client(id).dragstart(e); } )
-        window.addEventListener("mousemove", function(e){ Konekti.client(id).dragmove(e); } )
-        window.addEventListener("touchmove", function(e){ Konekti.client(id).dragmove(e); } )
-        window.addEventListener("mouseup", function(){ Konekti.client(id).dragend(); } )
-        window.addEventListener("touchend", function(){ Konekti.client(id).dragend(); } )
-    }
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new Split(thing) }
 }
 
 new SplitPlugIn()
@@ -56,7 +47,15 @@ class Split extends KonektiClient{
      */
     constructor( thing ){
         super(thing)
+	var x = this
         this.type = thing.type
+        var c = this.vc('-drag')
+        c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
+        c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
+        window.addEventListener("mousemove", function(e){ x.dragmove(e); } )
+        window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
+        window.addEventListener("mouseup", function(){ x.dragend(); } )
+        window.addEventListener("touchend", function(){ x.dragend(); } )
     }
 
     /**
@@ -108,9 +107,6 @@ class Split extends KonektiClient{
  * @param type Type of split 'col' Vertical, 'row' Horixontal
  * @param percentage Percentage of the first subcomponent
  */
-Konekti.split = function(container, type='col', percentage='50%'){
-    var d = {"id":container, "type":type, "start":percentage}
-    var c = new Split(d)
-    Konekti.plugin.split.connect(d)
-    return c
+Konekti.split = function(id, type='col', percentage='50%'){
+    return Konekti.plugin.split.connect({"id":id, "type":type, "start":percentage})
 }

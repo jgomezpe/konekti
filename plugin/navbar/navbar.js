@@ -6,6 +6,7 @@ class NavBarPlugIn extends KonektiPlugIn{
     constructor(){
         super('navbar')
         this.replace = 'strict'
+	this.child_style = 'w3-bar-item'
     }
 
     /**
@@ -17,11 +18,22 @@ class NavBarPlugIn extends KonektiPlugIn{
         var id = thing.id
         var btnsHTML = ''
         var btn = thing.btn
-	for( var i=0; i<btn.length; i++ )
-		btnsHTML += Konekti.plugin.btn.fillLayout( Konekti.core.plugin.btn.config(btn[i]) ) 
+	var flag = thing.method!==undefined && thing.method=='select'
+	for( var i=0; i<btn.length; i++ ){
+		btn[i].style = (btn[i].style || '')+" w3-bar-item "
+		btn[i].onclick = btn[i].onclick || {'client':thing.client, 'method':flag?'select':btn[i].id}
+		btnsHTML += Konekti.plugin.btn.fillLayout( Konekti.core.plugin.btn.config(btn[i]) )
+	} 
         thing.btnsHTML = btnsHTML
         return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
     }
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new NavBar(thing) }
+
 }
 
 new NavBarPlugIn()
@@ -32,19 +44,19 @@ class NavBar extends KonektiClient{
 	 * Creates a NavBar Manager
 	 * @param thing Configuration of the navbar
 	 */
-	constructor(thing){
-		super(thing.id)
-		var flag = thing.method!==undefined && thing.method=='select'
-		for( var i=0; i<thing.btn.length; i++ ){
-			thing.btn[i].style = (thing.btn[i].style || '')+" w3-bar-item "
-			thing.btn[i].onclick = thing.btn[i].onclick || {'client':thing.client, 'method':flag?'select':thing.btn[i].id}
-		}		
-		Konekti.plugin.navbar.connect(thing)		 
-	}
-	/** Adds a button to the navbar
-	 * @param btn Button to add (configuration information)
+	constructor(thing){ super(thing) }
+
+	/** Adds a component to the navbar
+	 * @param type Type of component to add
+	 * @param thing Component to add (configuration information)
 	 */
-	addBtn( btn ){ Konekti.core.append(this.id,'btn',btn) }
+	add( type, thing ){ Konekti.core.append(this.id,type,thing) }
+
+	/**
+	 * Removes a component of the navbar
+	 * @param id Id of the component to remove 
+	 */
+	remove(id){ Konekti.core.remove(id) }
 }
 
 /**
@@ -60,5 +72,5 @@ class NavBar extends KonektiClient{
  * @return A NavBar manager
  */
 Konekti.navbar = function(id, btns=[], method='name', style="w3-blue-grey w3-xlarge", client='client'){
-	return new NavBar( {"id":id, "method":method, "btn":btns, "style":style, "client":client} )
+	return Konekti.plugin.navbar.connect( {"id":id, "method":method, "btn":btns, "style":style, "client":client} )
 }

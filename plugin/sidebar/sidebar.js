@@ -29,5 +29,5 @@ new SideBarPlugIn()
  * @param height Height of the side bar
  */
 Konekti.sidebar = function(id, width='200px', height='100%'){
-    Konekti.plugin.sidebar.connect({'id':id, 'width':width, 'height':height})
+    return Konekti.plugin.sidebar.connect({'id':id, 'width':width, 'height':height})
 }

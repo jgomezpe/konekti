@@ -35,6 +35,13 @@ class DropDownPlugIn extends KonektiPlugIn{
         thing.drop = optTemplate
         return Konekti.core.fromTemplate(this.htmlTemplate, thing)
     }
+
+        /**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new DropDown(thing) }
+
 }
 
 new DropDownPlugIn()
@@ -46,8 +53,8 @@ class DropDown extends KonektiClient{
 	 * @param thing Dropdown configuration
 	 */
 	constructor( thing ){
-		super(thing.id)
-		this.select = thing.select || 'select'
+		super(thing)
+		this.client_select = thing.select || 'select'
 		this.client = thing.client || 'client'
 	}
 	
@@ -67,8 +74,8 @@ class DropDown extends KonektiClient{
 	select( option ){
 		this.drop()
 		var c = Konekti.client(this.client)
-		if( typeof c != 'undefined' && c[this.select] !== undefined ) 
-			c[this.thing.select](this.id, option)
+		if( c !== undefined && c[this.client_select] !== undefined ) 
+			c[this.client_select](this.id, option)
 	}
 }
 
@@ -78,6 +85,5 @@ class DropDown extends KonektiClient{
  * @param thing Dropdown configuration
  */
 Konekti.dropdown = function(thing){
-	Konekti.plugin.dropdown.connect(thing)
-	return new DropDown(thing)
+	return Konekti.plugin.dropdown.connect(thing)
 }

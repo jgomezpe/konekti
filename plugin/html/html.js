@@ -3,11 +3,11 @@ class HTMLPlugIn extends KonektiPlugIn{
     /** Creates a Plugin for html components */
     constructor(){ super('html') }    
 
-    /** 
-     * Connects (extra steps) the html component with the GUI component
-     * @param thing Html component configuration
-     */
-    extra( thing ){ new DIVEditor(thing.id) }
+        /**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( thing ){ return new DIVEditor(thing.id) }
 }
 
 new HTMLPlugIn()
@@ -42,5 +42,5 @@ class DIVEditor extends KonektiEditor{
  * @param client Client of the html component
  */
 Konekti.html = function(id, code, client='client'){
-	Konekti.plugin.html.connect( {'id':id, 'initial':code, 'client':client} )
+	return Konekti.plugin.html.connect( {'id':id, 'initial':code, 'client':client} )
 }

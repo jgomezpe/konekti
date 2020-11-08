@@ -19,44 +19,16 @@ class YoutubePlugIn extends KonektiPlugIn{
         }
     }
     
-    /** 
-     * Connects (extra steps) the youtube video with the GUI component
-     * @param thing youtube configuration
-     */
-    extra( thing ){
-        if( this.APILoaded ){
-            var id = thing.id
-            function onPlayerReady(event){ new YoutubeMedia(thing.id, thing.client) }
-
-            function onPlayerStateChange(event){
-                var video = event.target.playerInfo.videoData.video_id
-                var comp = Konekti.vc(video)
-                var client = Konekti.client(thing.id).client
-                if( client != null ){
-                    if (event.data == YT.PlayerState.PLAYING) {
-                        function updatePlaying() {
-                            if (YT.PlayerState.PLAYING) {
-                                if( client.play !== null ) client.seek(id, event.target.playerInfo.currentTime)
-                                comp.setAttribute('timeout', setTimeout(updatePlaying,100))
-                            }
-                        }
-                        updatePlaying()
-                    }else{
-                        clearTimeout(comp.getAttribute('timeout'))
-                        if( client.pause !== null ) client.pause(id)
-                    }
-                }
-            }
-            window[id] = new YT.Player(thing.video, {
-                videoId: thing.video,
-                playerVars: {rel: 0, fs:0, modestbranding:1},
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }else this.video.push( thing )
-    }
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ 
+		var yt = new YoutubeMedia(thing) 
+		if( this.APILoaded ) yt.load(thing)
+		else this.video.push( thing )
+		return yt
+	}
 }
 
 new YoutubePlugIn()
@@ -68,7 +40,44 @@ window.onYouTubeIframeAPIReady = function(){ Konekti.plugin.youtube.done() }
 
 
 class YoutubeMedia extends KonektiMedia{
-	constructor(id, client){ super(id, client) }
+	constructor(thing){ super(thing) }
+
+	/**
+	 * Loads a Youtube palyer
+	 * @param thing Youtube configuration
+	 */
+	load(thing){
+		var id = thing.id
+		function onPlayerReady(event){ new YoutubeMedia(thing.id, thing.client) }
+
+		function onPlayerStateChange(event){
+			var video = event.target.playerInfo.videoData.video_id
+			var comp = Konekti.vc(video)
+			var client = Konekti.client(thing.id).client
+			if( client != null ){
+				if (event.data == YT.PlayerState.PLAYING) {
+					function updatePlaying() {
+						if (YT.PlayerState.PLAYING) {
+							if( client.play !== null ) client.seek(id, event.target.playerInfo.currentTime)
+							comp.setAttribute('timeout', setTimeout(updatePlaying,100))
+						}
+					}
+					updatePlaying()
+				}else{
+					clearTimeout(comp.getAttribute('timeout'))
+					if( client.pause !== null ) client.pause(id)
+				}
+			}
+		}
+		window[id] = new YT.Player(thing.video, {
+			videoId: thing.video,
+			playerVars: {rel: 0, fs:0, modestbranding:1},
+			events: {
+				'onReady': onPlayerReady,
+				'onStateChange': onPlayerStateChange
+			}
+		});
+	}
 
 	/**
 	 * Pauses the media component
@@ -107,5 +116,5 @@ class YoutubeMedia extends KonektiMedia{
  * @param client Client of the latex component
  */
 Konekti.youtube = function(id, video, client='client'){
-	Konekti.plugin.youtube.connect({"id":id, "video":video, 'client':client})
+	return Konekti.plugin.youtube.connect({"id":id, "video":video, 'client':client})
 }

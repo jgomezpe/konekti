@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: plugin/sidebar/sidebar.js</title>
+    <title>JSDoc: Class: Btn</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,51 +17,185 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: plugin/sidebar/sidebar.js</h1>
+    <h1 class="page-title">Class: Btn</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/** Konekti Plugin for applications with a sidebar */
-class SideBarPlugIn extends KonektiPlugIn{
-    /** Creates a Plugin for sidebar applications */
-    constructor(){ 
-        super('sidebar') 
-        this.replace = 'strict'
-    }
+        <h2><span class="attribs"><span class="type-signature"></span></span>Btn<span class="signature">(thing)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">A Button manager</div>
+        
+    
+</header>
 
-    /**
-     * Displays the sidebar
-     * @param barId Sidebar's id
-     */
-    open( barId ){ Konekti.vc(barId).style.display = 'block' }
+<article>
+    <div class="container-overview">
+    
+        
 
-    /**
-     * Hides the sidebar
-     * @param barId Sidebar's id
-     */
-    close( barId ){ Konekti.vc(barId).style.display = 'none' }
-}
+    
+    <h2>Constructor</h2>
+    
 
-new SideBarPlugIn()
+    
+    <h4 class="name" id="Btn"><span class="type-signature"></span>new Btn<span class="signature">(thing)</span><span class="type-signature"></span></h4>
+    
 
-/**
- * @function
- * Konekti sidebar
- * @param id Id of the sidebar component
- * @param width Width of the sidebar
- * @param height Height of the side bar
- */
-Konekti.sidebar = function(id, width='200px', height='100%'){
-    return Konekti.plugin.sidebar.connect({'id':id, 'width':width, 'height':height})
-}
-</code></pre>
-        </article>
-    </section>
+    
+
+
+
+<div class="description">
+    Creates a Button Manager
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>thing</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Configuration of the navbar</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="plugin_btn_btn.js.html">plugin/btn/btn.js</a>, <a href="plugin_btn_btn.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

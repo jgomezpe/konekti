@@ -35,5 +35,5 @@ Konekti.header = function(id, header, size=3, style='w3-center w3-blue', icon=''
     if(typeof id==='string'){
         thing={"id":id, "caption":header, "size":size, "style":style, "icon":icon}
     }else thing=id
-    Konekti.plugin.header.connect(thing)
+    return Konekti.plugin.header.connect(thing)
 }
