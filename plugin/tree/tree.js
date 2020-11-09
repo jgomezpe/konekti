@@ -212,7 +212,7 @@ class Tree extends KonektiClient{
             var optTemplate = ''
             for( var i=0; i<option.length; i++ ){
 		if( option[i].caption !== undefined ) Konekti.core.update(option[i].id, 'caption', option[i].caption)
-		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = thing.icon
+		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = option[i].icon
             }
         }
     }

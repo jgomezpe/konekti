@@ -78,6 +78,23 @@ class DropDown extends KonektiClient{
 		if( c !== undefined && c[this.client_select] !== undefined ) 
 			c[this.client_select](this.id+'-'+option)
 	}
+
+    /**
+     * updates the html associated to a dropdown
+     * @param thing Dropdown configuration
+     */
+    update(thing){
+	if( thing.title !== undefined ) c.title = thing.title
+        if( thing.icon !== undefined ) this.vc('-icon').classNameicon = icon
+	if( thing.caption !== undefined ) Konekti.core.update(this.id, 'caption', thing.caption)
+	var option = thing.options
+        if( option !== undefined){
+            for( var i=0; i<option.length; i++ ){
+		if( option[i].caption !== undefined ) Konekti.core.update(option[i].id, 'caption', option[i].caption)
+		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = option[i].icon
+            }
+        }
+    }
 }
 
 /**
