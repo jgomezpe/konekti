@@ -240,7 +240,6 @@ class Tree extends KonektiClient{
      */
     updateInner(inner, icon, option){
         var id = inner.id
-console.log(id)
         for( var i=0; i<inner.children.length; i++ ){
             var child = inner.children[i]
             if( child.children !== undefined  ) this.updateInner(child, icon, option)

@@ -253,8 +253,15 @@ class AceEditor extends KonektiEditor{
      * @param txt Text to set in the editor
      */
     setText(txt){
-        this.edit.focus();
-        this.edit.setValue(txt, 1) 
+	var x = this
+	function checked(){
+		if( x.edit === undefined ) setTimeout( checked, 200 )
+		else{
+			x.edit.focus()
+        		x.edit.setValue(txt, 1) 
+		}
+	}
+	checked()
     }
 
 	/**
@@ -263,8 +270,8 @@ class AceEditor extends KonektiEditor{
 	 * @param column Column for the cursor
 	 */
 	locateCursor(row, column){
-    	this.edit.moveCursorTo(row, column);
-    	this.edit.focus();
+		this.edit.moveCursorTo(row, column);
+		this.edit.focus();
 	}
 	
 	/**
