@@ -18,7 +18,7 @@ class ButtonPlugIn extends KonektiPlugIn{
 		else thing = {'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick}
 		thing.caption = thing.caption || ''
 		onclick = thing.onclick
-		if(typeof onclick=='string') thing.run = onclick
+		if(typeof onclick==='string') thing.run = onclick
 		else{
 			onclick = onclick || {}
 			var client = onclick.client || 'client'
@@ -45,6 +45,28 @@ class Btn extends KonektiClient{
 	 * @param thing Configuration of the navbar
 	 */
 	constructor(thing){ super(thing) }
+
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param thing Component configuration 
+	 */
+	update(thing){
+		var c = this.vc()
+		if( thing.title !== undefined ) c.title = thing.title
+		if( thing.caption !== undefined ) Konekti.core.update(this.id, 'caption', thing.caption)
+		if( thing.icon !== undefined ) this.vc('-icon').className = thing.icon
+		var onclick = thing.onclick
+		if( onclick !== undefined ){
+			if(typeof onclick==='string') c.onclick = onclick
+			else{
+				onclick = onclick || {}
+				var client = onclick.client || 'client'
+				var method = onclick.method || thing.id
+				c.onclick = 'Konekti.client("'+client+'").'+method+'("'+this.id+'")'
+			}
+		}
+
+	}
 }
 
 

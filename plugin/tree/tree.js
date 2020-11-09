@@ -34,10 +34,9 @@ class TreePlugIn extends KonektiPlugIn{
             var optTemplate = ''
             for( var i=0; i<option.length; i++ ){
                 if( typeof option[i] == 'string'){
-                    option[i] = {"id":option[i], "caption":option[i]}
+                    option[i] = {"id":id+'-'+option[i], "caption":option[i]}
                 }
                 option[i].tree = tree
-                option[i].menu = id
                 optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
             }
             var opt = {"id":id, "tree":tree, "drop":optTemplate}
@@ -65,7 +64,7 @@ class TreePlugIn extends KonektiPlugIn{
     /**
      * Generates the html associated to an inner node of the tree
      * @param tree Tree's id
-     * @param leaf node's id
+     * @param inner node's id
      * @param icon node's icon
      * @param option Nodes configuration
      */
@@ -125,34 +124,35 @@ class Tree extends KonektiClient{
      */
 	constructor( thing ){
 		super(thing)
-		thing.select = thing.select || 'select'
-		thing.sel_color = thing.sel_color || " w3-green"
+		this.client = thing.client
+		this.clientSelect = thing.select || 'select'
+		this.sel_color = thing.sel_color || " w3-green"
 	}
 	
     /** 
-     * Updates a tree element 
-     * @param id Id of the element of the tree to update according to selection
+     * Shows/hides a tree element 
+     * @param id Id of the element of the tree to show/hide according to selection
      */
-	update( id ){
+	showhide( id ){
         if( this.current !== undefined ){
             var cx = Konekti.vc(this.current)
-            cx.className = cx.className.replace(this.thing.sel_color, ' ')
+            cx.className = cx.className.replace(this.sel_color, ' ')
             var ceb = Konekti.vc(this.current+'-btn')
             if( ceb !== undefined && ceb !== null){
                 var xd = Konekti.vc(id+'-drop');
                 if (xd.className.indexOf("w3-show") != -1)
                     xd.className = xd.className.replace(" w3-show", "")
                 ceb.className = ceb.className.replace('w3-show', 'w3-hide')
-                ceb.className = ceb.className.replace(this.thing.sel_color, ' ')
+                ceb.className = ceb.className.replace(this.sel_color, ' ')
             }    
         }
         this.current = id
         
         var x = Konekti.vc(id);
-        x.className += this.thing.sel_color
+        x.className += this.sel_color
         var eb = Konekti.vc(id+'-btn');
         if( eb !== undefined && eb !== null){
-            eb.className += this.thing.sel_color
+            eb.className += this.sel_color
             eb.className = eb.className.replace('w3-hide', 'w3-show')
         }
 	}
@@ -173,13 +173,12 @@ class Tree extends KonektiClient{
     /** 
      * Runs proccess associated to the selected option
      * @param id Selected option
-     * @param option Option selected (if any)
      */
-	select( id, option ){
-        var c = Konekti.client(this.thing.client)
-        if( typeof c != 'undefined' && c[this.thing.select] !== undefined ) 
-            c[this.thing.select](id, option)
-        this.update(id)
+	select( id ){
+        var c = Konekti.client(this.client)
+        if( typeof c != 'undefined' && c[this.clientSelect] !== undefined ) 
+            c[this.clientSelect](id)
+        this.showhide(id)
 	}
 
     /** 
@@ -187,9 +186,9 @@ class Tree extends KonektiClient{
      * @param id Id of the inner node of the tree to show/hide
      */
     expand( id ){
-        var c = Konekti.client(this.thing.client)
+        var c = Konekti.client(this.client)
         if( typeof c != 'undefined' && typeof c.expand != 'undefined' ) c.expand(id)
-        this.update(id)
+        this.showhide(id)
         var x = Konekti.vc(id);
         var b = Konekti.vc(id+'-icon')
         var i = Konekti.vc(id+'-inner')
@@ -200,7 +199,70 @@ class Tree extends KonektiClient{
             i.className = i.className.replace('w3-show', 'w3-hide')
             b.className = x.getAttribute('icon')
         }    
-    }    
+    }  
+
+    /**
+     * updates the html associated to a node of the tree
+     * @param tree Tree's id
+     * @param id node's id
+     * @param option Nodes configuration
+     */
+    updateOption(id, option){
+        if( option !== undefined && option !== null){
+            var optTemplate = ''
+            for( var i=0; i<option.length; i++ ){
+		if( option[i].caption !== undefined ) Konekti.core.update(option[i].id, 'caption', option[i].caption)
+		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = thing.icon
+            }
+        }
+    }
+
+    /**
+     * Updates the html associated to a leaf node of the tree
+     * @param leaf node's id
+     * @param icon node's icon
+     * @param option Nodes configuration
+     */
+    updateLeaf(leaf, icon, option){
+        if( icon !== undefined && icon !== null ) Konekti.vc(leaf.id).icon = icon
+        if( leaf.icon !== undefined && leaf.icon !== null ) Konekti.vc(leaf.id).icon = leaf.icon
+	Konekti.vc(leaf.id+'-icon').className = Konekti.vc(leaf.id).icon
+	if( leaf.caption !== undefined ) Konekti.core.update(leaf.id, 'caption', leaf.caption )
+	this.updateOption( leaf.id, leaf.option || (option!==undefined && option!==null)?option.leaf:null )
+   }
+
+    /**
+     * Updates the html associated to an inner node of the tree
+     * @param tree Tree's id
+     * @param inner node's id
+     * @param icon node's icon
+     * @param option Nodes configuration
+     */
+    updateInner(inner, icon, option){
+        var id = inner.id
+console.log(id)
+        for( var i=0; i<inner.children.length; i++ ){
+            var child = inner.children[i]
+            if( child.children !== undefined  ) this.updateInner(child, icon, option)
+            else{ 
+		if( icon !== undefined && icon !== null ) this.updateLeaf(child, icon.leaf, option.leaf)
+		else this.updateLeaf(child)
+		}
+        }
+        if( icon!==undefined && icon != null && icon.expand !== undefined ) Konekti.vc(inner.id).icon = icon.expand
+        if( inner.icon !== undefined ) Konekti.vc(inner.id).icon = inner.icon
+        if( icon!==undefined && icon != null && icon.contract !== undefined ) Konekti.vc(inner.id).cicon = icon.contract
+        if( inner.contracticon !== undefined ) Konekti.vc(inner.id).cicon = inner.contracticon
+	Konekti.vc(inner.id+'-icon').className = Konekti.vc(inner.id).icon
+	if( inner.caption !== undefined ) Konekti.core.update(inner.id, 'caption', inner.caption )
+	this.updateOption( inner.id, inner.option || (option!==undefined && option!==null)?option.inner:null )
+    }
+
+    /**
+     * Updates the specific tree information
+     * @param thing Tree information
+     */
+    update(thing){ this.updateInner(thing.tree, thing.icon || null, thing.options || null )}
 }
 
 /**

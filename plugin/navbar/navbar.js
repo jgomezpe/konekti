@@ -23,6 +23,7 @@ class NavBarPlugIn extends KonektiPlugIn{
 		btn[i].style = (btn[i].style || '')+" w3-bar-item "
 		btn[i].onclick = btn[i].onclick || {'client':thing.client, 'method':flag?'select':btn[i].id}
 		btnsHTML += Konekti.plugin.btn.fillLayout( Konekti.core.plugin.btn.config(btn[i]) )
+		Konekti.plugin.btn.client(btn[i])
 	} 
         thing.btnsHTML = btnsHTML
         return Konekti.core.fromTemplate( this.htmlTemplate, thing) 

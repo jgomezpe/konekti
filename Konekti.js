@@ -199,6 +199,8 @@ class KonektiCore{
 		this.client = {'console':console}
 		this.konektiPluginPath = "https://konekti.numtseng.com/source/plugin/"
 		this.pluginPath = "plugin/"
+		this.konektiModulePath = "https://konekti.numtseng.com/source/module/"
+		this.modulePath = "module/"
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 	}
@@ -274,6 +276,53 @@ class KonektiCore{
 			}
 			step()
 		}		
+	}
+
+	/**
+	 * Sets a module into a container and executes the callback function
+	 * @param container Id of the module's container
+	 * @param module A module to load (string version or JSON version)
+	 * @param callback function to be executed after initializing the plugin
+	 */
+	set(container, module, callback){
+		if( typeof module === 'string' ) module = JSON.parse(module)
+		if( typeof module.css === 'string' ) x.resource.css(module.css)
+		container = this.vc(container)
+		container.innerHTML = module.html || ''
+		if( typeof module.js === 'string' ) eval(module.js)
+		if( callback !== undefined ) callback()
+	}
+
+	/**
+	 * Loads a module and executes the callback function
+	 * @param container Id of the module's container
+	 * @param module_id Id of the module to load
+	 * @param callback function to be executed after loading the module
+	 */
+	module(container, module_id, callback){
+		var id = module_id
+		var x=this
+
+		function init(obj){ x.set(container, obj, callback) }
+
+		function next(js_code, path){
+			js_code = js_code!==null?js_code:''
+			x.resource.load(path+id+'/'+id+'.html', 
+				function(html_code){
+					html_code = html_code!==null?html_code:''
+					x.resource.load(path+id+'/'+id+'.css', function(css_code){
+						css_code = css_code!==null?css_code:''
+						init({"js":js_code,"html":html_code,"css":css_code})
+					})
+				})
+		}
+
+		function konekti(js_code){
+			if(js_code!==null){ next(js_code, x.konektiModulePath) }
+			else{ x.resource.load(x.modulePath+id+'/'+id+'.js', function(js_code){ next(js_code,x.modulePath) }) }
+		}
+
+		this.resource.load(this.konektiModulePath+id+'/'+id+'.js', konekti)
 	}
 
 	/**
@@ -449,30 +498,39 @@ class KonektiCore{
 		return plugin.connect(thing)
 	}
 
+	/** 
+	 * Internationalization
+	 * @param id Resource id/configuration
+	 */
+	i18n( id ){
+		var x = this
+		if( typeof id ==='string' ) this.resource.JSON( id, function(obj){ x.update(obj) } ) 
+		else this.update(id)
+	}
+
 	/**
-	 * Sets a component's attribute to the given value (or an array of components)
-	 * @param id Id of the component to change (change to introduce or array of changes to introduce)
+	 * Sets a component's attribute to the given value 
+	 * @param id Id of the component to change (or new configuration of the component)
 	 * @param attribute Attribute to change 
 	 * @param value New value for the component attribute
 	 */
-	set(id, attribute, value){
-		if( attribute !== undefined ){
-			var c = Konekti.vc(id+'-icon')
-
+	update(id, attribute, value){
+		if( typeof id === 'string' ){
+			var c = Konekti.vc(id)
 			if( c===undefined || c===null ) return  
-			if( attribute == 'text' ){
+			if( attribute == 'caption' ){
 				var i = Konekti.vc(id+'-icon')
 				if( i != null ) i.nextSibling.data = " "+value
 				else c.textContent = value
-			}else{ c.attribute = value }
+			}else{ c[attribute] = value }
 		}else{
-			if( id.id !== undefined ){
-				this.set(id.id, id.attribute, id.value)
-			}else{
-				for( var i=0; i<id.length; i++ ){
-					this.set( id[i] )
-				}
-			}
+			if( id.multi_update !== undefined && id.multi_update ){
+				for( var x in id )
+					if( x!=='multi_update' ){
+						id[x].id = x
+						this.update(id[x])
+					}
+			}else Konekti.client(id.id).update(id)
 		}
 	}
 
@@ -527,6 +585,12 @@ class KonektiAPI{
 	 */
 	vc(id){ return this.core.vc(id) }
 
+	/** 
+	 * Internationalization
+	 * @param id Resource id/configuration
+	 */
+	i18n( id ){ this.core.i18n(id) }
+
 	/**
 	 * Gets the plugin with the given id
 	 * @param id Id of the plugin to get 
@@ -549,16 +613,18 @@ class KonektiClient{
 	 * @param id Client id/client information
 	 */	
 	constructor(id){
-		if( typeof id == 'string' ){
-			this.id = id
-		}else{
-			this.thing = id
-			this.id = this.thing.id
-		}
+		if( typeof id == 'string' ) this.id = id
+		else this.id = id.id
 		this.gui = this.vc()
 		this.listener = []
 		Konekti.core.client[this.id] = this
 	}
+
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param thing Component configuration 
+	 */
+	update(thing){ Konekti.core.update( thing.id, thing.attribute, thing.value ) }
 
 	/**
 	 * Gets a visual component of submmodules of the client

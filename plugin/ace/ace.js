@@ -163,7 +163,7 @@ class AcePlugIn extends KonektiPlugIn{
         while( this.view.length > 0 ){
             var thing = this.view[0]
             this.view.shift()
-        	Konekti.client(thing.id).load(thing)    
+        	Konekti.client(thing.id).update(thing)    
         }
     }
     
@@ -182,7 +182,7 @@ class AcePlugIn extends KonektiPlugIn{
 	 */
 	client(thing){ 
 		var editor = new AceEditor(thing) 
-		if( this.loaded ) editor.load(thing)
+		if( this.loaded ) editor.update(thing)
 		else this.view.push( thing )
 		return editor
 	}
@@ -197,10 +197,10 @@ class AceEditor extends KonektiEditor{
     constructor(thing){ super(thing) }
 	
 	/**
-	 * Loads an Ace Editor
+	 * Updates an Ace Editor
 	 * @param thing Ace editor configuration
 	 */
-    load(thing){
+    update(thing){
         if( typeof thing.client !== 'undefined' && thing.client != null )
             this.listener.push(thing.client)
         var id = this.id
@@ -217,8 +217,8 @@ class AceEditor extends KonektiEditor{
         } 
 		
         x.edit.setFontSize("16px")
-        if(typeof thing.initial != 'undefined'){
-            x.gui.setAttribute('initial', thing.initial)
+        if(thing.initial !== undefined){
+            //x.gui.setAttribute('initial', thing.initial)
             x.edit.setValue(thing.initial,1)
         } 
 		

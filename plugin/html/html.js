@@ -21,6 +21,12 @@ class DIVEditor extends KonektiEditor{
 	constructor(id){ super(id) }
     
 	/**
+	 * Sets a component's attribute to the given value 
+	 * @param thing Component configuration 
+	 */
+	update(thing){ if( thing.initial !== undefined ) this.setText( thing.initial ) }
+
+	/**
 	 * Gets current html code in the div component
 	 * @return Current html code in the div component
 	 */

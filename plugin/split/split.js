@@ -72,23 +72,23 @@ class Split extends KonektiClient{
      * @param e Event information
      */
     dragmove(e) {
-        var id = this.thing.id
+        var id = this.id
         if (this.dragging){
-            var c = Konekti.vc(this.thing.id)
+            var c = this.vc()
             var r = c.getBoundingClientRect()
             if (this.type == "col") {
                 var leftPercentage = 100 * (e.pageX-r.left) / r.width
                 if (leftPercentage > 5 && leftPercentage < 98) {
                     var rightPercentage = 100-leftPercentage
-                    Konekti.vc(this.id+'-one').style.width = (leftPercentage) + "%"
-                    Konekti.vc(this.id+'-two').style.width = (rightPercentage-1) + "%"
+                    this.vc('-one').style.width = (leftPercentage) + "%"
+                    this.vc('-two').style.width = (rightPercentage-1) + "%"
                 }
             } else {
                 var leftPercentage = 100 * (e.pageY-r.top) / r.height
                 if (leftPercentage > 5 && leftPercentage < 98) {
                     var rightPercentage = 100-leftPercentage
-                    Konekti.vc(this.id+'-one').style.height = (leftPercentage-1) + "%"
-                    Konekti.vc(this.id+'-two').style.height = (rightPercentage-1) + "%"
+                    this.vc('-one').style.height = (leftPercentage-1) + "%"
+                    this.vc('-two').style.height = (rightPercentage-1) + "%"
                 }
             }
         }

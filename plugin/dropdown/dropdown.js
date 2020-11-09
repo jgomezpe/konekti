@@ -27,8 +27,9 @@ class DropDownPlugIn extends KonektiPlugIn{
 	var size = Konekti.core.previousFont(thing.style)
         for( var i=0; i<option.length; i++ ){
             if( typeof option[i] == 'string'){
-                option[i] = {"id":option[i], "caption":option[i], 'size':size}
+                option[i] = {"id":option[i], "caption":option[i]}
             }
+		option[i].size = size
             option[i].client = thing.id
             optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
         }
@@ -75,7 +76,7 @@ class DropDown extends KonektiClient{
 		this.drop()
 		var c = Konekti.client(this.client)
 		if( c !== undefined && c[this.client_select] !== undefined ) 
-			c[this.client_select](this.id, option)
+			c[this.client_select](this.id+'-'+option)
 	}
 }
 
