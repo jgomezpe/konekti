@@ -74,13 +74,13 @@ class Btn extends KonektiClient{
  * @function
  * Konekti btn
  * @param id Id of the button
+ * @param icon Icon of the button (default value '')
  * @param caption Caption of the button
  * @param onclick Information of the method that will be executed when the button is pressed
  * @param style Style of the button (default value 'w3-bar-item w3-xlarge')
- * @param icon Icon of the button (default value '')
  * @param title Message that will be shown when mouse is over the button (default value '')
  */
-Konekti.btn = function(id, caption='', onclick={'client':'client'}, 
-			style='w3-bar-item w3-xlarge', icon='', title=''){
+Konekti.btn = function(id, icon='', caption='', onclick={'client':'client'}, 
+			style='w3-bar-item w3-xlarge', title=''){
 	return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
 }
