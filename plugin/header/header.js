@@ -25,15 +25,15 @@ new HeaderPlugIn()
  * @function
  * Konekti header
  * @param id Id of the header/Configuration of the header
- * @param header Caption of the header
+ * @param icon Icon for the header (not required if configuration is provided)
+ * @param caption Caption of the header
  * @param size Size of the header (1,2,3..) (not required if configuration is provided)
  * @param style Style of the header (not required if configuration is provided)
- * @param icon Icon for the header (not required if configuration is provided)
  */
-Konekti.header = function(id, header, size=3, style='w3-center w3-blue', icon='' ){
+Konekti.header = function(id, icon='', caption='', size=3, style='w3-center w3-blue' ){
     var thing
     if(typeof id==='string'){
-        thing={"id":id, "caption":header, "size":size, "style":style, "icon":icon}
+        thing={"id":id, "caption":caption, "size":size, "style":style, "icon":icon}
     }else thing=id
     return Konekti.plugin.header.connect(thing)
 }

@@ -16,7 +16,10 @@ class ButtonPlugIn extends KonektiPlugIn{
 		var thing
 		if( typeof id === 'object' ) thing = id 
 		else thing = {'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick}
+		thing.icon = thing.icon || ''
 		thing.caption = thing.caption || ''
+		thing.title = thing.title || ''
+		thing.style = thing.style || 'w3-bar-item w3-xlarge'
 		onclick = thing.onclick
 		if(typeof onclick==='string') thing.run = onclick
 		else{
@@ -26,6 +29,21 @@ class ButtonPlugIn extends KonektiPlugIn{
 			thing.run = 'Konekti.client("'+client+'").'+method+'("'+thing.id+'")'
 		}
 		return thing
+	}
+
+	/**
+	 * Fills the html template with the specific tree information
+	 * @param thing Tree information
+	 * @return Html code associated to the tree component
+	 */
+	fillLayout(thing){
+		if(this.completed === undefined ){
+			this.completed = true
+			var parts = this.htmlTemplate.split('><')
+			this.htmlTemplate = parts[0]+'>'+Konekti.plugin.item.htmlTemplate+'<'+parts[1]
+		}
+		new Item( thing.id+'-icon' )
+		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
 	}
 
         /**
@@ -53,8 +71,7 @@ class Btn extends KonektiClient{
 	update(thing){
 		var c = this.vc()
 		if( thing.title !== undefined ) c.title = thing.title
-		if( thing.caption !== undefined ) Konekti.core.update(this.id, 'caption', thing.caption)
-		if( thing.icon !== undefined ) this.vc('-icon').className = thing.icon
+		Konekti.client(this.id+'-icon').update(thing)
 		var onclick = thing.onclick
 		if( onclick !== undefined ){
 			if(typeof onclick==='string') c.onclick = onclick
@@ -73,7 +90,7 @@ class Btn extends KonektiClient{
 /**
  * @function
  * Konekti btn
- * @param id Id of the button
+ * @param id Id of the button/Configuration of the button
  * @param icon Icon of the button (default value '')
  * @param caption Caption of the button
  * @param onclick Information of the method that will be executed when the button is pressed
@@ -82,5 +99,6 @@ class Btn extends KonektiClient{
  */
 Konekti.btn = function(id, icon='', caption='', onclick={'client':'client'}, 
 			style='w3-bar-item w3-xlarge', title=''){
-	return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
+	if(typeof id==='string') return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
+	else return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id))
 }

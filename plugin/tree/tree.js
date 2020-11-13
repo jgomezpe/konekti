@@ -139,7 +139,7 @@ class Tree extends KonektiClient{
             cx.className = cx.className.replace(this.sel_color, ' ')
             var ceb = Konekti.vc(this.current+'-btn')
             if( ceb !== undefined && ceb !== null){
-                var xd = Konekti.vc(id+'-drop');
+                var xd = Konekti.vc(this.current+'-drop');
                 if (xd.className.indexOf("w3-show") != -1)
                     xd.className = xd.className.replace(" w3-show", "")
                 ceb.className = ceb.className.replace('w3-show', 'w3-hide')

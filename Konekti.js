@@ -184,7 +184,22 @@ class KonektiPlugIn{
 	}
 }
 
+/** Konekti Plugin for items (icon/caption) */
+class ItemPlugIn extends KonektiPlugIn{
+	/**
+	 * creates the item plugin
+	 */
+	constructor(){ 
+		super('item') 
+		this.htmlTemplate = "<i id='·id·-icon' class='·icon·'></i> ·caption·"
+	}
 
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new Item(thing.id+'-icon') }
+}
 
 /** Core method for Konekti */
 class KonektiCore{
@@ -561,7 +576,7 @@ class KonektiAPI{
 	 * Creates a Konekti API
 	 */
 	constructor(){
-		this.core = new KonektiCore()
+		this.core = new KonektiCore(this)
 		this.plugin = this.core.plugin
 	}
     
@@ -603,6 +618,7 @@ class KonektiAPI{
  * Konekti Application program interface. Main object of the Konekti framework
  */
 Konekti = new KonektiAPI()
+new ItemPlugIn()
 
 /**
  * A client for the application. Connection point between front and back
@@ -612,7 +628,7 @@ class KonektiClient{
 	 * Creates a client with the given id/client information, and registers it into the Konekti framework
 	 * @param id Client id/client information
 	 */	
-	constructor(id){
+	constructor(id='client'){
 		if( typeof id == 'string' ) this.id = id
 		else this.id = id.id
 		this.gui = this.vc()
@@ -649,6 +665,26 @@ class KonektiClient{
 		var i=0
 		while(i<this.listener.length && this.listener[i] !== listener) i++
 		if( i<this.listener.length ) this.listener.splice(i,1)
+	}
+}
+
+/**
+ * An item (icon/caption) manager
+ */
+class Item extends KonektiClient{
+	/**
+	 * Creates an item client with the given id/information, and registers it into the Konekti framework
+	 * @param id Item id
+	 */	
+	constructor(id){ super(id) }
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param thing Item configuration
+	 */
+	update(thing){
+		var c = this.vc()
+		if( thing.caption !== undefined ) c.nextSibling.data = " "+thing.caption
+		if( thing.icon !== undefined ) c.className = thing.icon
 	}
 }
 

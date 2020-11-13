@@ -20,8 +20,8 @@ class DropDownPlugIn extends KonektiPlugIn{
     fillLayout(thing){
         if( this.itemTemplate === undefined ) this.splitTemplate()
         thing.caption = thing.caption || ''
-        thing.style = thing.style || 'w3-bar-item w3-xlarge'
         thing.icon = thing.icon || ''
+        thing.style = thing.style || 'w3-bar-item w3-xlarge'
         var optTemplate = ''
         var option = thing.options
 	var size = Konekti.core.previousFont(thing.style)
