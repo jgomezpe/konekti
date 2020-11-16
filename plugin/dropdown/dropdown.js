@@ -1,41 +1,39 @@
+Konekti.core.load('btn')
+
 /** Konekti Plugin for DropDown components */
 class DropDownPlugIn extends KonektiPlugIn{
-    /** Creates a Plugin for Dropdown components */
-    constructor(){
-        super('dropdown')
-        this.replace = 'strict'
-    }
+	/** Creates a Plugin for Dropdown components */
+	constructor(){
+		super('dropdown')
+		this.replace = 'strict'
+	}
     
-    splitTemplate(){
-        var k = this.htmlTemplate.indexOf("</div>\n<div") + 7
-        this.itemTemplate = this.htmlTemplate.substring(0,k)
-        this.htmlTemplate = this.htmlTemplate.substring(k)
-    }
-
-    /**
-     * Fills the html template with the specific dropdown information
-     * @param thing Dropdown information
-     * @return Html code associated to the dropdown
-     */
-    fillLayout(thing){
-        if( this.itemTemplate === undefined ) this.splitTemplate()
-        thing.caption = thing.caption || ''
-        thing.icon = thing.icon || ''
-        thing.style = thing.style || 'w3-bar-item w3-xlarge'
-        var optTemplate = ''
-        var option = thing.options
-	var size = Konekti.core.previousFont(thing.style)
-        for( var i=0; i<option.length; i++ ){
-            if( typeof option[i] == 'string'){
-                option[i] = {"id":option[i], "caption":option[i]}
-            }
-		option[i].size = size
-            option[i].client = thing.id
-            optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
-        }
-        thing.drop = optTemplate
-        return Konekti.core.fromTemplate(this.htmlTemplate, thing)
-    }
+	/**
+	 * Fills the html template with the specific dropdown information
+	 * @param thing Dropdown information
+	 * @return Html code associated to the dropdown
+	 */
+	fillLayout(thing){
+		var id = thing.id
+		thing.onclick = {"method":"drop", "client":id}
+		thing.id += '-btn'
+		thing.caption = thing.caption || ''
+		thing.icon = thing.icon || ''
+		thing.style = thing.style || 'w3-bar-item w3-xlarge'
+		var template = this.htmlTemplate.replace('·btn·',Konekti.plugin.btn.fillLayout(thing))
+		Konekti.plugin.btn.client(thing.id)
+		thing.id = id
+		var option = thing.options
+		var size = Konekti.core.previousFont(thing.style)
+		for( var i=0; i<option.length; i++ ){
+			if( typeof option[i] == 'string') option[i] = {"id":option[i], "caption":option[i]}
+			option[i].style = size
+			option[i].onclick = {"client":thing.id, "method":"select"}
+		}
+		thing.btn = option
+		thing.drop = Konekti.plugin.btn.listLayout(thing)
+		return Konekti.core.fromTemplate(template, thing)
+	}
 
         /**
 	 * Creates a client for the plugin's instance
@@ -55,7 +53,8 @@ class DropDown extends KonektiClient{
 	 */
 	constructor( thing ){
 		super(thing)
-		this.client_select = thing.select || 'select'
+		this.option = thing.options
+		this.method = thing.method || 'select'
 		this.client = thing.client || 'client'
 	}
 	
@@ -75,8 +74,8 @@ class DropDown extends KonektiClient{
 	select( option ){
 		this.drop()
 		var c = Konekti.client(this.client)
-		if( c !== undefined && c[this.client_select] !== undefined ) 
-			c[this.client_select](this.id+'-'+option)
+		if( c !== undefined && c[this.method] !== undefined ) 
+			c[this.method](((this.addID!==undefined && this.addID==true)?this.id+'-':'')+option)
 	}
 
     /**
@@ -84,16 +83,10 @@ class DropDown extends KonektiClient{
      * @param thing Dropdown configuration
      */
     update(thing){
-	if( thing.title !== undefined ) c.title = thing.title
-        if( thing.icon !== undefined ) this.vc('-icon').classNameicon = icon
-	if( thing.caption !== undefined ) Konekti.core.update(this.id, 'caption', thing.caption)
-	var option = thing.options
-        if( option !== undefined){
-            for( var i=0; i<option.length; i++ ){
-		if( option[i].caption !== undefined ) Konekti.core.update(option[i].id, 'caption', option[i].caption)
-		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = option[i].icon
-            }
-        }
+	var id = thing.id 
+	Konekti.client(id+'-btn').update(thing) 	
+	thing.id = id
+        if( thing.options !== undefined) Konekti.core.update({"components":thing.options})
     }
 }
 

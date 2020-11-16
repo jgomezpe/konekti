@@ -1,35 +1,25 @@
 /** Konekti Plugin for buttons */
 class ButtonPlugIn extends KonektiPlugIn{
 	/** Creates a Plugin for buttons */
-	constructor(){ super('btn') }
+	constructor(){
+		super('btn')
+		this.replace = 'strict'
+	}
 
 	/**
-	 * Creates a configuration object from button characteristics
-	 * @param id Id of the button
-	 * @param caption Caption of the button
-	 * @param onclick Information of the method that will be executed when the button is pressed
-	 * @param style Style of the button 
-	 * @param icon Icon of the button 
-	 * @param title Message that will be shown when mouse is over the button
+	 * Defines the run method of the button
+	 * @param id Button id
+	 * @param onclick Button run configuration
 	 */
-	config(id, caption, onclick, style, icon, title){
-		var thing
-		if( typeof id === 'object' ) thing = id 
-		else thing = {'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick}
-		thing.icon = thing.icon || ''
-		thing.caption = thing.caption || ''
-		thing.title = thing.title || ''
-		thing.style = thing.style || 'w3-bar-item w3-xlarge'
-		onclick = thing.onclick
-		if(typeof onclick==='string') thing.run = onclick
-		else{
+	run(id, onclick){
+		if(typeof onclick==='object'){
 			onclick = onclick || {}
 			var client = onclick.client || 'client'
-			var method = onclick.method || thing.id
-			thing.run = 'Konekti.client("'+client+'").'+method+'("'+thing.id+'")'
+			var method = onclick.method || id
+			return 'Konekti.client("'+client+'").'+method+'("'+id+'")'
 		}
-		return thing
-	}
+		return onclick
+	}	
 
 	/**
 	 * Fills the html template with the specific tree information
@@ -37,13 +27,31 @@ class ButtonPlugIn extends KonektiPlugIn{
 	 * @return Html code associated to the tree component
 	 */
 	fillLayout(thing){
-		if(this.completed === undefined ){
-			this.completed = true
-			var parts = this.htmlTemplate.split('><')
-			this.htmlTemplate = parts[0]+'>'+Konekti.plugin.item.htmlTemplate+'<'+parts[1]
-		}
+		this.addItemHTML()
+		thing.icon = thing.icon || ''
+		thing.caption = thing.caption || ''
+		thing.title = thing.title || ''
+		thing.style = thing.style || 'w3-bar-item w3-xlarge'
+		thing.run = this.run(thing.id, thing.onclick)
 		new Item( thing.id+'-icon' )
 		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+	}
+
+	/**
+	 * Fills the html template with a specific button list information
+	 * @param thing button list information
+	 * @return Html code associated to the button list component
+	 */
+	listLayout( thing ){
+		var btnsHTML = ''
+		var btn = thing.btn
+		for( var i=0; i<btn.length; i++ ){
+			btn[i].style = (btn[i].style || '')+" w3-bar-item "
+			btn[i].onclick = btn[i].onclick || {'client':thing.client, 'method':thing.method||btn[i].id}
+			btnsHTML += this.fillLayout( btn[i] )
+			new Btn(btn[i])
+		} 
+		return btnsHTML
 	}
 
         /**
@@ -60,7 +68,7 @@ new ButtonPlugIn()
 class Btn extends KonektiClient{
 	/** 
 	 * Creates a Button Manager
-	 * @param thing Configuration of the navbar
+	 * @param thing Configuration of the button
 	 */
 	constructor(thing){ super(thing) }
 
@@ -72,17 +80,7 @@ class Btn extends KonektiClient{
 		var c = this.vc()
 		if( thing.title !== undefined ) c.title = thing.title
 		Konekti.client(this.id+'-icon').update(thing)
-		var onclick = thing.onclick
-		if( onclick !== undefined ){
-			if(typeof onclick==='string') c.onclick = onclick
-			else{
-				onclick = onclick || {}
-				var client = onclick.client || 'client'
-				var method = onclick.method || thing.id
-				c.onclick = 'Konekti.client("'+client+'").'+method+'("'+this.id+'")'
-			}
-		}
-
+		if( thing.onclick !== undefined ) c.onclick = Konekti.plugin.btn.run(thing.id, thing.onclick)
 	}
 }
 
@@ -99,6 +97,6 @@ class Btn extends KonektiClient{
  */
 Konekti.btn = function(id, icon='', caption='', onclick={'client':'client'}, 
 			style='w3-bar-item w3-xlarge', title=''){
-	if(typeof id==='string') return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id, caption, onclick, style, icon, title))
-	else return Konekti.plugin.btn.connect(Konekti.plugin.btn.config(id))
+	if( typeof id === 'object' ) return Konekti.plugin.btn.connect(id) 
+	else return  Konekti.plugin.btn.connect({'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick})
 }

@@ -7,7 +7,7 @@ Konekti is a Java Script connection library that allows to connect JS/HTML/CSS r
 
 &nbsp;Konekti url: <A HREF="https://konekti.numtseng.com/">https://konekti.numtseng.com</A>
 
-&nbsp;Ready to use: <A HREF="https://konekti.numtseng.com/source/">https://konekti.numtseng.com/source/</A>
+&nbsp;Ready to use: <A HREF="https://konekti.numtseng.com/src/">https://konekti.numtseng.com/src/</A>
 
 &nbsp;Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A>
 

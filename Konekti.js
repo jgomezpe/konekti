@@ -153,6 +153,16 @@ class KonektiPlugIn{
 	client(thing){ return new KonektiClient(thing) }
 	
 	/**
+	 * Adds item's html to plugin's html
+	 */
+	addItemHTML(){
+		if(this.completed === undefined ){
+			this.completed = true
+			this.htmlTemplate = this.htmlTemplate.replace('·item·',Konekti.plugin.item.htmlTemplate)
+		}
+	}
+
+	/**
 	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance <i>dictionary</i>
 	 * @param thing Information of the instance of the PlugIn
 	 * @return The HTML resource of an instance of the PlugIn.
@@ -212,9 +222,9 @@ class KonektiCore{
 		this.resource = new KonektiResource()
 		this.plugin = {}
 		this.client = {'console':console}
-		this.konektiPluginPath = "https://konekti.numtseng.com/source/plugin/"
+		this.konektiPluginPath = "https://konekti.numtseng.com/src/plugin/"
 		this.pluginPath = "plugin/"
-		this.konektiModulePath = "https://konekti.numtseng.com/source/module/"
+		this.konektiModulePath = "https://konekti.numtseng.com/src/module/"
 		this.modulePath = "module/"
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
@@ -278,7 +288,7 @@ class KonektiCore{
 				else{ x.resource.load(x.pluginPath+id+'/'+id+'.js', function(js_code){ next(js_code,x.pluginPath) }) }
 			}
 
-			this.resource.load(this.konektiPluginPath+id+'/'+id+'.js', konekti)
+			if( this.plugin[id] === undefined) this.resource.load(this.konektiPluginPath+id+'/'+id+'.js', konekti)
 		}else{
 			var i=0
 			function step(){
@@ -539,12 +549,9 @@ class KonektiCore{
 				else c.textContent = value
 			}else{ c[attribute] = value }
 		}else{
-			if( id.multi_update !== undefined && id.multi_update ){
-				for( var x in id )
-					if( x!=='multi_update' ){
-						id[x].id = x
-						this.update(id[x])
-					}
+			if( id.id === undefined ){
+				for( var i=0; i<id.components.length; i++ )
+					this.update(id.components[i])
 			}else Konekti.client(id.id).update(id)
 		}
 	}

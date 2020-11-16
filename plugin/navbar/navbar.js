@@ -15,17 +15,7 @@ class NavBarPlugIn extends KonektiPlugIn{
      * @return Html code associated to the navbar component
      */
     fillLayout( thing ){
-        var id = thing.id
-        var btnsHTML = ''
-        var btn = thing.btn
-	var flag = thing.method!==undefined && thing.method=='select'
-	for( var i=0; i<btn.length; i++ ){
-		btn[i].style = (btn[i].style || '')+" w3-bar-item "
-		btn[i].onclick = btn[i].onclick || {'client':thing.client, 'method':flag?'select':btn[i].id}
-		btnsHTML += Konekti.plugin.btn.fillLayout( Konekti.core.plugin.btn.config(btn[i]) )
-		Konekti.plugin.btn.client(btn[i])
-	} 
-        thing.btnsHTML = btnsHTML
+        thing.btnsHTML = Konekti.plugin.btn.listLayout(thing)
         return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
     }
 
