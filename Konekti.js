@@ -254,6 +254,60 @@ class KonektiCore{
 	}
 
 	/**
+	 * Loads a plugin/module and executes the callback function
+	 * @param id plugin/module to load
+	 * @param path Path for the plugin/module
+	 * @param callback function to be executed after loading the plugin/module
+	 * @param kpath Konekti Path of plugin/module
+	 */
+	wrap(id, path, callback=null, kpath=null){
+		var x = this
+		function css(obj, file){
+			if(obj.css){
+				x.resource.load(file+'.css', function(css_code){
+					obj.css = css_code
+					if(callback!=null) callback(obj) 
+				})
+			}else{
+				obj.css = ''
+				if(callback!=null) callback(obj)
+			}
+		}
+
+		function html(obj, file){
+			if(obj.html){
+				x.resource.load(file+'.html', function(html_code){
+					obj.html = html_code
+					css(obj,file) 
+				})
+			}else{
+				obj.html = ''
+				css(obj,file)
+			}
+		}
+
+		function js(obj, file){
+			if(obj.js){
+				x.resource.load(file+'.js', function(js_code){
+					obj.js = js_code
+					html(obj,file) 
+				})
+			}else{
+				obj.js = ''
+				html(obj,file)
+			}
+		}
+
+		function konekti(obj){
+			if(obj!==null){ js(obj, kpath+id+'/'+id) }
+			else{ x.resource.JSON(path+id+'/'+id, function(obj){ js(obj,path+id+'/'+id) }) }
+		}
+
+		if( kpath !== null ) this.resource.JSON(kpath+id+'/'+id, konekti)
+		else konekti( null )
+	}
+
+	/**
 	 * Loads a set of plugins and executes the callback function
 	 * @param plugins An array of plugin ids
 	 * @param callback function to be executed after loading plugins
@@ -271,24 +325,7 @@ class KonektiCore{
 				x.init(obj, callback) 
 			}
 
-			function next(js_code, path){
-				js_code = js_code!==null?js_code:''
-				x.resource.load(path+id+'/'+id+'.html', 
-					function(html_code){
-						html_code = html_code!==null?html_code:''
-						x.resource.load(path+id+'/'+id+'.css', function(css_code){
-							css_code = css_code!==null?css_code:''
-							init({"js":js_code,"html":html_code,"css":css_code})
-						})
-					})
-			}
-
-			function konekti(js_code){
-				if(js_code!==null){ next(js_code, x.konektiPluginPath) }
-				else{ x.resource.load(x.pluginPath+id+'/'+id+'.js', function(js_code){ next(js_code,x.pluginPath) }) }
-			}
-
-			if( this.plugin[id] === undefined) this.resource.load(this.konektiPluginPath+id+'/'+id+'.js', konekti)
+			if( this.plugin[id] === undefined) this.wrap(id, x.pluginPath, init, x.konektiPluginPath)
 		}else{
 			var i=0
 			function step(){
@@ -310,6 +347,7 @@ class KonektiCore{
 	 * @param callback function to be executed after initializing the plugin
 	 */
 	set(container, module, callback){
+		var x = this
 		if( typeof module === 'string' ) module = JSON.parse(module)
 		if( typeof module.css === 'string' ) x.resource.css(module.css)
 		container = this.vc(container)
@@ -324,30 +362,10 @@ class KonektiCore{
 	 * @param module_id Id of the module to load
 	 * @param callback function to be executed after loading the module
 	 */
-	module(container, module_id, callback){
-		var id = module_id
+	module(container, module_id, callback, checkKonekti=false){
 		var x=this
-
 		function init(obj){ x.set(container, obj, callback) }
-
-		function next(js_code, path){
-			js_code = js_code!==null?js_code:''
-			x.resource.load(path+id+'/'+id+'.html', 
-				function(html_code){
-					html_code = html_code!==null?html_code:''
-					x.resource.load(path+id+'/'+id+'.css', function(css_code){
-						css_code = css_code!==null?css_code:''
-						init({"js":js_code,"html":html_code,"css":css_code})
-					})
-				})
-		}
-
-		function konekti(js_code){
-			if(js_code!==null){ next(js_code, x.konektiModulePath) }
-			else{ x.resource.load(x.modulePath+id+'/'+id+'.js', function(js_code){ next(js_code,x.modulePath) }) }
-		}
-
-		this.resource.load(this.konektiModulePath+id+'/'+id+'.js', konekti)
+		this.wrap(module_id, x.modulePath, init, checkKonekti?x.konektiModulePath:null)
 	}
 
 	/**
@@ -355,8 +373,8 @@ class KonektiCore{
 	 * @param plugins An array of plugin ids
 	 */
 	uses(){ 
-	    if( KonektiMain !== undefined ) this.load(...arguments, KonektiMain) 
-	    else this.load(...arguments)
+		if(typeof arguments[arguments.length-1] === 'string' && KonektiMain !== undefined ) this.load(...arguments, KonektiMain) 
+		else this.load(...arguments)
 	}
 
 	/**

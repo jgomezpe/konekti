@@ -54,13 +54,13 @@ class Header extends KonektiClient{
  * @param id Id of the header/Configuration of the header
  * @param icon Icon for the header
  * @param caption Caption of the header
- * @param size Size of the header (1,2,3..)
+ * @param h Size of the header (1,2,3..)
  * @param style Style of the header
  */
-Konekti.header = function(id, icon='', caption='', size=3, style='w3-center w3-blue' ){
+Konekti.header = function(id, icon='', caption='', h=3, style='w3-center w3-blue' ){
     var thing
     if(typeof id==='string'){
-        thing={"id":id, "caption":caption, "h":size, "style":style, "icon":icon}
+        thing={"id":id, "caption":caption, "h":h, "style":style, "icon":icon}
     }else thing=id
     return Konekti.plugin.header.connect(thing)
 }
