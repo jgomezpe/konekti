@@ -298,9 +298,14 @@ class KonektiCore{
 			}
 		}
 
+		function use(obj, file){
+			if(obj.uses) x.load(...obj.uses, function(){ js(obj,file) })
+			else js(obj,file)
+		}
+
 		function konekti(obj){
-			if(obj!==null){ js(obj, kpath+id+'/'+id) }
-			else{ x.resource.JSON(path+id+'/'+id, function(obj){ js(obj,path+id+'/'+id) }) }
+			if(obj!==null) use(obj, kpath+id+'/'+id) 
+			else x.resource.JSON(path+id+'/'+id, function(obj){ use(obj,path+id+'/'+id) })
 		}
 
 		if( kpath !== null ) this.resource.JSON(kpath+id+'/'+id, konekti)
@@ -326,6 +331,7 @@ class KonektiCore{
 			}
 
 			if( this.plugin[id] === undefined) this.wrap(id, x.pluginPath, init, x.konektiPluginPath)
+			else if( callback !== undefined && callback!==null) callback()
 		}else{
 			var i=0
 			function step(){
@@ -520,25 +526,35 @@ class KonektiCore{
 	 * HTML element in the document with the given id
 	 */
 	append(parent, plugin, thing){
-		plugin = this.plugin[plugin] 
-		this.vc( parent ).appendChild( this.div(thing.id, plugin.child_style) )
-		return plugin.connect(thing)
+		var x = this
+		function connect(){
+			plugin = x.plugin[plugin]
+			x.vc( parent ).appendChild( x.div(thing.id, plugin.child_style) )
+			return plugin.connect(thing)
+		}
+		if( this.plugin[plugin] !== undefined && this.plugin[plugin] !== null ) return connect()
+		else this.load(plugin, connect)
 	}
 	
 	/**
 	 * Creates an instance of the PlugIn with the given <i>dictionary</i> and inserts it as previous brother of the component
 	 * in the document with the given id <i>sister</i>, if possible
-	 * @param sister Id of the element in the document that will be the younger (next) sister of the new node
+	 * @param sister Id of the element in the document that will be the next sister component of the new node
 	 * @param thing PlugIn information for creating the HTML element that will be inserted as older (previous) brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
 	insertBefore(sister, plugin, thing){
-		plugin = this.plugin[plugin] 
-		var node = this.div( thing.id, plugin.child_style )
-		var sisterNode = this.vc( sister )
-		var parentNode = sisterNode.parentElement
-		parentNode.insertBefore( node, sisterNode )
-		return plugin.connect(thing)
+		var x = this
+		function connect(){
+			plugin = x.plugin[plugin] 
+			var node = x.div( thing.id, plugin.child_style )
+			var sisterNode = x.vc( sister )
+			var parentNode = sisterNode.parentElement
+			parentNode.insertBefore( node, sisterNode )
+			return plugin.connect(thing)
+		}
+		if( this.plugin[plugin] !== undefined && this.plugin[plugin] !== null ) return connect()
+		else this.load(plugin, connect)
 	}
 
 	/** 

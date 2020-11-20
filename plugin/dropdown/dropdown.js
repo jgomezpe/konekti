@@ -1,5 +1,3 @@
-Konekti.core.load('btn')
-
 /** Konekti Plugin for DropDown components */
 class DropDownPlugIn extends KonektiPlugIn{
 	/** Creates a Plugin for Dropdown components */
