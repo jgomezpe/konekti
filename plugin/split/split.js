@@ -77,14 +77,14 @@ class Split extends KonektiClient{
             var c = this.vc()
             var r = c.getBoundingClientRect()
             if (this.type == "col") {
-                var leftPercentage = 100 * (e.pageX-r.left) / r.width
+                var leftPercentage = 100 * (e.pageX-r.left-window.scrollX) / r.width
                 if (leftPercentage > 5 && leftPercentage < 98) {
                     var rightPercentage = 100-leftPercentage
                     this.vc('-one').style.width = (leftPercentage) + "%"
                     this.vc('-two').style.width = (rightPercentage-1) + "%"
                 }
             } else {
-                var leftPercentage = 100 * (e.pageY-r.top) / r.height
+               var leftPercentage = 100 * (e.pageY-r.top-window.scrollY) / r.height
                 if (leftPercentage > 5 && leftPercentage < 98) {
                     var rightPercentage = 100-leftPercentage
                     this.vc('-one').style.height = (leftPercentage-1) + "%"
@@ -104,8 +104,8 @@ class Split extends KonektiClient{
  * @function
  * Konekti split
  * @param id Id of the split component
- * @param type Type of split 'col' Vertical, 'row' Horixontal
- * @param percentage Percentage of the first subcomponent
+ * @param type Type of split 'col' Vertical, 'row' Horizontal
+ * @param percentage Percentage of the first subcomponent relative to the component's size
  */
 Konekti.split = function(id, type='col', percentage=50){
     return Konekti.plugin.split.connect({"id":id, "type":type, "start":percentage})
