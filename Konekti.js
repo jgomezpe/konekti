@@ -602,6 +602,13 @@ class KonektiCore{
 		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
 		return c
 	}
+
+	/**
+	 * Create an item configurstion using just the caption/id
+	 * @param id Id of the item to build
+	 * @return An item configuration 
+	 */
+	item(id){ return {'id':id, 'caption':id, 'icon':''} }
 	
 	/**
 	 * Creates a url from a http response
@@ -796,10 +803,7 @@ class KonektiEditor extends KonektiClient{
  * A media manager.
  */
 class KonektiMedia extends KonektiClient{
-	constructor(thing){
-		super(thing)
-		this.client = Konekti.client(thing.client) || null
-	}
+	constructor(thing){ super(thing) }
 
 	/**
 	 * Pauses the media component

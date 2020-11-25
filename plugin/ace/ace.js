@@ -155,26 +155,26 @@ class AcePlugIn extends KonektiPlugIn{
         );
     }
     
-    /**
-     * Connects components as soon as the ACE library is loaded
-     */
-    done(){
-        this.loaded = true
-        while( this.view.length > 0 ){
-            var thing = this.view[0]
-            this.view.shift()
-        	Konekti.client(thing.id).update(thing)    
-        }
-    }
+	/**
+	 * Connects components as soon as the ACE library is loaded
+	*/
+	done(){
+		this.loaded = true
+		while( this.view.length > 0 ){
+			var thing = this.view[0]
+			this.view.shift()
+			Konekti.client(thing.id).update(thing)    
+		}
+	}
     
-    /**
-     * Load an ACE editor 
-     * @param id If of the ACE editor
-     */
-    load( id ){ 
-        this.view.push( id )
-        if( this.loaded ) this.done()
-    }
+	/**
+	 * Load an ACE editor 
+	 * @param id If of the ACE editor
+	 */
+	load( id ){ 
+		this.view.push( id )
+		if( this.loaded ) this.done()
+	}
 
 	/**
 	 * Creates a client for the plugin's instance
@@ -194,75 +194,74 @@ class AceEditor extends KonektiEditor{
 	 * Creates an Ace Editor
 	 * @param thing Ace editor configuration
 	 */
-    constructor(thing){ super(thing) }
+	constructor(thing){ super(thing) }
 	
 	/**
 	 * Updates an Ace Editor
 	 * @param thing Ace editor configuration
 	 */
-    update(thing){
-        if( typeof thing.client !== 'undefined' && thing.client != null )
-            this.listener.push(thing.client)
-        var id = this.id
-        var x = this
+	update(thing){
+		var id = this.id
+		var x = this
         
-        x.gui = x.vc('Ace')
-        x.edit = ace.edit(id+'Ace');
-        x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
-        x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
+		x.gui = x.vc('Ace')
+		x.edit = ace.edit(id+'Ace');
+		x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
+		x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
         
-        if( thing.code != null ){
-            thing.code.cid = id
-            Konekti.plugin.ace.define(thing.code)
-        } 
+		if( thing.code != null ){
+			thing.code.cid = id
+			thing.code.mode = thing.mode
+			Konekti.plugin.ace.define(thing.code)
+		} 
 		
-        x.edit.setFontSize("16px")
-        if(thing.initial !== undefined){
-            //x.gui.setAttribute('initial', thing.initial)
-            x.edit.setValue(thing.initial,1)
-        } 
+		x.edit.setFontSize("16px")
+		if(thing.initial !== undefined){
+			//x.gui.setAttribute('initial', thing.initial)
+			x.edit.setValue(thing.initial,1)
+		} 
 		
-        x.edit.session.setMode("ace/mode/"+thing.mode);
-        if( thing.theme!=null) this.edit.setTheme("ace/theme/"+thing.theme);
-            x.edit.setShowPrintMargin(false);
+		if( thing.mode!==null ) x.edit.session.setMode("ace/mode/"+thing.mode)
+		if( thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
+		x.edit.setShowPrintMargin(false)
 
-        if(typeof thing.annotation == 'boolean' && thing.annotation)
-            x.edit.session.on("changeAnnotation", function () {
-                var annot = x.edit.session.getAnnotations();
-                for( var i=0; i<x.listener.length; i++ )
-                    if( x.listener[i] != null && Konekti.client(x.listener[i]) != null ) Konekti.client(x.listener[i]).annotation(id, annot)                
-            });	
+		x.edit.session.on("changeAnnotation", function () {
+			var annot = x.edit.session.getAnnotations();
+			for( var i=0; i<x.listener.length; i++ ){
+				var l = Konekti.client(x.listener[i])
+				if( l != null && l.annotation != null ) l.annotation(id, annot)
+			}             
+		});	
             
-       if(typeof thing.onchange == 'boolean' && thing.onchange)
-            x.edit.session.on('change', function(){ 
-                for( var i=0; i<x.listener.length; i++ )
-                    if( x.listener[i] != null && Konekti.client(x.listener[i]) != null ) Konekti.client(x.listener[i]).onchange(id)
-            })
-    }
-
-	
-	
-    /**
-     * Gets current text in the editor
-     * @return Current text in the editor
-     */
-    getText(){ return this.edit.getValue() }
-
-    /**
-     * Sets text in the editor
-     * @param txt Text to set in the editor
-     */
-    setText(txt){
-	var x = this
-	function checked(){
-		if( x.edit === undefined ) setTimeout( checked, 200 )
-		else{
-			x.edit.focus()
-        		x.edit.setValue(txt, 1) 
-		}
+		x.edit.session.on('change', function(){ 
+			for( var i=0; i<x.listener.length; i++ ){
+				var l = Konekti.client(x.listener[i])
+				if( l != null && l.onchange!=null ) l.onchange(id)
+			}
+		})
 	}
-	checked()
-    }
+
+	/**
+	 * Gets current text in the editor
+	 * @return Current text in the editor
+	 */
+	getText(){ return this.edit.getValue() }
+
+	/**
+	 * Sets text in the editor
+	 * @param txt Text to set in the editor
+	 */
+	setText(txt){
+		var x = this
+		function checked(){
+			if( x.edit === undefined ) setTimeout( checked, 200 )
+			else{
+				x.edit.focus()
+				x.edit.setValue(txt, 1) 
+			}
+		}
+		checked()
+	}
 
 	/**
 	 * Sets current position in the editor
@@ -303,39 +302,38 @@ class AceEditor extends KonektiEditor{
 	 * @param pos New position for the scroll
 	 */
 	scrollTop(pos){
-	    var x=this
-    	var tout
-    	function check(){
-    	    var h = parseInt(x.sbui.style.height, 10)
-    	    var ls = parseInt(x.sui.style.lineHeight,10)
-    	    var tlines = h/ls
-    	    if(tlines != x.edit.session.getLength() ) tout = setTimeout(check,100)
-            else{
-            	if(typeof pos=='undefined') pos = h
-            	var line = Math.floor(pos/ls)
-                x.edit.scrollToLine(line, true, true, function () {});
-                x.edit.gotoLine(line, 0, true);
-                clearTimeout(tout)
-            }
-    	}
-    	check()
+		var x=this
+		var tout
+		function check(){
+			var h = parseInt(x.sbui.style.height, 10)
+			var ls = parseInt(x.sui.style.lineHeight,10)
+			var tlines = h/ls
+			if(tlines != x.edit.session.getLength() ) tout = setTimeout(check,100)
+			else{
+				if(typeof pos=='undefined') pos = h
+				var line = Math.floor(pos/ls)
+				x.edit.scrollToLine(line, true, true, function () {});
+				x.edit.gotoLine(line, 0, true);
+				clearTimeout(tout)
+			}
+		}
+		check()
 	}
 }
 
 /**
  * @function
  * Konekti ace
- * @param id Id of the component that will contain the ace editor
- * @param config Configuration of the ace editor
+ * @param id Id/configuration of the component that will contain the ace editor
+ * @param initial Initial text inside the ace editor
+ * @param mode Mode of the ace editor
+ * @param theme Theme of the ace editor
+ * @param code Lexical configuration for the ace editor  
  */
-Konekti.ace = function(id, config = {'client':'client'}){
-    config.id = id
-    return Konekti.plugin.ace.connect(config)
+Konekti.ace = function(id, initial='', mode=null, theme=null, code=null){
+    if( typeof id ==='string' ) return Konekti.plugin.ace.connect({"id":id, "initial":initial, "mode":mode, "theme":theme, "code":code})
+	else return Konekti.plugin.ace.connect(id)
 }
 
 new AcePlugIn()
 Konekti.core.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugin.ace.done() } )
-
-
-
-

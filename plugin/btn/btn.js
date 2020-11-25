@@ -22,9 +22,9 @@ class ButtonPlugIn extends KonektiPlugIn{
 	}	
 
 	/**
-	 * Fills the html template with the specific tree information
-	 * @param thing Tree information
-	 * @return Html code associated to the tree component
+	 * Fills the html template with the specific button information
+	 * @param thing Button information
+	 * @return Html code associated to the button component
 	 */
 	fillLayout(thing){
 		this.addItemHTML()
@@ -88,12 +88,12 @@ class Btn extends KonektiClient{
 /**
  * @function
  * Konekti btn
- * @param id Id of the button/Configuration of the button
- * @param icon Icon of the button (default value '')
+ * @param id Id/Configuration of the button
+ * @param icon Icon of the button
  * @param caption Caption of the button
  * @param onclick Information of the method that will be executed when the button is pressed
- * @param style Style of the button (default value 'w3-bar-item w3-xlarge')
- * @param title Message that will be shown when mouse is over the button (default value '')
+ * @param style Style of the button
+ * @param title Message that will be shown when mouse is over the button
  */
 Konekti.btn = function(id, icon='', caption='', onclick={'client':'client'}, 
 			style='w3-bar-item w3-xlarge', title=''){

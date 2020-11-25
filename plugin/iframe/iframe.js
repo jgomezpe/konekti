@@ -4,6 +4,22 @@ class IFramePlugIn extends KonektiPlugIn{
     constructor(){ super('iframe') }
 
 	/**
+	 * Fills the html template with the specific iframe information
+	 * @param thing Tree information
+	 * @return Html code associated to the tree component
+	 */
+	fillLayout(thing){
+		if( !thing.src.startsWith('https://') ){
+       			const getBlobURL = (code, type) => {
+            			const blob = new Blob([code], {type})
+            			return URL.createObjectURL(blob)
+        		}
+        		thing.src = getBlobURL(thing.src, 'text/html')
+		}
+		return this.core.fromTemplate( this.htmlTemplate, thing ) 
+	}
+
+	/**
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
@@ -47,7 +63,7 @@ class IFrameEditor extends KonektiEditor{
  * @function
  * Konekti iframe
  * @param id Id of the iframe container
- * @param url Url for the iframe component
+ * @param url Url/code for the iframe component
  * @param client Client of the iframe component
  */
 Konekti.iframe = function(id, url='', client='client'){

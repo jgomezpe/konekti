@@ -15,7 +15,7 @@ class YoutubePlugIn extends KonektiPlugIn{
         while( this.video.length > 0 ){
             var thing = this.video[0]
             this.video.shift()
-            this.connect( thing )
+            Konekti.client(thing.id).load( thing )
         }
     }
     
@@ -47,29 +47,29 @@ class YoutubeMedia extends KonektiMedia{
 	 * @param thing Youtube configuration
 	 */
 	load(thing){
-		var id = thing.id
-		function onPlayerReady(event){ new YoutubeMedia(thing.id, thing.client) }
+		var x = this
+		function onPlayerReady(event){}
 
 		function onPlayerStateChange(event){
-			var video = event.target.playerInfo.videoData.video_id
-			var comp = Konekti.vc(video)
-			var client = Konekti.client(thing.id).client
-			if( client != null ){
-				if (event.data == YT.PlayerState.PLAYING) {
-					function updatePlaying() {
-						if (YT.PlayerState.PLAYING) {
-							if( client.play !== null ) client.seek(id, event.target.playerInfo.currentTime)
-							comp.setAttribute('timeout', setTimeout(updatePlaying,100))
-						}
+			var comp = Konekti.vc(event.target.playerInfo.videoData.video_id)
+			if (event.data == YT.PlayerState.PLAYING) {
+				function updatePlaying() {
+					if (YT.PlayerState.PLAYING) {
+						for( var i=0; i<x.listener.length; i++ )
+							if( Konekti.client(x.listener[i]).seek !== undefined )
+								Konekti.client(x.listener[i]).seek(x.id, event.target.playerInfo.currentTime) 
+						comp.setAttribute('timeout', setTimeout(updatePlaying,100))
 					}
-					updatePlaying()
-				}else{
-					clearTimeout(comp.getAttribute('timeout'))
-					if( client.pause !== null ) client.pause(id)
 				}
+				updatePlaying()
+			}else{
+				clearTimeout(comp.getAttribute('timeout'))
+				for( var i=0; i<x.listener.length; i++ )
+					if( Konekti.client(x.listener[i]).pause !== undefined )
+						Konekti.client(x.listener[i]).pause(x.id) 
 			}
 		}
-		window[id] = new YT.Player(thing.video, {
+		window[x.id] = new YT.Player(thing.video, {
 			videoId: thing.video,
 			playerVars: {rel: 0, fs:0, modestbranding:1},
 			events: {
@@ -84,8 +84,9 @@ class YoutubeMedia extends KonektiMedia{
 	 */
 	pause(){ 
 		window[this.id].pauseVideo()
-		var c = this.client
-		if( c!==null && c.pause !== undefined ) c.pause(this.id)
+		for( var i=0; i<this.listener.length; i++ )
+			if( Konekti.client(this.listener[i]).pause !== undefined )
+				Konekti.client(this.listener[i]).pause(this.id)
 	}
 
 	/**
@@ -93,8 +94,9 @@ class YoutubeMedia extends KonektiMedia{
 	 */
 	play(){
 		window[this.id].playVideo() 
-		var c = this.client
-		if( c!==null && c.play !== undefined ) c.play(this.id)
+		for( var i=0; i<this.listener.length; i++ )
+			if( Konekti.client(this.listener[i]).play !== undefined )
+				Konekti.client(this.listener[i]).play(this.id) 
 	}
 
 	/**
@@ -103,8 +105,9 @@ class YoutubeMedia extends KonektiMedia{
 	 */
 	seek(time){
 		window[this.id].seekTo(time,true) 
-		var c = this.client
-		if( c!==null && c.seek !== undefined ) c.seek(this.id, time)
+		for( var i=0; i<this.listener.length; i++ )
+			if( Konekti.client(this.listener[i]).seek !== undefined )
+				Konekti.client(this.listener[i]).seek(this.id,time) 
 	}
 }
 
@@ -113,8 +116,7 @@ class YoutubeMedia extends KonektiMedia{
  * Konekti youtube
  * @param id Id of the youtube component
  * @param video youtube id of the video
- * @param client Client of the latex component
  */
-Konekti.youtube = function(id, video, client='client'){
-	return Konekti.plugin.youtube.connect({"id":id, "video":video, 'client':client})
+Konekti.youtube = function(id, video){
+	return Konekti.plugin.youtube.connect({"id":id, "video":video})
 }

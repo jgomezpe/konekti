@@ -54,6 +54,7 @@ class DropDown extends KonektiClient{
 		this.option = thing.options
 		this.method = thing.method || 'select'
 		this.client = thing.client || 'client'
+		this.addID = thing.addID || false
 	}
 	
 	/**
@@ -91,8 +92,20 @@ class DropDown extends KonektiClient{
 /**
  * @function
  * Konekti dropdown
- * @param thing Dropdown configuration
+ * @param id Id/Configuration of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param options List of options
+ * @param client Client listening to the dropdown
+ * @param method Method of the client listening to selection of options
+ * @param addID Indicates if the id of the selected option that is sent to the client includes the dropdown id or not
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
  */
-Konekti.dropdown = function(thing){
+Konekti.dropdown = function(id, icon, caption, options, client='client', method='select', addID=false, style='w3-bar-item w3-xlarge', title=''){
+	if( typeof id === 'object' ) return Konekti.plugin.dropdown.connect(id) 
+	else return  Konekti.plugin.dropdown.connect(
+		{'id':id, 'icon':icon, 'caption':caption, 'options':options, 'client':client,
+		 'method':method, 'addID':addID, 'style':style, 'title':title})
 	return Konekti.plugin.dropdown.connect(thing)
 }

@@ -1,4 +1,3 @@
-Konekti.core.load('navbar')
 
 /** Konekti Plugin for tab components */
 class TabPlugIn extends KonektiPlugIn{
@@ -35,8 +34,10 @@ class TabPlugIn extends KonektiPlugIn{
 	 */
 	connect( thing ){
 		thing.ids=[]
-		for( var i=0; i<thing.tab.length; i++ )
+		for( var i=0; i<thing.tab.length; i++ ){
+			if( typeof thing.tab[i] === 'string' ) thing.tab[i] = Konekti.core.item(thing.tab[i])
 			thing.ids.push(thing.tab[i].id)
+		}
 		thing.gui = this.html(thing) 
 		Konekti.navbar(thing.navbarid || thing.id+'-bar', thing.tab, "select", "w3-light-grey w3-medium", thing.id)		
 		var client = this.client(thing)
@@ -86,7 +87,7 @@ class TabClient extends KonektiClient{
 Konekti.tab = function(id, initial){
     var btn = []
     for(var i=2; i<arguments.length; i++){
-        if(typeof arguments[i]==='string') btn.push({'id':arguments[i], 'caption':arguments[i]})
+        if(typeof arguments[i]==='string') btn.push(Konekti.core.item(arguments[i]))
         else btn.push(arguments[i])
     }
     return Konekti.plugin.tab.connect({'id':id, 'initial':initial, 'tab':btn})
