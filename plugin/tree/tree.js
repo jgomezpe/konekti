@@ -33,14 +33,15 @@ class TreePlugIn extends KonektiPlugIn{
         if( option !== undefined ){
             var optTemplate = ''
             for( var i=0; i<option.length; i++ ){
-                if( typeof option[i] == 'string'){
-                    option[i] = {"id":id+'-'+option[i], "caption":option[i]}
+		var opt = option[i]
+                if( typeof opt == 'string'){
+                    opt = {"id":id+'-'+opt, "caption":opt}
                 }
-                option[i].tree = tree
-                optTemplate += Konekti.core.fromTemplate(this.itemTemplate, option[i])
+                opt.tree = tree
+                optTemplate += Konekti.core.fromTemplate(this.itemTemplate, opt)
             }
-            var opt = {"id":id, "tree":tree, "drop":optTemplate}
-            return Konekti.core.fromTemplate(this.optionsTemplate, opt)
+            var copt = {"id":id, "tree":tree, "drop":optTemplate}
+            return Konekti.core.fromTemplate(this.optionsTemplate, copt)
         }else return ''
     }
 

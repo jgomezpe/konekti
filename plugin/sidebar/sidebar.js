@@ -24,10 +24,11 @@ new SideBarPlugIn()
 /**
  * @function
  * Konekti sidebar
- * @param id Id of the sidebar component
+ * @param id Id/Configuration of the sidebar component
  * @param width Width of the sidebar
  * @param height Height of the side bar
  */
 Konekti.sidebar = function(id, width='200px', height='100%'){
-    return Konekti.plugin.sidebar.connect({'id':id, 'width':width, 'height':height})
+	if( typeof id === 'string' ) return Konekti.plugin.sidebar.connect({'id':id, 'width':width, 'height':height})
+	else return Konekti.plugin.sidebar.connect(id)
 }
