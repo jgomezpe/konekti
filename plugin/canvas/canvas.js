@@ -620,8 +620,16 @@ class CanvasEditor extends KonektiEditor{
 		if( type !== null ) this[type](obj)
 	}
 
+	/**
+	 * Gets the drawing commands in text format
+	 * @return A stringify representation of the commands drawn by the canvas
+	 */
 	getText(){ return JSON.stringify(commands) }
 
+	/**
+	 * Sets the drawing commands in text format
+	 * @param text A stringify representation of the commands to be drawn by the canvas
+	 */
 	setText(txt){ 
 		this.commands = JSON.parse(txt)
 		this.redraw()
