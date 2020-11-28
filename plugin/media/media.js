@@ -30,7 +30,8 @@ new MediaPlugIn()
  * @param src url of media to connect
  */
 Konekti.media = function(id, media, type, src){
-    return Konekti.plugin.media.connect({"id":id, "media":media, "type":type, "src":src})
+	if( typeof id==='string' ) return Konekti.plugin.media.connect({"id":id, "media":media, "type":type, "src":src})
+	else return Konekti.plugin.media.connect(id)
 }
 
 /**

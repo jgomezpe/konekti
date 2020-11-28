@@ -114,9 +114,10 @@ class YoutubeMedia extends KonektiMedia{
 /**
  * @function
  * Konekti youtube
- * @param id Id of the youtube component
+ * @param id Id/Confiiguration of the youtube component
  * @param video youtube id of the video
  */
 Konekti.youtube = function(id, video){
-	return Konekti.plugin.youtube.connect({"id":id, "video":video})
+	if( typeof id === 'string' ) return Konekti.plugin.youtube.connect({"id":id, "video":video})
+	else return Konekti.plugin.youtube.connect(id)
 }

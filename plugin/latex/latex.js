@@ -77,11 +77,12 @@ class LatexEditor extends KonektiEditor{
 /**
  * @function
  * Konekti latex
- * @param id Id of the latex component
+ * @param id Id/Configuration of the latex component
  * @param tex Latex code
  * @param client Client of the latex component
  */
 Konekti.latex = function(id, tex='', client='client'){
-	return Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
+	if( typeof id === 'string' ) return Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
+	else return Konekti.plugin.latex.connect(id)
 }
 
