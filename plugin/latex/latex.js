@@ -30,7 +30,6 @@ class LatexPlugIn extends KonektiPlugIn{
 	 * Creates a config object from parameters
 	 * @param id Id/Configuration of the latex component
 	 * @param tex Latex code
-	 * @param client Client of the latex component
 	 */
 	config(id, tex=''){ return {"id":id, 'initial':tex} }
 
@@ -89,7 +88,6 @@ new LatexPlugIn()
  * latex
  * @param id Id/Configuration of the latex component
  * @param tex Latex code
- * @param client Client of the latex component
  */
 Konekti.latex = function(id, tex){
 	if(typeof id === 'string') id=Konekti.plugin.latex.config(id,tex)

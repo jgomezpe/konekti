@@ -1,4 +1,4 @@
 {
  "id":"info",
-	"initial":"Un componente latex (<a href='https://www.mathjax.org/' target='_blank'>MathJax</a>) se conecta a un componente html mediante el método:<br><i>Konekti.latex(id, tex='', client='client')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el componente latex</td></tr><tr><td>initial</td><td>Código latex que se presenta en el componente al iniciarlo</td></tr><tr><td>client</td><td>Cliente que se asocia para responder a eventos del componente</td></tr></table>"
+	"initial":"Un componente latex (<a href='https://www.mathjax.org/' target='_blank'>MathJax</a>) se conecta a un componente html mediante el método:<br><i>Konekti.latex(id, tex='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el componente latex</td></tr><tr><td>tex</td><td>Código latex que se presenta en el componente al iniciarlo</td></tr></table>"
 }

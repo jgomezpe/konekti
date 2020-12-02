@@ -1,4 +1,4 @@
 {
  "id":"info",
-	"initial":"Un componente iframe (HTML embebido) se conecta a un componente gráfico html usando el método:<br><i>Konekti.iframe(id, url='', client='client')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Component html a asociar con el iframe</td></tr><tr><td>url</td><td>Url/código para el componente iframe</td></tr><tr><td>client</td><td>Cliente que se asocia para responder a eventos del componente</td></tr></table>"
+	"initial":"Un componente iframe (HTML embebido) se conecta a un componente gráfico html usando el método:<br><i>Konekti.iframe(id, url='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Component html a asociar con el iframe</td></tr><tr><td>url</td><td>Url/código para el componente iframe</td></tr></table>"
 }

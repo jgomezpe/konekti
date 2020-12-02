@@ -69,16 +69,16 @@ class TabPlugIn extends KonektiPlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param id Id of the tab component
 	 * @param initial Id of the tab that will be initially open
-	 * @param tabs Tab configurations 
+	 * @param ... Tab configurations 
 	 */
-	config(id, initial, tabs){
+	config(id, initial){
 		var btn = []
-		for(var i=0; i<tabs.length; i++){
-			if(typeof tabs[i]==='string'){
-				var item = Konekti.core.item(tabs[i])
+		for(var i=2; i<arguments.length; i++){
+			if(typeof arguments[i]==='string'){
+				var item = Konekti.core.item(arguments[i])
 				btn.push(item)
 		  	}else{
-				btn.push(tabs[i])
+				btn.push(arguments[i])
 			}
 		}
 		return {"id":id, "initial":initial, "tab":btn}
@@ -123,13 +123,13 @@ new TabPlugIn()
  * tab
  * @param id Id of the tab component
  * @param initial Id of the tab that will be initially open
- * @param tabs Tab configurations 
+ * @param ... Tab configurations 
  */
 Konekti.tab = function(id, initial){
 	if( typeof id === 'string' ){
 		var tabs = []
 		for(var i=2; i<arguments.length; i++) tabs.push(arguments[i])
-		id = Konekti.plugin.tab.config(id, initial, tabs)
+		id = Konekti.plugin.tab.config(id, initial, ...tabs)
 	}
 	return Konekti.plugin.tab.connect(id)
 }
