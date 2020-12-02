@@ -7,7 +7,7 @@ class HTMLPlugIn extends KonektiPlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
-	client( thing ){ return new DIVEditor(thing.id) }
+	client( thing ){ return new HTML(thing.id) }
 
 	/**
 	 * Creates a config object from parameters
@@ -17,10 +17,8 @@ class HTMLPlugIn extends KonektiPlugIn{
 	config(id, initial=''){ return {'id':id, 'initial':initial} }
 }
 
-new HTMLPlugIn()
-
 /** HTML component that works as an editor */
-class DIVEditor extends KonektiEditor{
+class HTML extends KonektiEditor{
 	/**
 	 * Creates a div component that works as an editor
 	 * @param id Id of the div component
@@ -46,10 +44,13 @@ class DIVEditor extends KonektiEditor{
 	setText(txt){ this.gui.innerHTML = txt }
 }
 
+/** Embedded HTML class */
+new HTMLPlugIn()
 
 /**
- * @function
- * Konekti html
+ * Associates/Adds embedded html
+ * @method
+ * html
  * @param id Id/Configuration of the html container
  * @param code Code for the html component
  */

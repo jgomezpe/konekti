@@ -1,5 +1,5 @@
 /** Canvas Editor */
-class CanvasEditor extends KonektiEditor{
+class Canvas extends KonektiEditor{
 	/**
 	 * Creates a CanvasEditor
 	 * @param thing Canvas configuration
@@ -637,7 +637,7 @@ class CanvasEditor extends KonektiEditor{
 }
 
 /** Konekti Plugin for canvas */
-class KonektiCanvasPlugIn extends KonektiPlugIn{
+class CanvasPlugIn extends KonektiPlugIn{
 	/** Creates a Plugin for canvas */
 	constructor(){ 
 		super('canvas') 
@@ -658,7 +658,7 @@ class KonektiCanvasPlugIn extends KonektiPlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
-	client( thing ){ return new CanvasEditor(thing) } 
+	client( thing ){ return new Canvas(thing) } 
 
 	/**
 	 * Creates a config object from parameters
@@ -673,13 +673,15 @@ class KonektiCanvasPlugIn extends KonektiPlugIn{
 	}
 }
 
-new KonektiCanvasPlugIn()
+/** Canvas class */
+new CanvasPlugIn()
 
 window.addEventListener("resize", Konekti.plugin.canvas.resize)
 
 /**
- * @function
- * Konekti canvas
+ * Associates/Adds a canvas
+ * @method
+ * canvas
  * @param id Id/Configuration of the canvas
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)

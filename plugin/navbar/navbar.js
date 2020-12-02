@@ -39,8 +39,6 @@ class NavBarPlugIn extends KonektiPlugIn{
 	}
 }
 
-new NavBarPlugIn()
-
 /** A Navigation Bar manager */
 class NavBar extends KonektiClient{
 	/** 
@@ -101,9 +99,13 @@ class NavBar extends KonektiClient{
 	}
 }
 
+/** Navigation Bar class */
+new NavBarPlugIn()
+
 /**
- * @function
- * Konekti navbar
+ * Associates/adds a navigation bar component
+ * @method
+ * navbar
  * @param id Id/configuration of the navbar component
  * @param btns Array of buttons to maintain by the navbar
  * @param client Client of the navbar component

@@ -20,9 +20,11 @@ class BoxPlugIn extends KonektiPlugIn{
 
 	/**
 	 * Creates a config object from parameters
-	 * @param id Id/Configuration of the box component,
-	 * @param plugin Plugin connected to the box
-	 * extra parameters are specific for the plugin
+	 * @param id Id/Configuration of the box component
+	 * @param cl Box class
+	 * @param sty Box style
+	 * @param plugin Component connected to the box
+	 * @param ... Component specific parameters
 	 */
 	config(id, cl, sty, plugin){
 		var args = [id]
@@ -38,16 +40,21 @@ class BoxPlugIn extends KonektiPlugIn{
 	}
 }
 
-new BoxPlugIn()
-
 /**
- * @function
- * Konekti hcf
- * @param id Id/Configuration of the box component,
- * @param plugin Plugin connected to the box
- * extra parameters are specific for the plugin
+ * Associates/adds a box component
+ * @method
+ * box
+ * @param id Id/Configuration of the box component
+ * @param cl Box class
+ * @param sty Box style
+ * @param plugin Component connected to the box
+ * @param ... Component specific parameters
  */
 Konekti.box = function(id, cl, sty, plugin){
 	if( typeof id === 'string' ) id = Konekti.plugin.box.config(...arguments)
 	return Konekti.plugin.box.connect(id)
 }
+
+/** Box class */
+new BoxPlugIn()
+

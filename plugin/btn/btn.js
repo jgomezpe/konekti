@@ -1,5 +1,5 @@
 /** Konekti Plugin for buttons */
-class ButtonPlugIn extends KonektiPlugIn{
+class BtnPlugIn extends KonektiPlugIn{
 	/** Creates a Plugin for buttons */
 	constructor(){
 		super('btn')
@@ -75,7 +75,7 @@ class ButtonPlugIn extends KonektiPlugIn{
 }
 
 /** Creates and registers the button plugin */
-new ButtonPlugIn()
+new BtnPlugIn()
 
 /** A Button manager */
 class Btn extends KonektiClient{
@@ -99,8 +99,9 @@ class Btn extends KonektiClient{
 
 
 /**
- * @function
- * Konekti btn
+ * Associates/Adds a button 
+ * @method
+ * btn
  * @param id Id/Configuration of the button
  * @param icon Icon of the button
  * @param caption Caption of the button

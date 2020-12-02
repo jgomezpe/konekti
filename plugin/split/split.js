@@ -78,8 +78,6 @@ class SplitPlugIn extends KonektiPlugIn{
 	}
 }
 
-new SplitPlugIn()
-
 /** Split manager */
 class Split extends KonektiClient{
 	/** 
@@ -143,9 +141,13 @@ class Split extends KonektiClient{
     dragend() { this.dragging = false }    
 }
 
+/** SplitPanel class */
+new SplitPlugIn()
+
 /**
- * @function
- * Konekti split
+ * Associates/adds Split panel
+ * @method
+ * split
  * @param id Id of the split component
  * @param type Type of split 'col' Vertical, 'row' Horizontal
  * @param percentage Percentage of the first subcomponent relative to the component's size

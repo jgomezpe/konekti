@@ -1,10 +1,10 @@
 /** Konekti Plugin for Header components */
 class HeaderPlugIn extends KonektiPlugIn{
-    /** Creates a Plugin for Header components */
-    constructor(){ 
-        super('header') 
-        this.replace = 'strict'
-    }
+	/** Creates a Plugin for Header components */
+	constructor(){ 
+		super('header') 
+		this.replace = 'strict'
+	}
     
 	/**
 	 * Fills the html template with the specific header information
@@ -38,9 +38,6 @@ class HeaderPlugIn extends KonektiPlugIn{
 	}
 }
 
-new HeaderPlugIn()
-
-
 /** A Header manager */
 class Header extends KonektiClient{
 	/** 
@@ -62,8 +59,12 @@ class Header extends KonektiClient{
 	}
 }
 
+/** Header class */
+new HeaderPlugIn()
+
 /**
- * @function
+ * Associates/adds a header
+ * @method
  * Konekti header
  * @param id Id of the header/Configuration of the header
  * @param icon Icon for the header

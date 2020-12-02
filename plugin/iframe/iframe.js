@@ -33,8 +33,6 @@ class IFramePlugIn extends KonektiPlugIn{
 	config(id, url=''){ return {"id":id, "src":url} }
 }
 
-new IFramePlugIn()
-
 /** Iframe component that works as an editor */
 class IFrameEditor extends KonektiEditor{
 	/**
@@ -66,9 +64,13 @@ class IFrameEditor extends KonektiEditor{
     }
 }
 
+/** IFrame class */
+new IFramePlugIn()
+
 /**
- * @function
- * Konekti iframe
+ * Associates/Adds an IFrame 
+ * @method
+ * iframe
  * @param id Id of the iframe container
  * @param url Url/code for the iframe component
  */

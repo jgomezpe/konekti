@@ -181,7 +181,7 @@ class AcePlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client(thing){ 
-		var editor = new AceEditor(thing) 
+		var editor = new Ace(thing) 
 		if( this.loaded ) editor.update(thing)
 		else this.view.push( thing )
 		return editor
@@ -200,7 +200,7 @@ class AcePlugIn extends KonektiPlugIn{
 }
 
 /** An Ace Editor */
-class AceEditor extends KonektiEditor{
+class Ace extends KonektiEditor{
 	/**
 	 * Creates an Ace Editor
 	 * @param thing Ace editor configuration
@@ -332,8 +332,9 @@ class AceEditor extends KonektiEditor{
 }
 
 /**
- * @function
- * Konekti ace
+ * Associates/adds an Ace editor component
+ * @method
+ * ace
  * @param id Id/configuration of the component that will contain the ace editor
  * @param initial Initial text inside the ace editor
  * @param mode Mode of the ace editor
@@ -345,5 +346,6 @@ Konekti.ace = function(id, initial, mode, theme, code){
 	return Konekti.plugin.ace.connect(id)
 }
 
+/** Ace class */
 new AcePlugIn()
 Konekti.core.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugin.ace.done() } )

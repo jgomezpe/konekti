@@ -136,7 +136,6 @@ class TreePlugIn extends KonektiPlugIn{
 
 }
 
-new TreePlugIn()
 
 /** Tree manager */
 class Tree extends KonektiClient{
@@ -287,9 +286,13 @@ class Tree extends KonektiClient{
     update(thing){ this.updateInner(thing.tree, thing.icon || null, thing.options || null )}
 }
 
+/** Tree component */
+new TreePlugIn()
+
 /**
- * @function
- * Konekti tree
+ * Associates/Adds a tree component
+ * @method
+ * tree
  * @param id Id/configuration of the tree component
  * @param t Tree
  * @param client Client listening to tree selections

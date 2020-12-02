@@ -85,8 +85,6 @@ class TabPlugIn extends KonektiPlugIn{
 	}
 }
 
-new TabPlugIn()
-
 /** Tab manager */
 class TabClient extends KonektiClient{
 	/** 
@@ -116,9 +114,13 @@ class TabClient extends KonektiClient{
 	}
 }
 
+/** Tab class */
+new TabPlugIn()
+
 /**
- * @function
- * Konekti tab
+ * Associates/Adds a Tab panel
+ * @method
+ * tab
  * @param id Id of the tab component
  * @param initial Id of the tab that will be initially open
  * @param tabs Tab configurations 

@@ -65,11 +65,13 @@ class SideBarPlugIn extends KonektiPlugIn{
 	}
 }
 
+/** Side Bar class */
 new SideBarPlugIn()
 
 /**
- * @function
- * Konekti sidebar
+ * Associates/Adds a side bar component (includes navigation bar, and main component)
+ * @method
+ * sidebar
  * @param id Id/Configuration of the sidebar component
  * @param width Width of the sidebar
  * @param side Side component configuration

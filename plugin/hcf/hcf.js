@@ -1,4 +1,4 @@
-/** Konekti Plugin for applications with a sidebar */
+/** Konekti Plugin for applications with header/content/footer */
 class HCFPlugIn extends KonektiPlugIn{
 	/** Creates a Plugin for sidebar applications */
 	constructor(){ super('hcf') }
@@ -60,11 +60,13 @@ class HCFPlugIn extends KonektiPlugIn{
 	}
 }
 
+/** Header/content/footer component */
 new HCFPlugIn()
 
 /**
- * @function
- * Konekti hcf
+ * Associates/Adds a Header/Content/Footer component
+ * @method
+ * hcf
  * @param id Id/Configuration of the header/content/footer component
  * @param content Content component configuration
  * @param header Header component configuration

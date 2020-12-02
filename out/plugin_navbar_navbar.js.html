@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: plugin/navbar/navbar.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: plugin/navbar/navbar.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Konekti Plugin for navigation (buttons) bar components */
+class NavBarPlugIn extends KonektiPlugIn{
+    /** Creates a Plugin for navbar components */
+    constructor(){
+        super('navbar')
+        this.replace = 'strict'
+	this.child_style = 'w3-bar-item'
+    }
+
+	/**
+	 * Fills the html template with the specific navbar information
+	 * @param thing Navbar information
+	 * @return Html code associated to the navbar component
+	 */
+	fillLayout( thing ){
+		thing.style = thing.style || "w3-blue-grey w3-xlarge"
+		thing.client = thing.client || "client"
+	        thing.btnsHTML = Konekti.plugin.btn.listLayout(thing)
+	        return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
+	}
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new NavBar(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the navbar component
+	 * @param btns Array of buttons to maintain by the navbar
+	 * @param client Client of the navbar component
+	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
+	 * @param style Style of the navbar
+	 * @return A NavBar manager
+	 */
+	config(id, btns=[], client='client', method='select', style="w3-blue-grey w3-xlarge"){
+		return {"id":id, "method":method, "btn":btns, "style":style, "client":client}
+	}
+}
+
+new NavBarPlugIn()
+
+/** A Navigation Bar manager */
+class NavBar extends KonektiClient{
+	/** 
+	 * Creates a NavBar Manager
+	 * @param thing Configuration of the navbar
+	 */
+	constructor(thing){
+		super(thing)
+		this.method = thing.method
+		this.client = thing.client
+	}
+
+	/** Adds a component to the navbar
+	 * @param arguments Components to add
+	 */
+	add(){
+		for( var i=0; i&lt;arguments.length; i++ ){
+			var thing = arguments[i]
+			var type = arguments[i].plugin || 'btn'
+			if( thing.onclick === undefined || thing.onclick === null ) thing.onclick={"method":this.method||thing.id,"client":"client"}
+			Konekti.core.append(this.id,type,thing) 
+		}
+	}
+
+	/**
+	 * Insert a component into the navbar before the given component
+	 * @param sister Id of the component that will be the next sister of the new component
+	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
+	 * HTML element in the document with the given &lt;i>sister&lt;/i> id
+	 */
+	insertBefore(sister){
+		for( var i=1; i&lt;arguments.length; i++ ){
+			var thing = arguments[i]
+			var type = arguments[i].plugin || 'btn'
+			if( thing.onclick === undefined || thing.onclick === null ) 
+				thing.onclick={"method":this.method||thing.id,"client":this.client||"client"}
+			Konekti.core.insertBefore(sister, type, thing)
+		}
+	}
+
+	/**
+	 * Removes a component of the navbar
+	 * @param id Id of the component to remove 
+	 */
+	remove(id){ return Konekti.core.remove(id) }
+
+	/** 
+	 * Keeps the given components in the navbar and removes any other component.
+	 * @param ids Ids of the components to keep in the navbar.
+	 */
+	keep( ids ){
+		var c = this.vc()
+		var r = []
+		for( var i=0; i&lt;c.children.length; i++ ){
+			if( !ids.includes(c.children[i].id)  ) r.push(c.children[i].id)
+		}
+		for( var j=0; j&lt;r.length; j++) this.remove(r[j])
+	}
+}
+
+/**
+ * @function
+ * Konekti navbar
+ * @param id Id/configuration of the navbar component
+ * @param btns Array of buttons to maintain by the navbar
+ * @param client Client of the navbar component
+ * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
+ * @param style Style of the navbar
+ * @return A NavBar manager
+ */
+Konekti.navbar = function(id, btns, client, method, style){
+	if(typeof id === 'string') id=Konekti.plugin.navbar.config(id,btns,client,method,style)
+	return Konekti.plugin.navbar.connect(id)
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AceEditor.html">AceEditor</a></li><li><a href="AcePlugIn.html">AcePlugIn</a></li><li><a href="BoxPlugIn.html">BoxPlugIn</a></li><li><a href="Btn.html">Btn</a></li><li><a href="ButtonPlugIn.html">ButtonPlugIn</a></li><li><a href="CanvasEditor.html">CanvasEditor</a></li><li><a href="DIVEditor.html">DIVEditor</a></li><li><a href="DropDown.html">DropDown</a></li><li><a href="DropDownPlugIn.html">DropDownPlugIn</a></li><li><a href="HCFPlugIn.html">HCFPlugIn</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderPlugIn.html">HeaderPlugIn</a></li><li><a href="HTMLPlugIn.html">HTMLPlugIn</a></li><li><a href="HyperMedia.html">HyperMedia</a></li><li><a href="IFrameEditor.html">IFrameEditor</a></li><li><a href="IFramePlugIn.html">IFramePlugIn</a></li><li><a href="Item.html">Item</a></li><li><a href="ItemPlugIn.html">ItemPlugIn</a></li><li><a href="KonektiAPI.html">KonektiAPI</a></li><li><a href="KonektiCanvasPlugIn.html">KonektiCanvasPlugIn</a></li><li><a href="KonektiClient.html">KonektiClient</a></li><li><a href="KonektiCore.html">KonektiCore</a></li><li><a href="KonektiEditor.html">KonektiEditor</a></li><li><a href="KonektiMedia.html">KonektiMedia</a></li><li><a href="KonektiPlugIn.html">KonektiPlugIn</a></li><li><a href="KonektiResource.html">KonektiResource</a></li><li><a href="LatexEditor.html">LatexEditor</a></li><li><a href="LatexPlugIn.html">LatexPlugIn</a></li><li><a href="Media.html">Media</a></li><li><a href="MediaPlugIn.html">MediaPlugIn</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="NavBarPlugIn.html">NavBarPlugIn</a></li><li><a href="SideBarPlugIn.html">SideBarPlugIn</a></li><li><a href="Split.html">Split</a></li><li><a href="SplitPlugIn.html">SplitPlugIn</a></li><li><a href="TabClient.html">TabClient</a></li><li><a href="TabPlugIn.html">TabPlugIn</a></li><li><a href="Tree.html">Tree</a></li><li><a href="TreePlugIn.html">TreePlugIn</a></li><li><a href="YoutubePlugIn.html">YoutubePlugIn</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Konekti">Konekti</a></li><li><a href="global.html#Konektiace">Konekti ace</a></li><li><a href="global.html#Konektiaudio">Konekti audio</a></li><li><a href="global.html#Konektibtn">Konekti btn</a></li><li><a href="global.html#Konekticanvas">Konekti canvas</a></li><li><a href="global.html#Konektidropdown">Konekti dropdown</a></li><li><a href="global.html#Konektihcf">Konekti hcf</a></li><li><a href="global.html#Konektiheader">Konekti header</a></li><li><a href="global.html#Konektihtml">Konekti html</a></li><li><a href="global.html#Konektiiframe">Konekti iframe</a></li><li><a href="global.html#Konektilatex">Konekti latex</a></li><li><a href="global.html#Konektimedia">Konekti media</a></li><li><a href="global.html#Konektimp4">Konekti mp4</a></li><li><a href="global.html#Konektinavbar">Konekti navbar</a></li><li><a href="global.html#Konektisidebar">Konekti sidebar</a></li><li><a href="global.html#Konektisplit">Konekti split</a></li><li><a href="global.html#Konektitab">Konekti tab</a></li><li><a href="global.html#Konektitree">Konekti tree</a></li><li><a href="global.html#Konektivideo">Konekti video</a></li><li><a href="global.html#Konektiyoutube">Konekti youtube</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Wed Dec 02 2020 15:08:52 GMT-0500 (Colombia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

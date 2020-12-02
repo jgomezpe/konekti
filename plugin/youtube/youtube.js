@@ -24,7 +24,7 @@ class YoutubePlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client(thing){ 
-		var yt = new YoutubeMedia(thing) 
+		var yt = new Youtube(thing) 
 		if( this.APILoaded ) yt.load(thing)
 		else this.video.push( thing )
 		return yt
@@ -40,15 +40,7 @@ class YoutubePlugIn extends KonektiPlugIn{
 	}
 }
 
-new YoutubePlugIn()
-
-//  Using the youtube api
-Konekti.core.resource.script(null,'https://www.youtube.com/iframe_api', null)
-
-window.onYouTubeIframeAPIReady = function(){ Konekti.plugin.youtube.done() }
-
-
-class YoutubeMedia extends KonektiMedia{
+class Youtube extends KonektiMedia{
 	constructor(thing){ super(thing) }
 
 	/**
@@ -120,9 +112,17 @@ class YoutubeMedia extends KonektiMedia{
 	}
 }
 
+/** Youtube class */
+new YoutubePlugIn()
+
+//  Using the youtube api
+window.onYouTubeIframeAPIReady = function(){ Konekti.plugin.youtube.done() }
+Konekti.core.resource.script(null,'https://www.youtube.com/iframe_api', null)
+
 /**
- * @function
- * Konekti youtube
+ * Associates/Adds a youtube video component
+ * @method
+ * youtube
  * @param id Id/Confiiguration of the youtube component
  * @param video youtube id of the video
  */

@@ -58,8 +58,6 @@ class DropDownPlugIn extends KonektiPlugIn{
 	}
 }
 
-new DropDownPlugIn()
-
 /** A Dropdown component */
 class DropDown extends KonektiClient{
 	/**
@@ -106,9 +104,13 @@ class DropDown extends KonektiClient{
     }
 }
 
+/** DropDown class */
+new DropDownPlugIn()
+
 /**
- * @function
- * Konekti dropdown
+ * Associates/Adds a dropdown
+ * @method
+ * dropdown
  * @param id Id/Configuration of the dropdown
  * @param icon Icon of the dropdown
  * @param caption Caption of the dropdown

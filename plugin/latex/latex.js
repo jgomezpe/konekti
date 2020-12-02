@@ -24,7 +24,7 @@ class LatexPlugIn extends KonektiPlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
-	client( thing ){ return new LatexEditor(thing) }
+	client( thing ){ return new Latex(thing) }
 
 	/**
 	 * Creates a config object from parameters
@@ -36,10 +36,8 @@ class LatexPlugIn extends KonektiPlugIn{
 
 }
 
-new LatexPlugIn()
-
 /** Latex editor */
-class LatexEditor extends KonektiEditor{
+class Latex extends KonektiEditor{
 	/**
 	 * Creates a latex editor
 	 * @param thing Latex component configuration
@@ -82,9 +80,13 @@ class LatexEditor extends KonektiEditor{
 	}
 }
 
+/** Latex class */
+new LatexPlugIn()
+
 /**
- * @function
- * Konekti latex
+ * Associates/Adds a latex component
+ * @method
+ * latex
  * @param id Id/Configuration of the latex component
  * @param tex Latex code
  * @param client Client of the latex component
