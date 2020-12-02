@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='header1'></div>	
+<div id='header2'></div>	
+<div id='header3'></div>	
+<script>
+
+Konekti.uses('header')
+
+/* Se define la función principal de Konekti */
+function KonektiMain(){
+	/* Se crea el cliente para responder a los eventos */
+	var client = new KonektiClient()
+	/* Se conectan los componentes */
+	Konekti.header('header1','fa fa-gavel', 'Encabezado con icono, texto y valores para tamaño y estilo por defecto' )
+	Konekti.header('header2', 'fa fa-smile-o','Encabezado con tamaño 4, color negro y texto alineado a la izquierda', 4, 'w3-black' )
+	Konekti.header('header3', '','Solo texto, Encabezado con tamaño 2, color naranja y texto alineado a la derecha', 2, 'w3-orange w3-right-align' )
+}
+
+</script>
+
+</body>
+</html>

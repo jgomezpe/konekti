@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Un audio se conecta a un componente html usando uno de los siguientes métodos:<br><i>Konekti.media(id, media, type, src)</i><br><i>Konekti.audio(id, type, src)</i><br><i>Konekti.mp3(id, src)</i><br><table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el audio</td></tr><tr><td>media</td><td>Tipo de medio (se fija en 'audio' para audios)</td></tr><tr><td>type</td><td>Tipo de audio</td></tr><tr><td>src</td><td>URL del audio</td></tr></table>"
+}

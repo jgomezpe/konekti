@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"An embebed html component is connected to a html component using method:<br><i>Konekti.html(id, code='', client='client')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the embeded html</td></tr><tr><td>url</td><td>Code for the html component</td></tr><tr><td>client</td><td>Client that will answer to events from the html component</td></tr></table>"
+}

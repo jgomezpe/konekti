@@ -659,6 +659,18 @@ class KonektiCanvasPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new CanvasEditor(thing) } 
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the canvas
+	 * @param initial Initial set of commands to run (as JSON object or stringify object)
+	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+	 */
+	config(id, initial={}, custom_commands={}){
+		if( typeof initial === 'string' ) initial = JSON.parse(initial)
+		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
+		return {"id":id,"custom":custom_commands,"commands":initial}
+	}
 }
 
 new KonektiCanvasPlugIn()
@@ -672,10 +684,8 @@ window.addEventListener("resize", Konekti.plugin.canvas.resize)
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
  */
-Konekti.canvas = function(id, initial={}, custom_commands={}){
-	if( typeof initial === 'string' ) initial = JSON.parse(initial)
-	if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
-	if( typeof id === 'string' ) return Konekti.plugin.canvas.connect({"id":id,"custom":custom_commands,"commands":initial})
-	else return Konekti.plugin.canvas.connect(id)
+Konekti.canvas = function(id, initial, custom_commands){
+	if( typeof id === 'string' ) id = Konekti.plugin.canvas.config(id,initial,custom_commands)
+	return Konekti.plugin.canvas.connect(id)
 }
 

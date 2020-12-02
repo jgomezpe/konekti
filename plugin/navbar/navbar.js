@@ -7,15 +7,17 @@ class NavBarPlugIn extends KonektiPlugIn{
 	this.child_style = 'w3-bar-item'
     }
 
-    /**
-     * Fills the html template with the specific navbar information
-     * @param thing Navbar information
-     * @return Html code associated to the navbar component
-     */
-    fillLayout( thing ){
-        thing.btnsHTML = Konekti.plugin.btn.listLayout(thing)
-        return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
-    }
+	/**
+	 * Fills the html template with the specific navbar information
+	 * @param thing Navbar information
+	 * @return Html code associated to the navbar component
+	 */
+	fillLayout( thing ){
+		thing.style = thing.style || "w3-blue-grey w3-xlarge"
+		thing.client = thing.client || "client"
+	        thing.btnsHTML = Konekti.plugin.btn.listLayout(thing)
+	        return Konekti.core.fromTemplate( this.htmlTemplate, thing) 
+	}
 
 	/**
 	 * Creates a client for the plugin's instance
@@ -23,6 +25,18 @@ class NavBarPlugIn extends KonektiPlugIn{
 	 */
 	client(thing){ return new NavBar(thing) }
 
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the navbar component
+	 * @param btns Array of buttons to maintain by the navbar
+	 * @param client Client of the navbar component
+	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
+	 * @param style Style of the navbar
+	 * @return A NavBar manager
+	 */
+	config(id, btns=[], client='client', method='select', style="w3-blue-grey w3-xlarge"){
+		return {"id":id, "method":method, "btn":btns, "style":style, "client":client}
+	}
 }
 
 new NavBarPlugIn()
@@ -40,24 +54,31 @@ class NavBar extends KonektiClient{
 	}
 
 	/** Adds a component to the navbar
-	 * @param type Type of component to add
-	 * @param thing Component to add (configuration information)
+	 * @param arguments Components to add
 	 */
-	add( type, thing ){
-		if( thing.onclick === undefined || thing.onclick === null ) thing.onclick={"method":this.method||thing.id,"client":"client"}
-		return Konekti.core.append(this.id,type,thing) 
+	add(){
+		for( var i=0; i<arguments.length; i++ ){
+			var thing = arguments[i]
+			var type = arguments[i].plugin || 'btn'
+			if( thing.onclick === undefined || thing.onclick === null ) thing.onclick={"method":this.method||thing.id,"client":"client"}
+			Konekti.core.append(this.id,type,thing) 
+		}
 	}
 
 	/**
 	 * Insert a component into the navbar before the given component
-	 * @param type Type of component to add
 	 * @param sister Id of the component that will be the next sister of the new component
 	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	insertBefore(type, sister, thing){
-		if( thing.onclick === undefined || thing.onclick === null ) thing.onclick={"method":this.method||thing.id,"client":this.client||"client"}
-		return Konekti.core.insertBefore(sister, type, thing) 
+	insertBefore(sister){
+		for( var i=1; i<arguments.length; i++ ){
+			var thing = arguments[i]
+			var type = arguments[i].plugin || 'btn'
+			if( thing.onclick === undefined || thing.onclick === null ) 
+				thing.onclick={"method":this.method||thing.id,"client":this.client||"client"}
+			Konekti.core.insertBefore(sister, type, thing)
+		}
 	}
 
 	/**
@@ -85,12 +106,12 @@ class NavBar extends KonektiClient{
  * Konekti navbar
  * @param id Id/configuration of the navbar component
  * @param btns Array of buttons to maintain by the navbar
+ * @param client Client of the navbar component
  * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
  * @param style Style of the navbar
- * @param client Client of the navbar component
  * @return A NavBar manager
  */
-Konekti.navbar = function(id, btns=[], method='select', style="w3-blue-grey w3-xlarge", client='client'){
-	if( typeof id === 'string' ) return Konekti.plugin.navbar.connect( {"id":id, "method":method, "btn":btns, "style":style, "client":client} )
-	else return Konekti.plugin.navbar.connect( id )
+Konekti.navbar = function(id, btns, client, method, style){
+	if(typeof id === 'string') id=Konekti.plugin.navbar.config(id,btns,client,method,style)
+	return Konekti.plugin.navbar.connect(id)
 }

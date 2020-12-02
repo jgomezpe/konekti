@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id='hsplit1'></div>	
+<div id='split1' style='height:50%;width:100%'></div>
+<div id='left' class='w3-green' style='height:100%;width:100%'>This is a left panel</div>
+<div id='right' class='w3-orange' style='height:100%;width:100%'>This is a right panel</div>
+<div id='hsplit2'></div>	
+<div id='split2' style='height:50%;width:100%'></div>
+<div id='up' class='w3-blue' style='height:100%;width:100%'>This is top panel</div>
+<div id='down' class='w3-grey' style='height:100%;width:100%'>This is a bottom panel</div>
+
+<script>
+
+Konekti.uses('header','split')
+
+function KonektiMain(){
+	var client = new KonektiClient('client')
+
+	Konekti.header('title','', 'Konekti Splits' )
+	Konekti.header('hsplit1','', 'Vertical Split', 4, 'w3-black' )
+	Konekti.split('split1', 'col', 70)
+	Konekti.core.move('left','split1-one')
+	Konekti.core.move('right','split1-two')
+
+	Konekti.header('hsplit2','', 'Horizontal Split', 4, 'w3-black' )
+	Konekti.split('split2', 'row', 40)
+	Konekti.core.move('up','split2-one')
+	Konekti.core.move('down','split2-two')
+
+}
+
+</script>
+
+</body>
+</html>

@@ -29,6 +29,15 @@ class YoutubePlugIn extends KonektiPlugIn{
 		else this.video.push( thing )
 		return yt
 	}
+
+	/**
+	 * 
+	 * @param id Id of the youtube component
+	 * @param video youtube id of the video
+	 */
+	config(id, video){
+		return {"id":id, "video":video}
+	}
 }
 
 new YoutubePlugIn()
@@ -118,6 +127,6 @@ class YoutubeMedia extends KonektiMedia{
  * @param video youtube id of the video
  */
 Konekti.youtube = function(id, video){
-	if( typeof id === 'string' ) return Konekti.plugin.youtube.connect({"id":id, "video":video})
-	else return Konekti.plugin.youtube.connect(id)
+	if(typeof id === 'string') id=Konekti.plugin.youtube.config(id,video)
+	return Konekti.plugin.youtube.connect(id)
 }

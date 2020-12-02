@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Una lista desplegable se conecta a un componente HTML usando el método:<br><i>Konekti.dropdown(id, initial, mode, theme, code)</i><br><table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia la lista desplegable</td></tr><tr><td>icon</td><td>Icono de la lista desplegable (<a href='https://www.w3schools.com/icons/fontawesome_icons_intro.asp' target='_blank'>Font Awesome</a>)</td></tr><tr><td>caption</td><td>Texto asociado a la lista desplegable</td></tr><tr><td>options</td><td>Lista a desplegar</td></tr><tr><td>style</td><td>Estilo de la lista desplegable (<a href='https://www.w3schools.com/w3css/w3css_buttons.asp' target='_blank'>w3css</a>)</td></tr><tr><td>title</td><td>Ayuda rápida de la lista desplegable</td></tr></table>"
+}

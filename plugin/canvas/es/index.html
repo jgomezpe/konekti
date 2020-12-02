@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id='btn' ></div>
+<div id='hcanvas'></div>	
+<div id='canvas' style='height:40%;width:100%'></div>
+<div id='hedit'></div>	
+<div id='coder' style='height:40%;width:100%'></div>
+
+<script>
+
+Konekti.uses('header','canvas','btn','ace')
+
+function run(){
+	// Se envia el comando escrito en el editor al canvas
+   Konekti.client('canvas').setText( Konekti.client('coder').getText() )
+}
+
+function KonektiMain(){
+	var client = new KonektiClient('client')
+	// Comandos a ejecutar (se dejan en modo cadena para visualizarlos en el editor)
+	var initial = '{"command":"compound","commands":[\n	{"r":true,"x":1,"y":1,"command":"fit", "commands":[\n		{"x":1,"y":0,"command":"translate","commands":[\n			{"r":1.5707963267948966,"x":0.5,"y":0.5,"command":"rotate","commands":[{"command":"/"}, {"command":"_"}]}\n		]},\n		{"command":"compound","commands":[{"command":"_"},{"command":"-"}]}\n	]}\n]}'
+
+	// Comandos personalizados (basados en comandos primitivos)
+	var commands = {"commands":[
+        { "command":":" },
+        { 
+            "command":"_", 
+            "commands":[
+                {
+                    "command":"strokeStyle",
+                    "color":{"red":0, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polyline",
+                    "x":[0,0,1,1,0],
+                    "y":[0,1,1,0,0]
+                }
+            ]
+        },
+        {
+            "command":"<",
+            "commands":[
+                {
+                    "command":"fillStyle",
+                    "color":{"red":255, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polygon",
+                    "x":[0.4,0.4,1,1,0.6,0.6],
+                    "y":[0,0.6,0.6,0.4,0.4,0]
+                }
+            ]
+        },  
+        {
+            "command":"+",
+            "commands":[
+                {
+                    "command":"fillStyle",
+                    "color":{"red":255, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polygon",
+                    "x":[0.4,0.4,0,0,0.4,0.4,0.6,0.6,1,1,0.6,0.6,0.4],
+                    "y":[0,0.4,0.4,0.6,0.6,1,1,0.6,0.6,0.4,0.4,0,0]
+                }
+            ]
+        },  
+        {
+            "command":"*",
+            "commands":[
+                {
+                    "command":"fillStyle",
+                    "color":{"red":255, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polygon",
+                    "x":[0.4,0.4,0.6,0.6,1,1,0.6,0.6,0.4],
+                    "y":[0,1,1,0.6,0.6,0.4,0.4,0,0]
+                }
+            ]
+        },  
+        {
+            "command":"/",
+            "commands":[
+                {
+                    "command":"fillStyle",
+                    "color":{"red":255, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polygon",
+                    "x":[0.4,0.6,1,1],
+                    "y":[0,0,0.4,0.6]
+                }
+            ]
+        },      
+        {
+            "command":"-",
+            "commands":[
+                {
+                    "command":"fillStyle",
+                    "color":{"red":255, "green":0, "blue":0, "alpha":255}
+                },
+                {
+                    "command":"polygon",
+                    "x":[0,0,1,1],
+                    "y":[0.4,0.6,0.6,0.4]
+                }
+            ]
+        }       
+      ]      
+    }
+	Konekti.header('title','', 'Componente Canvas de Konekti' )
+	Konekti.header('hcanvas','fa fa-edit', 'Canvas', 4, 'w3-black' )
+
+	// Se conecta el canvas con el componente gráfico
+	Konekti.canvas( 'canvas', initial, commands )
+
+	Konekti.btn('btn',"fa fa-play", "Compilar","run()",'w3-bar-item w3-large',"Compila commandos")
+	Konekti.ace( 'coder', initial, 'json' )
+
+}
+
+</script>
+
+</body>
+</html>

@@ -186,6 +186,17 @@ class AcePlugIn extends KonektiPlugIn{
 		else this.view.push( thing )
 		return editor
 	}
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the component that will contain the ace editor
+	 * @param initial Initial text inside the ace editor
+	 * @param mode Mode of the ace editor
+	 * @param theme Theme of the ace editor
+	 * @param code Lexical configuration for the ace editor  
+	 */
+	config(id, initial='', mode=null, theme=null, code=null){ return {"id":id, "initial":initial, "mode":mode, "theme":theme, "code":code} }
+
 }
 
 /** An Ace Editor */
@@ -254,11 +265,10 @@ class AceEditor extends KonektiEditor{
 	setText(txt){
 		var x = this
 		function checked(){
-			if( x.edit === undefined ) setTimeout( checked, 200 )
-			else{
+			if( x.edit !== undefined ){
 				x.edit.focus()
 				x.edit.setValue(txt, 1) 
-			}
+			}else setTimeout( checked, 200 )
 		}
 		checked()
 	}
@@ -330,9 +340,9 @@ class AceEditor extends KonektiEditor{
  * @param theme Theme of the ace editor
  * @param code Lexical configuration for the ace editor  
  */
-Konekti.ace = function(id, initial='', mode=null, theme=null, code=null){
-    if( typeof id ==='string' ) return Konekti.plugin.ace.connect({"id":id, "initial":initial, "mode":mode, "theme":theme, "code":code})
-	else return Konekti.plugin.ace.connect(id)
+Konekti.ace = function(id, initial, mode, theme, code){
+	if(typeof id ==='string') id=Konekti.plugin.ace.config(id,initial,mode,theme,code)
+	return Konekti.plugin.ace.connect(id)
 }
 
 new AcePlugIn()

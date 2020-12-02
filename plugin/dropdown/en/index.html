@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id="log" style='width:100%'>Selected option will appear here...</div>
+<div id='dd1'></div>
+<div id='dd2'></div>
+<div id='dd3'></div>
+
+<script>
+
+Konekti.uses('header','dropdown')
+
+class TheClient extends KonektiClient{
+	constructor(){ super() }
+	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
+	edit(optId){ Konekti.vc("log").innerHTML =  'Edit: '+ optId; }
+	media(optId){ Konekti.vc("log").innerHTML =  'Media: '+ optId; }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+
+	Konekti.header('title','', 'Konekti Dropdown' )
+	Konekti.dropdown( "dd1", "fa fa-edit", "Edit", [
+				{"id":"copy", "caption":"Copy", "icon":"fa fa-copy"}, 
+				{"id":"cut", "caption":"Cut", "icon":"fa fa-cut"},
+				{"id":"paste", "caption":"Paste", "icon":"fa fa-paste"}], 'client', 'edit' )
+	Konekti.dropdown( "dd2", "fa fa-film", "Media", [
+				{"id":"video", "caption":"Video", "icon":"fa fa-video-camera"}, 
+				{"id":"audio", "caption":"Audio", "icon":"fa fa-volume-up"}], 'client', 'media', true )
+	Konekti.dropdown( "dd3", "fa fa-language", "", ["Español", "English"] )
+}
+
+</script>
+
+</body>
+</html>

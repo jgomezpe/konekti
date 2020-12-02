@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"A tab component is connected to a html component using method:<br><i>Konekti.tab(id, initial, ...)</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>HTML component to associate with the tab component</td></tr><tr><td>initial</td><td>Id of the tab that is initially shown</td></tr><tr><td>...</td><td>A list of tab components configurations</td></tr></table>"
+}

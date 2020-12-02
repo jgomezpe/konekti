@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id='btn' ></div>
+<div id='hlatex'></div>	
+<div id='latex' style='height:40%;width:100%'></div>
+<div id='hedit'></div>	
+<div id='coder' style='height:40%;width:100%'></div>
+
+<script>
+
+Konekti.uses('header','latex','btn','ace')
+
+function run(){
+   Konekti.client('latex').setText( Konekti.client('coder').getText() )
+}
+
+function KonektiMain(){
+	var client = new KonektiClient('client')
+	
+	var initial = 'When \\(a \\ne 0\\), there are two solutions to \\(ax^2 + bx + c = 0\\) and they are $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$'
+
+	Konekti.header('title','', 'Konekti Latex Component using MatJax' )
+	Konekti.header('hlatex','fa fa-subscript', 'Latex', 4, 'w3-black' )
+	Konekti.latex( 'latex', initial )
+	Konekti.btn('btn',"fa fa-play", "Compile","run()",'w3-bar-item w3-large',"Compile latex")
+	Konekti.ace( 'coder', initial, 'latex' )
+
+}
+
+</script>
+
+</body>
+</html>

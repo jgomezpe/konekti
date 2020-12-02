@@ -59,6 +59,19 @@ class ButtonPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new Btn(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the button
+	 * @param icon Icon of the button
+	 * @param caption Caption of the button
+	 * @param onclick Information of the method that will be executed when the button is pressed
+	 * @param style Style of the button
+	 * @param title Message that will be shown when mouse is over the button
+	 */
+	config(id, icon='', caption='', onclick={'client':'client'}, style='w3-bar-item w3-xlarge', title=''){
+		return {'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick}
+	}
 }
 
 /** Creates and registers the button plugin */
@@ -95,8 +108,7 @@ class Btn extends KonektiClient{
  * @param style Style of the button
  * @param title Message that will be shown when mouse is over the button
  */
-Konekti.btn = function(id, icon='', caption='', onclick={'client':'client'}, 
-			style='w3-bar-item w3-xlarge', title=''){
-	if( typeof id === 'object' ) return Konekti.plugin.btn.connect(id) 
-	else return  Konekti.plugin.btn.connect({'id':id, 'style':style, 'caption':caption, 'icon':icon, 'title':title, 'onclick':onclick})
+Konekti.btn = function(id, icon, caption, onclick, style, title){
+	if(typeof id === 'string') id=Konekti.plugin.btn.config(id, icon, caption, onclick, style, title)
+	return Konekti.plugin.btn.connect(id) 
 }

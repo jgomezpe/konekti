@@ -175,12 +175,16 @@ class KonektiPlugIn{
 	 */
 	html(thing){
 		var c = this.core.vc( thing.id )
-		if( c!==null ){
-			if( typeof this.replace == 'string' && this.replace == 'strict' ){
-				var node = this.core.resource.html(this.fillLayout(thing))
-				c.parentElement.replaceChild(node, c)
-			}else{ c.innerHTML = this.fillLayout(thing) }
+		if( c===null ){
+			c = document.createElement('div')
+			document.body.appendChild(c)
 		}
+
+		if( typeof this.replace === 'string' && this.replace == 'strict' ){
+			var node = this.core.resource.html(this.fillLayout(thing))
+			c.parentElement.replaceChild(node, c)
+		}else{ c.innerHTML = this.fillLayout(thing) }
+
 		return c
 	}
 
@@ -192,23 +196,13 @@ class KonektiPlugIn{
 		thing.gui = this.html(thing)
 		return this.client(thing)
 	}
-}
-
-/** Konekti Plugin for items (icon/caption) */
-class ItemPlugIn extends KonektiPlugIn{
-	/**
-	 * creates the item plugin
-	 */
-	constructor(){ 
-		super('item') 
-		this.htmlTemplate = "<i id='·id·-icon' class='·icon·'></i> ·caption·"
-	}
 
 	/**
-	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
+	 * Creates a config object from parameters
+	 * @param id Id of Plugin
+	 * @param arguments Plugin configuration parameters
 	 */
-	client(thing){ return new Item(thing.id+'-icon') }
+	config(){ return {} }
 }
 
 /** Core method for Konekti */
@@ -226,6 +220,7 @@ class KonektiCore{
 		this.pluginPath = "plugin/"
 		this.konektiModulePath = "https://konekti.numtseng.com/src/module/"
 		this.modulePath = "module/"
+		this.resource.stylesheet( 'https://konekti.numtseng.com/src/Konekti.css' )
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 	}
@@ -489,12 +484,12 @@ class KonektiCore{
 	
 	/**
 	 * Moves a component as child of another component
-	 * @param id Id of the component to move 
+	 * @param id Id/node of the component to move 
 	 * @param parent Id of the component that receives the component
 	 */
 	move(id, parent){
-		var t = this.vc(id)
-		t.parentElement.removeChild(t)
+		var t = (typeof id==='string')?this.vc(id):id
+		if( t!==null && t.parentElement !== null ) t.parentElement.removeChild(t)
 		this.vc(parent).appendChild(t)
 	}
 
@@ -666,7 +661,6 @@ class KonektiAPI{
  * Konekti Application program interface. Main object of the Konekti framework
  */
 Konekti = new KonektiAPI()
-new ItemPlugIn()
 
 /**
  * A client for the application. Connection point between front and back
@@ -716,6 +710,35 @@ class KonektiClient{
 	}
 }
 
+
+/** Konekti Plugin for items (icon/caption) */
+class ItemPlugIn extends KonektiPlugIn{
+	/**
+	 * creates the item plugin
+	 */
+	constructor(){ 
+		super('item') 
+		this.htmlTemplate = "<i id='·id·-icon' class='·icon·'></i> ·caption·"
+	}
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client(thing){ return new Item(thing.id+'-icon') }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the item
+	 * @param icon Icon of the item
+	 * @param caption Caption of the item
+	 */
+	config(id, icon='', caption='' ){ return {"id":id, "icon":icon, "caption":caption} }
+
+}
+
+new ItemPlugIn()
+
 /**
  * An item (icon/caption) manager
  */
@@ -734,6 +757,17 @@ class Item extends KonektiClient{
 		if( thing.caption !== undefined ) c.nextSibling.data = " "+thing.caption
 		if( thing.icon !== undefined ) c.className = thing.icon
 	}
+}
+
+/**
+ * Creates a config object from parameters
+ * @param id Id/config of the item
+ * @param icon Icon of the item
+ * @param caption Caption of the item
+ */
+Konekti.item = function(id, icon, caption){ 
+	id = (typeof id === 'string' )?Konekti.plugin.item.config(id,icon,caption):id
+	return Konekti.plugin.item(id)
 }
 
 /**

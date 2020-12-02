@@ -25,6 +25,15 @@ class LatexPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new LatexEditor(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id/Configuration of the latex component
+	 * @param tex Latex code
+	 * @param client Client of the latex component
+	 */
+	config(id, tex=''){ return {"id":id, 'initial':tex} }
+
 }
 
 new LatexPlugIn()
@@ -52,25 +61,24 @@ class LatexEditor extends KonektiEditor{
 	 * @param tex latex code to set in the latex component
 	 */
 	setText(tex){
-	    if( typeof tex == 'undefined' || tex==null) text=''
-        this.gui.setAttribute('initial', tex)
-        var output = this.innergui
-        output.innerHTML = tex.trim()
-        var tout = null
-        function set(){
-            if(typeof window.MathJax!='undefined'){
-                if( tout !=null ) clearTimeout(tout)
-                output.innerHTML = tex.trim()
-                window.MathJax.texReset()
-                window.MathJax.typesetClear()
-                window.MathJax.typesetPromise([output]).catch(function(err){
-                    output.innerHTML = ''
-                    output.appendChild(document.createTextNode(err.message))
-                    console.error(err)
-                }).then(function(){});
-            }else{ tout = setTimeout(set,1000) }
-        }
-        set()
+		if( tex === undefined || tex===null) text=''
+        	this.gui.setAttribute('initial', tex)
+		var output = this.innergui
+		var tout = null
+		function set(){
+			if(window.MathJax!==undefined){
+				if( tout !=null ) clearTimeout(tout)
+				output.innerHTML = tex.trim()
+				window.MathJax.texReset()
+				window.MathJax.typesetClear()
+				window.MathJax.typesetPromise([output]).catch(function(err){
+					output.innerHTML = ''
+					output.appendChild(document.createTextNode(err.message))
+					console.error(err)
+				}).then(function(){});
+			}else{ tout = setTimeout(set,1000) }
+		}
+		set()
 	}
 }
 
@@ -81,8 +89,8 @@ class LatexEditor extends KonektiEditor{
  * @param tex Latex code
  * @param client Client of the latex component
  */
-Konekti.latex = function(id, tex='', client='client'){
-	if( typeof id === 'string' ) return Konekti.plugin.latex.connect({"id":id, 'initial':tex, 'client':client})
-	else return Konekti.plugin.latex.connect(id)
+Konekti.latex = function(id, tex){
+	if(typeof id === 'string') id=Konekti.plugin.latex.config(id,tex)
+	return Konekti.plugin.latex.connect(id)
 }
 

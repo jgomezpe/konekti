@@ -24,6 +24,13 @@ class IFramePlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client(thing){ return new IFrameEditor(thing) }
+
+	/**
+	 * Creates a config object from parameters 
+	 * @param id Id of the iframe container
+	 * @param url Url/code for the iframe component
+	 */
+	config(id, url=''){ return {"id":id, "src":url} }
 }
 
 new IFramePlugIn()
@@ -64,8 +71,8 @@ class IFrameEditor extends KonektiEditor{
  * Konekti iframe
  * @param id Id of the iframe container
  * @param url Url/code for the iframe component
- * @param client Client of the iframe component
  */
-Konekti.iframe = function(id, url='', client='client'){
-	return Konekti.plugin.iframe.connect({"id":id, "src":url, 'client':client})
+Konekti.iframe = function(id, url){
+	if(typeof id==='string') id=Konekti.plugin.iframe.config(id,url)
+	return Konekti.plugin.iframe.connect(id)
 }

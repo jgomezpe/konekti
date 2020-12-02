@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id="log" style='width:100%'>La opción seleccionada aparece aquí...</div>
+<div id='header1'></div>	
+<div id='btn1'></div>
+<div id='header2'></div>	
+<div id='btn2'></div>
+<div id='header3'></div>	
+<div id='btn3' ></div>
+<div id='header4'></div>	
+<div id='btn4' ></div>
+<div id='header5'></div>	
+<div id='btn5' ></div>
+<div id='btn6' ></div>
+<div id='header7'></div>	
+<div id='btn7' ></div>
+<div id='header8'></div>	
+<div id='btn8' ></div>
+<script>
+
+Konekti.uses('btn','header')
+
+/* Cuando se selecciona el botón Prueba*/
+function run(){ Konekti.vc("log").innerHTML =  'Se seleccionó el botón Ejecutar' }
+
+/* Se define el cliente principal */
+class TheClient extends KonektiClient{
+	constructor(){ super() }
+	/* Cuando se selecciona un botón que redirije al metodo select */
+	select(optId){ Konekti.vc("log").innerHTML =  'Botón Seleccionado '+ optId + ':' + Konekti.vc(optId).innerHTML; }
+	/* Cuando se selecciona el botón Play (id=btn1) */
+	btn1(){ Konekti.vc("log").innerHTML =  'Se seleccionó el botón play'; }
+	/* Cuando se selecciona el botón Pruebame (id=btn2) */
+	btn2(){ Konekti.vc("log").innerHTML =  'Se seleccionó el botón Pruebame'; }
+	/* Cuando se selecciona el botón Paz (id=btn3) */
+	btn3(){ Konekti.vc("log").innerHTML =  'Se seleccionó el botón Paz'; }
+}
+
+/* Se define la función principal de Konekti */
+function KonektiMain(){
+	/* Se crea el cliente para responder a los eventos */
+	var client = new TheClient()
+	/* Se conectan los componentes */
+	Konekti.header('title','fa fa-gavel', 'Botón de Konekti' )
+	Konekti.header('header1', 'fa fa-smile-o','Solo icono', 4, 'w3-black' )
+	Konekti.btn('btn1','fa fa-play')
+	Konekti.header('header2', 'fa fa-font', 'Solo texto', 4, 'w3-black' )
+	Konekti.btn('btn2','', 'Pruebame')
+	Konekti.header('header3','fa fa-object-group','Icono y texto', 4, 'w3-black' )
+	Konekti.btn('btn3','fa fa-hand-peace-o', 'Paz')
+	Konekti.header('header4', 'fa fa-rocket','Ejecutando una función concreta (run)', 4, 'w3-black' )
+	Konekti.btn('btn4',"fa fa-bullseye", "Ejecutar","run()")
+	Konekti.header('header5','fa fa-plug','Ejecutando un método del cliente (select)', 4, 'w3-black' )
+	Konekti.btn('btn5',"fa fa-car", 'Carro', {"method":"select"})
+	Konekti.btn('btn6',"fa fa-plane", 'Avión', {"method":"select"})
+	Konekti.header('header5','fa fa-magic','Cambiando el estilo', 4, 'w3-black' )
+	Konekti.btn('btn5',"fa fa-bell", '', {"method":"select"},'w3-btn w3-jumbo w3-blue')
+	Konekti.btn('btn6',"fa fa-beer", '', {"method":"select"},'w3-circle w3-xlarge')
+	Konekti.header('header7','', 'Ayuda rápida', 4, 'w3-black' )
+	Konekti.btn('btn7','fa fa-bomb', '', {"method":"select"},'w3-btn w3-xlarge w3-red', 'Un botón con ayuda rápida')
+	Konekti.header('header8','fa fa-cog','Usando objeto de configuración', 4, 'w3-black' )
+	Konekti.btn({"id":"btn8","icon":"fa fa-bug", "onclick":{"method":"select"}})
+}
+
+</script>
+
+</body>
+</html>

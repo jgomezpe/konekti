@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id='hiframe1'></div>	
+<div id='iframe1' style='height:30%;width:100%'></div>
+<div id='btn' ></div>
+<div id='hiframe'></div>	
+<div id='iframe' style='height:30%;width:100%'></div>
+<div id='hedit'></div>	
+<div id='coder' style='height:30%;width:100%'></div>
+
+<script>
+
+Konekti.uses('header','iframe','btn','ace')
+
+function run(){
+   Konekti.client('iframe').setText( Konekti.client('coder').getText() )
+}
+
+var initial = "<!DOCTYPE html>\n<html>\n<head>\n<meta charset='UTF-8'>\n<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'>\n</scr"+"ipt>\n</head>\n<body>\n<style>\n html, body {\n height:100%;\n margin:0px;\n}\n</style>\n<div id='title'></div>\n<script>\nKonekti.uses('header')\nfunction KonektiMain(){\n var client = new KonektiClient()\n Konekti.header('title', 'fa fa-smile-o','Inside an iframe', 3, 'w3-teal w3-center' )\n}\n</scr"+"ipt>\n</body>\n</html>"
+
+function KonektiMain(){
+	var client = new KonektiClient()
+
+	Konekti.header('title','', 'Konekti Iframe Component' )
+	Konekti.header('hiframe1','fa fa-wikipedia-w', 'Wikipedia', 4, 'w3-black' )
+	Konekti.iframe( 'iframe1', 'https://wikipedia.com' )
+	Konekti.header('hiframe','fa fa-file-code-o', 'IFrame from HTML code', 4, 'w3-black' )
+	Konekti.iframe( 'iframe', initial )
+	Konekti.btn('btn',"fa fa-play", "Compile","run()",'w3-bar-item w3-large',"Compile HTML")
+	Konekti.ace( 'coder', initial, 'html' )
+
+}
+
+</script>
+
+</body>
+</html>

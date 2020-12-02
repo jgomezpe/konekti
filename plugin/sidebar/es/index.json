@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Una barra lateral se conecta a un componente html usando el siguiente método:<br><i>Konekti.sidebar(id, width='200px', height='100%')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML a asociar con la barra lateral</td></tr><tr><td>width</td><td>Ancho de la barra lateral</td></tr><tr><td>height</td><td>Alto de la barra lateral</td></tr><tr><td>side</td><td>Configuración componente lateral</td></tr><tr><td>main</td><td>Configuración componente principal</td></tr><tr><td>navbar</td><td>Configuración barra de navegación</td></tr></table>"
+}

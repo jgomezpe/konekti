@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Un componente tab se conecta a un componente html mediante el método:<br><i>Konekti.tab(id, initial, ...)</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el componente tab</td></tr><tr><td>initial</td><td>Identificador del tab que se presenta al inicio</td></tr><tr><td>...</td><td>Una lista de configuración de cada tab en el componente</td></tr></table>"
+}

@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"A video is connected to a html component using one of the following methods:<br><i>Konekti.media(id, media, type, src)</i><br><i>Konekti.video(id, type, src)</i><br><i>Konekti.mp4(id, src)</i><br><table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the video</td></tr><tr><td>media</td><td>Media type (set to 'video' for videos)</td></tr><tr><td>type</td><td>Video type</td></tr><tr><td>src</td><td>URL of the video</td></tr></table>"
+}

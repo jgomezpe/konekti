@@ -8,6 +8,13 @@ class HTMLPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new DIVEditor(thing.id) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the html container
+	 * @param initial Initial code for the html component
+	 */
+	config(id, initial=''){ return {'id':id, 'initial':initial} }
 }
 
 new HTMLPlugIn()
@@ -43,10 +50,10 @@ class DIVEditor extends KonektiEditor{
 /**
  * @function
  * Konekti html
- * @param id Id of the html container
+ * @param id Id/Configuration of the html container
  * @param code Code for the html component
- * @param client Client of the html component
  */
-Konekti.html = function(id, code, client='client'){
-	return Konekti.plugin.html.connect( {'id':id, 'initial':code, 'client':client} )
+Konekti.html = function(id, code){
+	if(typeof id === 'string') id=Konekti.plugin.html.config(id,code)
+	return Konekti.plugin.html.connect(id)
 }

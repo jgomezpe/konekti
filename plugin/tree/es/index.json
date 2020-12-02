@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Un árbol se conecta a un componente html usando el método:<br><i>Konekti.tree(id, t, client='client', expand='fa fa-angle-right', shrink='fa fa-angle-down', inneroptions=null, leaf='', leafoptions=null video )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el árbol</td></tr><tr><td>t</td><td>Árbol</td></tr><tr><td>client</td><td>Cliente que escucha las opciones seleccionadas del árbol</td></tr><tr><td>expand</td><td>Ícono de expandir un nodo interno</td></tr><tr><td>shrink</td><td>Ícono de contraer un nodo interno</td></tr><tr><td>inneroptions</td><td>Operaciones extra sobre un nodo interno</td></tr><tr><td>leaf</td><td>Ícono para los nodos hoja</td></tr><tr><td>leafoptions</td><td>Operaciones extra sobre un nodo hoja</td></tr></table>"
+}

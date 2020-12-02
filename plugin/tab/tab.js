@@ -9,7 +9,7 @@ class TabPlugIn extends KonektiPlugIn{
  	 * @param thing Tab information
 	 * @return Html code associated to the tab component
 	 */
-	fillLayout( thing ){
+	fillTabs( thing ){
 		var tabsHTML =''
 		for( var i=0; i<thing.tab.length; i++ ){
 			var btx = thing.tab[i]
@@ -18,7 +18,19 @@ class TabPlugIn extends KonektiPlugIn{
 			btx.id += '-tab'
 		}
 		thing.tabs = tabsHTML
-		return Konekti.core.fromTemplate( this.htmlTemplate, thing)    
+		return thing.tabs    
+	}
+
+	/** 
+	 * Computes the tabs-ids
+	 * @param thing Tab configuration
+	 */
+	ids( thing ){
+		thing.ids=[]
+		for( var i=0; i<thing.tab.length; i++ ){
+			if( typeof thing.tab[i] === 'string' ) thing.tab[i] = Konekti.core.item(thing.tab[i])
+			thing.ids.push(thing.tab[i].id)
+		}
 	}
 
 
@@ -33,16 +45,43 @@ class TabPlugIn extends KonektiPlugIn{
 	 * @param thing Tab component configuration
 	 */
 	connect( thing ){
-		thing.ids=[]
-		for( var i=0; i<thing.tab.length; i++ ){
-			if( typeof thing.tab[i] === 'string' ) thing.tab[i] = Konekti.core.item(thing.tab[i])
-			thing.ids.push(thing.tab[i].id)
+		this.ids(thing)
+		var content = {"plugin":"html", "initial":this.fillTabs(thing)}
+		Konekti.hcf( thing.id, content,  
+			{"plugin":"navbar", "btn":thing.tab, "client":thing.id, "method":"select", "style":"w3-light-grey w3-medium"})
+		function back(){
+			for( var i=0; i<thing.tab.length; i++ )
+				if(thing.tab[i].plugin!==undefined) Konekti[thing.tab[i].plugin](thing.tab[i])
 		}
-		thing.gui = this.html(thing) 
-		Konekti.navbar(thing.navbarid || thing.id+'-bar', thing.tab, "select", "w3-light-grey w3-medium", thing.id)		
+		var uses = []
+		for( var i=0; i<thing.tab.length; i++ ){
+			thing.tab[i].id = thing.tab[i].id.substring(0,thing.tab[i].id.length-4)
+			if(thing.tab[i].plugin !== undefined) uses.push(thing.tab[i].plugin)
+		}
+		if(uses.length>0) Konekti.uses(...uses,back)	
 		var client = this.client(thing)
 		setTimeout( function(){ client.open(thing.initial) }, 200 )
 		return client
+	}
+
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param id Id of the tab component
+	 * @param initial Id of the tab that will be initially open
+	 * @param tabs Tab configurations 
+	 */
+	config(id, initial, tabs){
+		var btn = []
+		for(var i=0; i<tabs.length; i++){
+			if(typeof tabs[i]==='string'){
+				var item = Konekti.core.item(tabs[i])
+				btn.push(item)
+		  	}else{
+				btn.push(tabs[i])
+			}
+		}
+		return {"id":id, "initial":initial, "tab":btn}
 	}
 }
 
@@ -50,11 +89,11 @@ new TabPlugIn()
 
 /** Tab manager */
 class TabClient extends KonektiClient{
-    /** 
-     * Creates a tab component manager 
-     * @param id Tab id
-     * @param tabs Collection of tabs managed by the component
-     */
+	/** 
+	 * Creates a tab component manager 
+	 * @param id Tab id
+	 * @param tabs Collection of tabs managed by the component
+	 */
 	constructor( thing ){
 		super(thing)
 		this.tabs = thing.ids
@@ -85,10 +124,10 @@ class TabClient extends KonektiClient{
  * @param tabs Tab configurations 
  */
 Konekti.tab = function(id, initial){
-    var btn = []
-    for(var i=2; i<arguments.length; i++){
-        if(typeof arguments[i]==='string') btn.push(Konekti.core.item(arguments[i]))
-        else btn.push(arguments[i])
-    }
-    return Konekti.plugin.tab.connect({'id':id, 'initial':initial, 'tab':btn})
+	if( typeof id === 'string' ){
+		var tabs = []
+		for(var i=2; i<arguments.length; i++) tabs.push(arguments[i])
+		id = Konekti.plugin.tab.config(id, initial, tabs)
+	}
+	return Konekti.plugin.tab.connect(id)
 }

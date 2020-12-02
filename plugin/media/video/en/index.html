@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id="log" style='width:100%;height:10%'>Video progress/events will appear here...</div>
+<div id='video' style='height:60%;width:100%'></div>
+
+<script>
+
+Konekti.uses('header','media')
+
+class TheClient extends KonektiClient{
+	constructor(){ super() }
+	// Listen to video's play button 
+	play( id ){ Konekti.vc('log').innerHTML = 'Play button pressed: ' + id }
+	// Listen to video's pause button 
+	pause( id ){ Konekti.vc('log').innerHTML = 'Pause button pressed: ' + id }
+	// Listen to video's current position  
+	seek( id, time ){ Konekti.vc('log').innerHTML = 'Playing video: ' + id + ' time: ' + time }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+	Konekti.header('title','', 'Konekti Video' )
+	// Connects the video with the HTML component
+	var vd = Konekti.mp4( 'video', 'https://www.w3schools.com/html/mov_bbb.mp4' )
+	// Adds a listener to the video player
+	vd.addListener(client.id)
+}
+
+</script>
+
+</body>
+</html>

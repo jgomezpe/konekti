@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"A youtube video is connected to a html component using function:<br><i>Konekti.youtube(id, video )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the button</td></tr><tr><td>video</td><td>Youtube id of the video</td></tr></table>"
+}

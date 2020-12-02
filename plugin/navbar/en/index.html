@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+
+</head>
+
+<body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0px;
+    }
+</style>
+
+<div id='title'></div>
+<div id="log" style='width:100%;height:10%'>Selected option will appear here...</div>
+<div id='header1'></div>
+<div id='navbar1'></div>	
+<div id='header2'></div>
+<div id='navbar2'></div>	
+<div id='header3'></div>
+<div id='navbar3'></div>	
+<div id='header4'></div>
+<div id='navbar4'></div>	
+<script>
+
+Konekti.uses('navbar','header')
+
+function add(){
+    Konekti.client("navbar3").add({"id":"soccer","title":"Soccer", "icon":"fa fa-soccer-ball-o"})
+}
+
+function addSoccer(){
+    Konekti.client("navbar3").add('btn', {"id":"soccer","title":"Soccer", "icon":"fa fa-soccer-ball-o"})
+}
+
+function del(){
+    Konekti.client("navbar3").remove("soccer")
+}
+
+class TheClient extends KonektiClient{
+	constructor(){ super() }
+	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
+	
+	addleaf(){ Konekti.client("navbar4").add('btn', {"id":"leaf","title":"Leaf", "icon":"fa fa-leaf"}) }
+	addmobile(){ Konekti.client("navbar4").add('btn', {"id":"mobile","title":"Mobile", "icon":"fa fa-mobile"}) }
+	addmoon(){ Konekti.client("navbar4").insertBefore('btn', 'keep', {"id":"moon","title":"Moon", "icon":"fa fa-moon-o"}) }
+	keep(){ Konekti.client("navbar4").keep(['addleaf','addmobile', 'keep']) }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+
+	Konekti.header('title','', 'Konekti Navigation Bars' )
+	Konekti.header('header1','', 'Navbar with default style', 4, 'w3-black' )	
+	var btn=[
+			{"id":"config","title":"Configure","icon":"fa fa-cogs"},
+			{"id":"coffee","title":"Coffe","icon":"fa fa-coffee"},
+			{"id":"html","title":"HTML","icon":"fa fa-file-code-o"},
+			{"id":"file","title":"File","icon":"fa fa-file-text-o"}
+		]		
+	var navbar = Konekti.navbar('navbar1', btn ) 
+	// Adds language dropdown
+	navbar.add( 'dropdown', {"id":"lang", "icon":"fa fa-language", "method":"select", 
+				"options":[{"id":"es","caption":"Español"}, {"id":"en","caption":"English"}]} )
+
+	Konekti.header('header2','', 'Navbar with orange style and large icons', 4, 'w3-black' )	
+	var btn2=[
+			{"id":"hand","title":"Hand","icon":"fa fa-hand-paper-o"},
+			{"id":"arrow","title":"Arrow","icon":"fa fa-arrow-left"},
+			{"id":"face","title":"Face","icon":"fa fa-smile-o"}
+		]		
+	var navbar2 = Konekti.navbar('navbar2', btn2, 'client', 'select', 'w3-orange w3-large' ) 
+
+	Konekti.header('header3','', 'Adds and removes a button', 4, 'w3-black' )	
+	var btn3=[
+			{"id":"add","title":"Add button","onclick":"add()","icon":"fa fa-plus"},
+			{"id":"remove","title":"Remove button","onclick":"del()","icon":"fa fa-minus"}
+		]		
+	var navbar3 = Konekti.navbar('navbar3', btn3, 'client', 'select', 'w3-teal w3-xlarge' )
+
+	Konekti.header('header4','', 'Dynamic Navbar', 4, 'w3-black' )	
+	var btn4=[
+			{"id":"addleaf","title":"Add leaf button","onclick":{"method":"addleaf"},"icon":"fa fa-key"},
+			{"id":"addmobile","title":"Add mobile button","onclick":{"method":"addmobile"},"icon":"fa fa-pencil"},
+			{"id":"addmoon","title":"Insert moon button","onclick":{"method":"addmoon"},"icon":"fa fa-lemon-o"},
+			{"id":"keep","title":"Keeps original buttons","onclick":{"method":"keep"},"icon":"fa fa-magic"}
+		]		
+	var navbar4 = Konekti.navbar('navbar4', btn4, 'client', 'select', 'w3-blue w3-xlarge' )
+}
+
+</script>
+
+</body>
+</html>

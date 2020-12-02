@@ -8,7 +8,7 @@ class MediaPlugIn extends KonektiPlugIn{
 	 * @return Html code associated to the button component
 	 */
 	fillLayout(thing){
-		thing.style = thing.media=='video'?'height:100%;width:auto':''
+		thing.style = thing.media=='video'?'width:100%;height:100%':''
 		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
 	}
 
@@ -17,6 +17,15 @@ class MediaPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new Media(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the media component
+	 * @param media Type of media to connect (audio/video)
+	 * @param type Type of media to connect
+	 * @param src url of media to connect
+	 */
+	config(id, media, type, src){ return {"id":id, "media":media, "type":type, "src":src} }
 }
 
 new MediaPlugIn()
@@ -30,8 +39,8 @@ new MediaPlugIn()
  * @param src url of media to connect
  */
 Konekti.media = function(id, media, type, src){
-	if( typeof id==='string' ) return Konekti.plugin.media.connect({"id":id, "media":media, "type":type, "src":src})
-	else return Konekti.plugin.media.connect(id)
+	if(typeof id==='string') id=Konekti.plugin.media.config(id,media,type,src)
+	return Konekti.plugin.media.connect(id)
 }
 
 /**

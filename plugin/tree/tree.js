@@ -3,8 +3,7 @@ class TreePlugIn extends KonektiPlugIn{
     /** Creates a Plugin for tree components */
     constructor(){
         super('tree')
-        this.replace = 'strict'
-    }
+     }
     
     /**
      * Splits the html template in the tree components 
@@ -118,6 +117,22 @@ class TreePlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new Tree(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the tree component
+	 * @param t Tree
+	 * @param client Client listening to tree selections
+	 * @param expand Default icon for expanding inner nodes
+	 * @param shrink Default icon for shrinking inner nodes
+	 * @param inneroptions Default dropdown list associated to inner nodes
+	 * @param leaf Default icon for leaf nodes
+	 * @param leafoptions Default dropdown list associated to leaf nodes
+	 */
+	config(id, t, client='client', expand='fa fa-angle-right', shrink='fa fa-angle-down', inneroptions=null, leaf='', leafoptions=null ){
+		return {"id":id,"tree":t,"client":client,"expand":expand,"shrink":shrink,"leaf":leaf, 
+			"inneroptions":inneroptions, "leafoptions":leafoptions} 
+	}
 
 }
 
@@ -284,9 +299,7 @@ class Tree extends KonektiClient{
  * @param leaf Default icon for leaf nodes
  * @param leafoptions Default dropdown list associated to leaf nodes
  */
-Konekti.tree = function(id, t, client='client', expand='fa fa-angle-right', shrink='fa fa-angle-down', inneroptions=null, leaf='', leafoptions=null ){
-	if( typeof id === 'string' )
-		return Konekti.plugin.tree.connect({"id":id,"tree":t,"client":client,"expand":expand,"shrink":shrink,"leaf":leaf, "inneroptions":inneroptions, "leafoptions":leafoptions}) 
-			
-	else return Konekti.plugin.tree.connect(id)
+Konekti.tree = function(id, t, client, expand, shrink, inneroptions, leaf, leafoptions ){
+	if(typeof id === 'string') id=Konekti.plugin.tree.config(id,t,client,expand,shrink,inneroptions,leaf,leafoptions) 
+	return Konekti.plugin.tree.connect(id)
 }

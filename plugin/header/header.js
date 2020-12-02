@@ -24,6 +24,18 @@ class HeaderPlugIn extends KonektiPlugIn{
 	 * @param thing Instance configuration
 	 */
 	client( thing ){ return new Header(thing) }
+
+	/**
+	 * Creates a config object from parameters
+	 * @param id Id of the header 
+	 * @param icon Icon for the header
+	 * @param caption Caption of the header
+	 * @param h Size of the header (1,2,3..)
+	 * @param style Style of the header
+	 */
+	config(id, icon='', caption='', h=3, style='w3-center w3-blue' ){
+	    return {"id":id, "caption":caption, "h":h, "style":style, "icon":icon}
+	}
 }
 
 new HeaderPlugIn()
@@ -57,10 +69,7 @@ class Header extends KonektiClient{
  * @param h Size of the header (1,2,3..)
  * @param style Style of the header
  */
-Konekti.header = function(id, icon='', caption='', h=3, style='w3-center w3-blue' ){
-    var thing
-    if(typeof id==='string'){
-        thing={"id":id, "caption":caption, "h":h, "style":style, "icon":icon}
-    }else thing=id
-    return Konekti.plugin.header.connect(thing)
+Konekti.header = function(id, icon, caption, h, style){
+    if(typeof id==='string') id=Konekti.plugin.header.config(id,icon,caption,h,style)
+    return Konekti.plugin.header.connect(id)
 }
