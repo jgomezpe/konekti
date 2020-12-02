@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"A hcf component (Header/Content/Footer component) is connected to a html component using method:<br><i>Konekti.hcf(id, content, header={}, footer={} )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the hcf container</td></tr><tr><td>content</td><td>Content component</td></tr><tr><td>header</td><td>Header component</td></tr><tr><td>footer</td><td>Footer component</td></tr></table>"
+}

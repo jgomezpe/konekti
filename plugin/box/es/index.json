@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"Un componente caja (contenedor para componentes Konekti) se conecta a un componente html usando el método:<br><i>Konekti.box(id, cl, sty, plugin, ... )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML para el contenedor caja</td></tr><tr><td>cl</td><td>Configuratión de clase del contenedor caja</td></tr><tr><td>sty</td><td>Configuración de estilo para el componente caja</td></tr><tr><td>plugin</td><td>Componente Konekti dentro del contenedor caja</td></tr><tr><td>...</td><td>Argumentos específicos del componente Konekti (en el mismo orden pero sin <i>id</i>)</td></tr></table>"
+}

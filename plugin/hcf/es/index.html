@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti HCF</title>
+	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
+</head>
+
+<body>
+<div id="main" style='width:80%;height:80%'></div>
+
+<script>
+Konekti.uses('hcf')
+function KonektiMain(){
+	var client = new KonektiClient()
+
+	// Main content
+
+	Konekti.hcf("main", {
+				"plugin":"split",
+				"type":"col",
+				"start":40,
+				"one":{"plugin":"ace","id":"coder","mode":"html","initial":"<div>Hola Mundo!</div>"},
+				"two":{"plugin":"youtube","id":"viewer","video":"fv2Ms3C7Xrw"}
+			},
+			{"plugin":"header","icon":"fa fa-lightbulb-o", "caption":"Konekti Encabezado/Contenido/Pie", "h":3},
+			{"plugin":"header","caption":"Desarrollado por el Prof. Jonatan Gomez, Ph. D.", "h":6})
+}
+</script>
+
+</body>
+</html>

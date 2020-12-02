@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+	<meta charset="UTF-8">
+	<title>Konekti Canvas</title>
 	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
 
 </head>
@@ -27,7 +28,7 @@ Konekti.uses('header','canvas','btn','ace')
 
 function run(){
 	// Se envia el comando escrito en el editor al canvas
-   Konekti.client('canvas').setText( Konekti.client('coder').getText() )
+	Konekti.client('canvas').setText( Konekti.client('coder').getText() )
 }
 
 function KonektiMain(){

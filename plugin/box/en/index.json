@@ -1,0 +1,4 @@
+{
+ "id":"info",
+	"initial":"A box component (container for Konekti components) is connected to a html component using method:<br><i>Konekti.box(id, cl, sty', plugin, ... )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the box container</td></tr><tr><td>cl</td><td>Class configuration of the box container</td></tr><tr><td>sty</td><td>Style configuration of the box container</td></tr><tr><td>plugin</td><td>Konekti component to be inside the box container</td></tr><tr><td>...</td><td>Specificic arguments of the Konekti component (same order, without id)</td></tr></table>"
+}

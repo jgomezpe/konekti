@@ -2,27 +2,23 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Konekti Side Bar</title>
+	<title>Konekti Box</title>
 	<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'></script> 
 </head>
 
 <body>
-<div id='title'></div>
-<div id='log'>Selected option will appear here...</div>
-<div id='root' style='width:100%;height:90%'></div>
+<div id="log" style='width:100%'>Selected option will appear here...</div>
 
 <script>
-
-Konekti.uses('sidebar','header')
-
+Konekti.uses('box')
 function KonektiMain(){
 	var client = new KonektiClient('client')
 	client.select = function(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 
 	// Main content
 
-	Konekti.header('title','', 'Konekti Sidebar' )
-	Konekti.sidebar('root', '200px', {"plugin":"tree", "id":"toc", "tree":{ "id":"Home", "client":"client",
+	Konekti.box("title", "", "", "header", '', 'Konekti Box' )
+	Konekti.box("root", "", "width:80%;height:60%", "sidebar", '200px', {"plugin":"tree", "id":"toc", "tree":{ "id":"Home", "client":"client",
 			"children":[
 				"Help",
 				{"caption":"About", "children":[
@@ -39,7 +35,6 @@ function KonektiMain(){
 			{"id":"file","title":"File","icon":"fa fa-file-text-o"}
 		]})
 }
-
 </script>
 
 </body>

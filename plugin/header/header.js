@@ -13,7 +13,7 @@ class HeaderPlugIn extends KonektiPlugIn{
 	 */
 	fillLayout(thing){
 		this.addItemHTML()
-		new Item(thing)
+		
 		thing.style = thing.style || 'w3-center w3-blue'
 		thing.h = thing.h || 3
 		return Konekti.core.fromTemplate( this.htmlTemplate, thing )
@@ -54,9 +54,11 @@ class Header extends KonektiClient{
 	 * @param thing Component configuration 
 	 */
 	update(thing){
-		var c = this.vc()
-		if( thing.style !== undefined ) c.className += thing.style
-		Konekti.client(this.id+'-icon').update(thing)
+		var c = this.vc('-icon')
+		if( thing.caption !== undefined ) c.nextSibling.data = " "+thing.caption
+		if( thing.icon !== undefined ) c.className = thing.icon
+		c = this.vc()
+		if( thing.style !== undefined ) c.className = thing.style
 	}
 }
 
