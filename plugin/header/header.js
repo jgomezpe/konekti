@@ -65,7 +65,7 @@ new HeaderPlugIn()
 /**
  * Associates/adds a header
  * @method
- * Konekti header
+ * header
  * @param id Id of the header/Configuration of the header
  * @param icon Icon for the header
  * @param caption Caption of the header

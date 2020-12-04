@@ -338,7 +338,7 @@ class PlugInLoader{
 
 }
 
-/** Doom utility functions */
+/** Document utility functions */
 class DOM{
 	constructor(){}
 
@@ -604,8 +604,6 @@ Konekti = null
 class API{
 	/**
 	 * Inits the konekti framework
-	 * @param callback Function that will be called after initializing the konekti framework
-	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
 	 */
 	constructor(){
 		Konekti = this
@@ -865,7 +863,8 @@ class MediaClient extends Client{
 }
 
 /**
- * HyperMedia: A hypermedia component for Konekti
+ * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
+ * When the media is played, the set of editors are updated accroding to thier associated scripts.
  */
 class HyperMedia extends KonektiMedia{
 	/**

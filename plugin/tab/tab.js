@@ -38,7 +38,7 @@ class TabPlugIn extends PlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
-	client(thing){ return new TabClient(thing) }    
+	client(thing){ return new Tab(thing) }    
 
 	/** 
 	 * Connects the tab component with the GUI component
@@ -86,7 +86,7 @@ class TabPlugIn extends PlugIn{
 }
 
 /** Tab manager */
-class TabClient extends Client{
+class Tab extends Client{
 	/** 
 	 * Creates a tab component manager 
 	 * @param id Tab id

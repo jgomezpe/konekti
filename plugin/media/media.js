@@ -1,4 +1,4 @@
-/** Konekti Plugin for media components */
+/** Konekti Plugin for media components (audio/video) */
 class MediaPlugIn extends PlugIn{
     /** Creates a Plugin for media components */
     constructor(){ super('media') }
