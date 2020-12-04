@@ -866,7 +866,7 @@ class MediaClient extends Client{
  * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
  * When the media is played, the set of editors are updated accroding to thier associated scripts.
  */
-class HyperMedia extends KonektiMedia{
+class HyperMedia extends MediaClient{
 	/**
 	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
 	 * @param thing Hyper media client information
