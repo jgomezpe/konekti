@@ -1,5 +1,5 @@
 /** Konekti Plugin for applications with a sidebar */
-class SideBarPlugIn extends KonektiPlugIn{
+class SideBarPlugIn extends PlugIn{
 	/** Creates a Plugin for sidebar applications */
 	constructor(){ 
  		super('sidebar') 
@@ -34,12 +34,12 @@ class SideBarPlugIn extends KonektiPlugIn{
 		navbar.id = navbar.id || thing.id+'-bar'
 		navbar.btn = navbar.btn || []
 		navbar.btn.unshift(
-			Konekti.plugin.btn.config(thing.id+'-main-btn',"fa fa-bars", "", 
-				'Konekti.plugin.sidebar.open("'+thing.id+'-side")', 
+			Konekti.plugins.btn.config(thing.id+'-main-btn',"fa fa-bars", "", 
+				'Konekti.plugins.sidebar.open("'+thing.id+'-side")', 
 				"w3-bar-item w3-xlarge w3-hide-large"))
 		var sidenavbar = {"plugin":"navbar", "id":thing.id+"-side-bar", 
-			"btn":[Konekti.plugin.btn.config(thing.id+'-side-btn', "fa fa-bars", "&times;",
-			'Konekti.plugin.sidebar.close("'+thing.id+'-side")',"w3-bar-item w3-xlarge w3-hide-large")]}
+			"btn":[Konekti.plugins.btn.config(thing.id+'-side-btn', "fa fa-bars", "&times;",
+			'Konekti.plugins.sidebar.close("'+thing.id+'-side")',"w3-bar-item w3-xlarge w3-hide-large")]}
 		
 		thing.gui = this.html(thing)
 		function back(){
@@ -79,7 +79,7 @@ new SideBarPlugIn()
  * @param navbar Navigation bar configuration
  */
 Konekti.sidebar = function(id, width, side, main, navbar){
-	if(typeof id === 'string') id=Konekti.plugin.sidebar.config(id,width,side,main,navbar)
-	return Konekti.plugin.sidebar.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.sidebar.config(id,width,side,main,navbar)
+	return Konekti.plugins.sidebar.connect(id)
 }
 

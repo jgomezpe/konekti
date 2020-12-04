@@ -17,7 +17,7 @@
 
 Konekti.uses('header','media')
 
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	// Escucha el botón de reproducir del video 
 	play( id ){ Konekti.vc('log').innerHTML = 'Se presionó el botón de reproducir: ' + id }

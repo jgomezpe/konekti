@@ -33,7 +33,7 @@ function del(){
     Konekti.client("navbar3").remove("soccer")
 }
 
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 	

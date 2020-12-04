@@ -1,5 +1,5 @@
 /** Konekti Plugin for tree components */
-class TreePlugIn extends KonektiPlugIn{
+class TreePlugIn extends PlugIn{
     /** Creates a Plugin for tree components */
     constructor(){
         super('tree')
@@ -37,10 +37,10 @@ class TreePlugIn extends KonektiPlugIn{
                     opt = {"id":id+'-'+opt, "caption":opt}
                 }
                 opt.tree = tree
-                optTemplate += Konekti.core.fromTemplate(this.itemTemplate, opt)
+                optTemplate += Konekti.dom.fromTemplate(this.itemTemplate, opt)
             }
             var copt = {"id":id, "tree":tree, "drop":optTemplate}
-            return Konekti.core.fromTemplate(this.optionsTemplate, copt)
+            return Konekti.dom.fromTemplate(this.optionsTemplate, copt)
         }else return ''
     }
 
@@ -54,11 +54,11 @@ class TreePlugIn extends KonektiPlugIn{
     fillLeaf(tree, leaf, icon, options){
         leaf.tree = tree
         leaf.run = "Konekti.client('·tree·').select('·id·')"
-        leaf.run = Konekti.core.fromTemplate(leaf.run, leaf)
+        leaf.run = Konekti.dom.fromTemplate(leaf.run, leaf)
         leaf.icon = leaf.icon || icon
         options = leaf.option || options
         leaf.options = this.fillOption(tree, leaf.id, options)
-        return Konekti.core.fromTemplate(this.leafTemplate, leaf)
+        return Konekti.dom.fromTemplate(this.leafTemplate, leaf)
     }
 
     /**
@@ -84,12 +84,12 @@ class TreePlugIn extends KonektiPlugIn{
         }
         inner.tree = tree
         inner.run = "Konekti.client('·tree·').expand('·id·')"
-        inner.run = Konekti.core.fromTemplate(inner.run, inner)
+        inner.run = Konekti.dom.fromTemplate(inner.run, inner)
         inner.icon = inner.icon || expand
         inner.shrink = inner.shrink || shrink
         inner.inner = template
         inner.options = this.fillOption(tree, inner.id, ioptions)
-        return Konekti.core.fromTemplate(this.innerTemplate, inner)
+        return Konekti.dom.fromTemplate(this.innerTemplate, inner)
     }
 
     /**
@@ -109,7 +109,7 @@ class TreePlugIn extends KonektiPlugIn{
         if( thing.tree.caption === undefined ) thing.tree.caption = thing.tree.id
         if( thing.tree.id === undefined ) thing.tree.id = thing.tree.caption
         thing.inner = this.fillInner(id, thing.tree, expand, shrink, leaf, ioptions, loptions )
-        return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+        return Konekti.dom.fromTemplate(this.htmlTemplate, thing)
     }
 
     	/**
@@ -138,7 +138,7 @@ class TreePlugIn extends KonektiPlugIn{
 
 
 /** Tree manager */
-class Tree extends KonektiClient{
+class Tree extends Client{
     /** 
      * Creates a tree component manager 
      * @param thing Tree configuration
@@ -233,7 +233,7 @@ class Tree extends KonektiClient{
         if( option !== undefined && option !== null){
             var optTemplate = ''
             for( var i=0; i<option.length; i++ ){
-		if( option[i].caption !== undefined ) Konekti.core.update(option[i].id, 'caption', option[i].caption)
+		if( option[i].caption !== undefined ) Konekti.dom.update(option[i].id, 'caption', option[i].caption)
 		if( option[i].icon !== undefined ) Konekti.vc(option[i]+'-icon').className = option[i].icon
             }
         }
@@ -249,7 +249,7 @@ class Tree extends KonektiClient{
         if( icon !== undefined && icon !== null ) Konekti.vc(leaf.id).icon = icon
         if( leaf.icon !== undefined && leaf.icon !== null ) Konekti.vc(leaf.id).icon = leaf.icon
 	Konekti.vc(leaf.id+'-icon').className = Konekti.vc(leaf.id).icon
-	if( leaf.caption !== undefined ) Konekti.core.update(leaf.id, 'caption', leaf.caption )
+	if( leaf.caption !== undefined ) Konekti.dom.update(leaf.id, 'caption', leaf.caption )
 	this.updateOption( leaf.id, leaf.option || (option!==undefined && option!==null)?option.leaf:null )
    }
 
@@ -275,7 +275,7 @@ class Tree extends KonektiClient{
         if( icon!==undefined && icon != null && icon.shrink !== undefined ) Konekti.vc(inner.id).shrink = icon.shrink
         if( inner.shrink !== undefined ) Konekti.vc(inner.id).shrink = inner.shrink
 	Konekti.vc(inner.id+'-icon').className = Konekti.vc(inner.id).icon
-	if( inner.caption !== undefined ) Konekti.core.update(inner.id, 'caption', inner.caption )
+	if( inner.caption !== undefined ) Konekti.dom.update(inner.id, 'caption', inner.caption )
 	this.updateOption( inner.id, inner.option || (option!==undefined && option!==null)?option.inner:null )
     }
 
@@ -303,6 +303,6 @@ new TreePlugIn()
  * @param leafoptions Default dropdown list associated to leaf nodes
  */
 Konekti.tree = function(id, t, client, expand, shrink, inneroptions, leaf, leafoptions ){
-	if(typeof id === 'string') id=Konekti.plugin.tree.config(id,t,client,expand,shrink,inneroptions,leaf,leafoptions) 
-	return Konekti.plugin.tree.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.tree.config(id,t,client,expand,shrink,inneroptions,leaf,leafoptions) 
+	return Konekti.plugins.tree.connect(id)
 }

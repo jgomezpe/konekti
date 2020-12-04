@@ -1,5 +1,5 @@
 /** Konekti Plugin for Youtube */
-class YoutubePlugIn extends KonektiPlugIn{
+class YoutubePlugIn extends PlugIn{
     /** Creates a Plugin for Youtube */
     constructor(){
         super('youtube') 
@@ -40,7 +40,7 @@ class YoutubePlugIn extends KonektiPlugIn{
 	}
 }
 
-class Youtube extends KonektiMedia{
+class Youtube extends MediaClient{
 	constructor(thing){ super(thing) }
 
 	/**
@@ -116,8 +116,8 @@ class Youtube extends KonektiMedia{
 new YoutubePlugIn()
 
 //  Using the youtube api
-window.onYouTubeIframeAPIReady = function(){ Konekti.plugin.youtube.done() }
-Konekti.core.resource.script(null,'https://www.youtube.com/iframe_api', null)
+window.onYouTubeIframeAPIReady = function(){ Konekti.plugins.youtube.done() }
+Konekti.resource.script(null,'https://www.youtube.com/iframe_api', null)
 
 /**
  * Associates/Adds a youtube video component
@@ -127,6 +127,6 @@ Konekti.core.resource.script(null,'https://www.youtube.com/iframe_api', null)
  * @param video youtube id of the video
  */
 Konekti.youtube = function(id, video){
-	if(typeof id === 'string') id=Konekti.plugin.youtube.config(id,video)
-	return Konekti.plugin.youtube.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.youtube.config(id,video)
+	return Konekti.plugins.youtube.connect(id)
 }

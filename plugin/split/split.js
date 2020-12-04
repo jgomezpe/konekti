@@ -1,5 +1,5 @@
 /** Konekti Plugin for split components */
-class SplitPlugIn extends KonektiPlugIn{
+class SplitPlugIn extends PlugIn{
 	/** Creates a Plugin for split components */
 	constructor(){ super('split') }
 
@@ -26,7 +26,7 @@ class SplitPlugIn extends KonektiPlugIn{
 			thing.hDrag = '1%'
 			thing.hTwo = (99-x)+'%'
 		}
-		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+		return Konekti.dom.fromTemplate(this.htmlTemplate, thing)
 	}
     
 	component( thing, x ){
@@ -47,15 +47,18 @@ class SplitPlugIn extends KonektiPlugIn{
 		thing.start = thing.start || 50
  		var one = this.component(thing,'one')
 		var two = this.component(thing,'two')
-		var c = Konekti.core.vc( thing.id )
+		var c = Konekti.dom.vc( thing.id )
 		if( c!==null ) c.innerHTML = this.fillLayout(thing)
 
 		function back(){
 			if(one.plugin!==undefined) Konekti[one.plugin](one)
 			if(two.plugin!==undefined) Konekti[two.plugin](two)
 		}
-		var uses = [one.plugin, two.plugin]
-		Konekti.core.uses(...uses,back)
+		var uses = []
+		if(one.plugin!==undefined) uses.push(one.plugin)
+		if(two.plugin!==undefined) uses.push(two.plugin)
+		if( uses.length>0 ) Konekti.uses(...uses,back)
+		else back()
 		return this.client(thing)
 	}
 
@@ -79,7 +82,7 @@ class SplitPlugIn extends KonektiPlugIn{
 }
 
 /** Split manager */
-class Split extends KonektiClient{
+class Split extends Client{
 	/** 
 	 * Creates a split component manager 
 	 * @param thing Split configuration
@@ -155,6 +158,6 @@ new SplitPlugIn()
  * @param two Right/Bottom component
  */
 Konekti.split = function(id, type, percentage, one, two){
-	if(typeof id === 'string') id=Konekti.plugin.split.config(id,type,percentage,one,two)
-	return Konekti.plugin.split.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.split.config(id,type,percentage,one,two)
+	return Konekti.plugins.split.connect(id)
 }

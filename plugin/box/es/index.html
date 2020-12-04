@@ -12,7 +12,7 @@
 <script>
 Konekti.uses('box')
 function KonektiMain(){
-	var client = new KonektiClient('client')
+	var client = new Client('client')
 	client.select = function(optId){ Konekti.vc("log").innerHTML =  'Seleccionada: '+ optId; }
 
 	// Main content

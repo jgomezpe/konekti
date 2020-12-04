@@ -1,5 +1,5 @@
 /** Konekti Plugin for media components */
-class MediaPlugIn extends KonektiPlugIn{
+class MediaPlugIn extends PlugIn{
     /** Creates a Plugin for media components */
     constructor(){ super('media') }
 	/**
@@ -9,7 +9,7 @@ class MediaPlugIn extends KonektiPlugIn{
 	 */
 	fillLayout(thing){
 		thing.style = thing.media=='video'?'width:100%;height:100%':''
-		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+		return Konekti.dom.fromTemplate(this.htmlTemplate, thing)
 	}
 
         /**
@@ -31,7 +31,7 @@ class MediaPlugIn extends KonektiPlugIn{
 /**
  * A media manager.
  */
-class Media extends KonektiMedia{
+class Media extends MediaClient{
 	/**
 	 * Creates a media component
 	 * @param thing Media component configuration
@@ -103,8 +103,8 @@ new MediaPlugIn()
  * @param src url of media to connect
  */
 Konekti.media = function(id, media, type, src){
-	if(typeof id==='string') id=Konekti.plugin.media.config(id,media,type,src)
-	return Konekti.plugin.media.connect(id)
+	if(typeof id==='string') id=Konekti.plugins.media.config(id,media,type,src)
+	return Konekti.plugins.media.connect(id)
 }
 
 /**

@@ -25,7 +25,7 @@
 
 Konekti.uses('btn','header','ace')
 
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	annotation( id, annot ){ Konekti.vc("log").innerHTML = 'Annotations of '+id+' changed, now there are '+annot.length+' annotations' }
 	onchange(id){  Konekti.vc("log").innerHTML = 'Content of editor '+id+' changed'}

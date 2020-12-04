@@ -1,5 +1,5 @@
 /** Konekti Plugin for applications with header/content/footer */
-class HCFPlugIn extends KonektiPlugIn{
+class HCFPlugIn extends PlugIn{
 	/** Creates a Plugin for sidebar applications */
 	constructor(){ super('hcf') }
 
@@ -44,7 +44,7 @@ class HCFPlugIn extends KonektiPlugIn{
 		if(thing.content.plugin!==undefined) uses.push(thing.content.plugin)
 		if(thing.header.plugin!==undefined) uses.push(thing.header.plugin)
 		if(thing.footer.plugin!==undefined) uses.push(thing.footer.plugin)
-		Konekti.core.uses(...uses,size)
+		Konekti.uses(...uses,size)
 		return this.client(thing)
 	}
 
@@ -73,6 +73,6 @@ new HCFPlugIn()
  * @param footer Footer component configuration
  */
 Konekti.hcf = function(id, content, header, footer){
-	if(typeof id === 'string') id=Konekti.plugin.hcf.config(id,content,header,footer)
-	return Konekti.plugin.hcf.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.hcf.config(id,content,header,footer)
+	return Konekti.plugins.hcf.connect(id)
 }

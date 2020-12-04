@@ -34,7 +34,7 @@ Konekti.uses('btn','header')
 function run(){ Konekti.vc("log").innerHTML =  'Se seleccionó el botón Ejecutar' }
 
 /* Se define el cliente principal */
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	/* Cuando se selecciona un botón que redirije al metodo select */
 	select(optId){ Konekti.vc("log").innerHTML =  'Botón Seleccionado '+ optId + ':' + Konekti.vc(optId).innerHTML; }

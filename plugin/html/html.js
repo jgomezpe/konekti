@@ -1,5 +1,5 @@
 /** Konekti Plugin for Html components */
-class HTMLPlugIn extends KonektiPlugIn{
+class HTMLPlugIn extends PlugIn{
     /** Creates a Plugin for html components */
     constructor(){ super('html') }    
 
@@ -18,7 +18,7 @@ class HTMLPlugIn extends KonektiPlugIn{
 }
 
 /** HTML component that works as an editor */
-class HTML extends KonektiEditor{
+class HTML extends Editor{
 	/**
 	 * Creates a div component that works as an editor
 	 * @param id Id of the div component
@@ -55,6 +55,6 @@ new HTMLPlugIn()
  * @param code Code for the html component
  */
 Konekti.html = function(id, code){
-	if(typeof id === 'string') id=Konekti.plugin.html.config(id,code)
-	return Konekti.plugin.html.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.html.config(id,code)
+	return Konekti.plugins.html.connect(id)
 }

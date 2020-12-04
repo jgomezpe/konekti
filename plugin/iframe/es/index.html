@@ -29,7 +29,7 @@ function run(){
 var initial = "<!DOCTYPE html>\n<html>\n<head>\n<meta charset='UTF-8'>\n<script type='text/javascript' src='https://konekti.numtseng.com/src/Konekti.js'>\n</scr"+"ipt>\n</head>\n<body>\n<style>\n html, body {\n height:100%;\n margin:0px;\n}\n</style>\n<div id='title'></div>\n<script>\nKonekti.uses('header')\nfunction KonektiMain(){\n var client = new KonektiClient()\n Konekti.header('title', 'fa fa-smile-o','Dentro de un iframe', 3, 'w3-teal w3-center' )\n}\n</scr"+"ipt>\n</body>\n</html>"
 
 function KonektiMain(){
-	var client = new KonektiClient()
+	var client = new Client()
 
 	Konekti.header('title','', 'Componente IFrame de Konekti' )
 	Konekti.header('hiframe1','fa fa-wikipedia-w', 'Wikipedia', 4, 'w3-black' )

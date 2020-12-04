@@ -19,7 +19,7 @@
 
 Konekti.uses('header','dropdown')
 
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 	edit(optId){ Konekti.vc("log").innerHTML =  'Edit: '+ optId; }

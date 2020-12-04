@@ -1,5 +1,5 @@
 /** Konekti Plugin for DropDown components */
-class DropDownPlugIn extends KonektiPlugIn{
+class DropDownPlugIn extends PlugIn{
 	/** Creates a Plugin for Dropdown components */
 	constructor(){
 		super('dropdown')
@@ -18,19 +18,19 @@ class DropDownPlugIn extends KonektiPlugIn{
 		thing.caption = thing.caption || ''
 		thing.icon = thing.icon || ''
 		thing.style = thing.style || 'w3-bar-item w3-xlarge'
-		var template = this.htmlTemplate.replace('·btn·',Konekti.plugin.btn.fillLayout(thing))
-		Konekti.plugin.btn.client(thing.id)
+		var template = this.htmlTemplate.replace('·btn·',Konekti.plugins.btn.fillLayout(thing))
+		Konekti.plugins.btn.client(thing.id)
 		thing.id = id
 		var option = thing.options
-		var size = Konekti.core.previousFont(thing.style)
+		var size = Konekti.dom.previousFont(thing.style)
 		for( var i=0; i<option.length; i++ ){
 			if( typeof option[i] == 'string') option[i] = {"id":option[i], "caption":option[i]}
 			option[i].style = size
 			option[i].onclick = {"client":thing.id, "method":"select"}
 		}
 		thing.btn = option
-		thing.drop = Konekti.plugin.btn.listLayout(thing)
-		return Konekti.core.fromTemplate(template, thing)
+		thing.drop = Konekti.plugins.btn.listLayout(thing)
+		return Konekti.dom.fromTemplate(template, thing)
 	}
 
         /**
@@ -59,7 +59,7 @@ class DropDownPlugIn extends KonektiPlugIn{
 }
 
 /** A Dropdown component */
-class DropDown extends KonektiClient{
+class DropDown extends Client{
 	/**
 	 * Creates a dropdown component
 	 * @param thing Dropdown configuration
@@ -100,7 +100,7 @@ class DropDown extends KonektiClient{
 	var id = thing.id 
 	Konekti.client(id+'-btn').update(thing) 	
 	thing.id = id
-        if( thing.options !== undefined) Konekti.core.update({"components":thing.options})
+        if( thing.options !== undefined) Konekti.dom.update({"components":thing.options})
     }
 }
 
@@ -122,6 +122,6 @@ new DropDownPlugIn()
  * @param title Message that will be shown when mouse is over the dropdown
  */
 Konekti.dropdown = function(id, icon, caption, options, client, method, addID, style, title){
-	if(typeof id === 'string') id=Konekti.plugin.dropdown.config(id,icon,caption,options,client,method,addID,style,title)
-	return Konekti.plugin.dropdown.connect(id) 
+	if(typeof id === 'string') id=Konekti.plugins.dropdown.config(id,icon,caption,options,client,method,addID,style,title)
+	return Konekti.plugins.dropdown.connect(id) 
 }

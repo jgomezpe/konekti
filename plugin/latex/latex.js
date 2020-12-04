@@ -1,10 +1,10 @@
 if(typeof window.MathJax=='undefined'){
-    Konekti.core.resource.script('text/javascript', 'https://polyfill.io/v3/polyfill.min.js?features=es6')
-    Konekti.core.resource.JS('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml')
+    Konekti.resource.script('text/javascript', 'https://polyfill.io/v3/polyfill.min.js?features=es6')
+    Konekti.resource.JS('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml')
 }
 
 /** Konekti Plugin for latex (MathJax) components */
-class LatexPlugIn extends KonektiPlugIn{
+class LatexPlugIn extends PlugIn{
     /** Creates a Plugin for latex components */
     constructor(){ super('latex') }
 
@@ -17,7 +17,7 @@ class LatexPlugIn extends KonektiPlugIn{
         var c = Konekti.vc( thing.id )
         if( typeof thing.initial == 'string')	c.setAttribute('initial',thing.initial)
         else c.setAttribute('initial', '')
-        return Konekti.core.fromTemplate( this.htmlTemplate, thing )
+        return Konekti.dom.fromTemplate( this.htmlTemplate, thing )
     }
 
     	/**
@@ -36,7 +36,7 @@ class LatexPlugIn extends KonektiPlugIn{
 }
 
 /** Latex editor */
-class Latex extends KonektiEditor{
+class Latex extends Editor{
 	/**
 	 * Creates a latex editor
 	 * @param thing Latex component configuration
@@ -90,7 +90,7 @@ new LatexPlugIn()
  * @param tex Latex code
  */
 Konekti.latex = function(id, tex){
-	if(typeof id === 'string') id=Konekti.plugin.latex.config(id,tex)
-	return Konekti.plugin.latex.connect(id)
+	if(typeof id === 'string') id=Konekti.plugins.latex.config(id,tex)
+	return Konekti.plugins.latex.connect(id)
 }
 

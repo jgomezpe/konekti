@@ -1,5 +1,5 @@
 /** Canvas Editor */
-class Canvas extends KonektiEditor{
+class Canvas extends Editor{
 	/**
 	 * Creates a CanvasEditor
 	 * @param thing Canvas configuration
@@ -9,7 +9,7 @@ class Canvas extends KonektiEditor{
 		this.gui = this.vc('-canvas')
 		this.custom_commands(thing.custom)
 		this.commands = thing.commands || {}
-		Konekti.plugin.canvas.render[this.id] = this
+		Konekti.plugins.canvas.render[this.id] = this
 		this.redraw()
 	}
 	
@@ -637,7 +637,7 @@ class Canvas extends KonektiEditor{
 }
 
 /** Konekti Plugin for canvas */
-class CanvasPlugIn extends KonektiPlugIn{
+class CanvasPlugIn extends PlugIn{
 	/** Creates a Plugin for canvas */
 	constructor(){ 
 		super('canvas') 
@@ -648,7 +648,7 @@ class CanvasPlugIn extends KonektiPlugIn{
 	 * Resizes all the canvas that have beien registered
 	 */
 	resize(){
-		var canvas = Konekti.plugin.canvas
+		var canvas = Konekti.plugins.canvas
 		for (var cc in canvas.render){
 			canvas.render[cc].redraw()
 		}
@@ -676,7 +676,7 @@ class CanvasPlugIn extends KonektiPlugIn{
 /** Canvas class */
 new CanvasPlugIn()
 
-window.addEventListener("resize", Konekti.plugin.canvas.resize)
+window.addEventListener("resize", Konekti.plugins.canvas.resize)
 
 /**
  * Associates/Adds a canvas
@@ -687,7 +687,7 @@ window.addEventListener("resize", Konekti.plugin.canvas.resize)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
  */
 Konekti.canvas = function(id, initial, custom_commands){
-	if( typeof id === 'string' ) id = Konekti.plugin.canvas.config(id,initial,custom_commands)
-	return Konekti.plugin.canvas.connect(id)
+	if( typeof id === 'string' ) id = Konekti.plugins.canvas.config(id,initial,custom_commands)
+	return Konekti.plugins.canvas.connect(id)
 }
 

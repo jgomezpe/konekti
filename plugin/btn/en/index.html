@@ -34,7 +34,7 @@ Konekti.uses('btn','header')
 function run(){ Konekti.vc("log").innerHTML =  'Run button was selected' }
 
 /* Client is defined */
-class TheClient extends KonektiClient{
+class TheClient extends Client{
 	constructor(){ super() }
 	/* When a button is redirected to a client method (select) */
 	select(optId){ Konekti.vc("log").innerHTML =  'Selected button '+ optId + ':' + Konekti.vc(optId).innerHTML; }

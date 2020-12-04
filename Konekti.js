@@ -14,7 +14,7 @@
 */
 
 /** Class for managable resources */
-class KonektiResource{
+class Resource{
 	/**
 	 * Creates a HTML element from a string, if possible
 	 * @param str String representing a single HTML element
@@ -135,14 +135,13 @@ class KonektiResource{
 }
 
 /** Plugin class */
-class KonektiPlugIn{
+class PlugIn{
 	/**
 	 * Creates a plugin with the given <i>id</i>, and html template
 	 * @param id Id of the plugin
 	 */
-	constructor(id){
-		this.core = Konekti.core
-		this.core.plugin[id] = this
+	constructor(id, konekti){
+		Konekti.plugins[id] = this
 		this.child_style = ''
 	}
 
@@ -150,15 +149,15 @@ class KonektiPlugIn{
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
-	client(thing){ return new KonektiClient(thing) }
-	
+	client(thing){ return new Client(thing) }
+
 	/**
 	 * Adds item's html to plugin's html
 	 */
 	addItemHTML(){
 		if(this.completed === undefined ){
 			this.completed = true
-			this.htmlTemplate = this.htmlTemplate.replace('·item·',Konekti.plugin.item.htmlTemplate)
+			this.htmlTemplate = this.htmlTemplate.replace('·item·',Konekti.plugin('item').htmlTemplate)
 		}
 	}
 
@@ -167,21 +166,21 @@ class KonektiPlugIn{
 	 * @param thing Information of the instance of the PlugIn
 	 * @return The HTML resource of an instance of the PlugIn.
 	 */
-	fillLayout(thing){ return this.core.fromTemplate( this.htmlTemplate, thing ) }
+	fillLayout(thing){ return Konekti.dom.fromTemplate( this.htmlTemplate, thing ) }
 
 	/**
 	 * Connects instance with html document
 	 * @param thing Plugin instance information
 	 */
 	html(thing){
-		var c = this.core.vc( thing.id )
+		var c = Konekti.vc( thing.id )
 		if( c===null ){
 			c = document.createElement('div')
 			document.body.appendChild(c)
 		}
 
 		if( typeof this.replace === 'string' && this.replace == 'strict' ){
-			var node = this.core.resource.html(this.fillLayout(thing))
+			var node = Konekti.resource.html(this.fillLayout(thing))
 			c.parentElement.replaceChild(node, c)
 		}else{ c.innerHTML = this.fillLayout(thing) }
 
@@ -205,24 +204,16 @@ class KonektiPlugIn{
 	config(){ return {} }
 }
 
-/** Core method for Konekti */
-class KonektiCore{
+/** Plugins Loader */
+class PlugInLoader{
 	/**
-	 * Inits the konekti framework
-	 * @param callback Function that will be called after initializing the konekti framework
-	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
+	 * Inits the Plugin loader
 	 */
 	constructor(){
-		this.resource = new KonektiResource()
-		this.plugin = {}
-		this.client = {'console':console}
-		this.konektiPluginPath = "https://konekti.numtseng.com/src/plugin/"
-		this.pluginPath = "plugin/"
-		this.konektiModulePath = "https://konekti.numtseng.com/src/module/"
-		this.modulePath = "module/"
-		this.resource.stylesheet( 'https://konekti.numtseng.com/src/Konekti.css' )
-		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
-		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
+		this.path = {
+			"konekti":"https://konekti.numtseng.com/src/plugin/",
+			"local":"plugin/"
+		}
 	}
 
 	/**
@@ -232,19 +223,18 @@ class KonektiCore{
 	 */
 	init(plugin, callback){
 		if( typeof plugin === 'string' ) plugin = JSON.parse(plugin)
-		var x = this
 		var js = plugin.js
 		var html = plugin.html || ''
 
 		function done(){
 			if( typeof js === 'string' ) eval(js)
-			else new KonektiPlugIn(plugin.id, x)
-			x.plugin[plugin.id].htmlTemplate = html
+			else new PlugIn(plugin.id)
+			Konekti.plugin(plugin.id).htmlTemplate = html
 			if( callback !== null ) callback()
 		}
     
-		if( typeof plugin.css === 'string' ) x.resource.css(plugin.css) 
-		if( typeof plugin.uses !== 'undefined' ){ x.load(...plugin.uses, done) }
+		if( typeof plugin.css === 'string' ) Konekti.resource.css(plugin.css) 
+		if(plugin.uses !== undefined){ Konekti.load(...plugin.uses, done) }
 		else done()
 	}
 
@@ -255,11 +245,11 @@ class KonektiCore{
 	 * @param callback function to be executed after loading the plugin/module
 	 * @param kpath Konekti Path of plugin/module
 	 */
-	wrap(id, path, callback=null, kpath=null){
-		var x = this
+	process(id, path, callback=null, kpath=null){
+
 		function css(obj, file){
 			if(obj.css){
-				x.resource.load(file+'.css', function(css_code){
+				Konekti.resource.load(file+'.css', function(css_code){
 					obj.css = css_code
 					if(callback!=null) callback(obj) 
 				})
@@ -271,7 +261,7 @@ class KonektiCore{
 
 		function html(obj, file){
 			if(obj.html){
-				x.resource.load(file+'.html', function(html_code){
+				Konekti.resource.load(file+'.html', function(html_code){
 					obj.html = html_code
 					css(obj,file) 
 				})
@@ -283,7 +273,7 @@ class KonektiCore{
 
 		function js(obj, file){
 			if(obj.js){
-				x.resource.load(file+'.js', function(js_code){
+				Konekti.resource.load(file+'.js', function(js_code){
 					obj.js = js_code
 					html(obj,file) 
 				})
@@ -294,16 +284,16 @@ class KonektiCore{
 		}
 
 		function use(obj, file){
-			if(obj.uses) x.load(...obj.uses, function(){ js(obj,file) })
+			if(obj.uses) Konekti.load(...obj.uses, function(){ js(obj,file) })
 			else js(obj,file)
 		}
 
 		function konekti(obj){
 			if(obj!==null) use(obj, kpath+id+'/'+id) 
-			else x.resource.JSON(path+id+'/'+id, function(obj){ use(obj,path+id+'/'+id) })
+			else Konekti.resource.JSON(path+id+'/'+id, function(obj){ use(obj,path+id+'/'+id) })
 		}
 
-		if( kpath !== null ) this.resource.JSON(kpath+id+'/'+id, konekti)
+		if( kpath !== null ) Konekti.resource.JSON(kpath+id+'/'+id, konekti)
 		else konekti( null )
 	}
 
@@ -314,74 +304,43 @@ class KonektiCore{
 	 */
 	load(){
 		var x = this
-		var n = arguments.length-1
+		var n = arguments.length
 		var args = arguments
-		var callback = n>0?args[n]:null
-		if(n<=1){
-			var id = args[0]
+		var callback = null
+		if(n>0 && typeof args[n-1] !== 'string'){
+			n--
+			callback = args[n]
+		}
 
+		function one(id, back){
 			function init(obj){
 				obj.id = id
-				x.init(obj, callback) 
+				x.init(obj, back) 
 			}
 
-			if( this.plugin[id] === undefined) this.wrap(id, x.pluginPath, init, x.konektiPluginPath)
-			else if( callback !== undefined && callback!==null) callback()
-		}else{
+			if(Konekti.plugin(id) === undefined) x.process(id, x.path.local, init, x.path.konekti)
+			else if(back!==null) back()
+		
+		}
+		if(n>1){
 			var i=0
 			function step(){
 				if( i<n ){
 					var p = args[i]
 					i++
-					if( typeof x.plugin[p] === 'undefined' ) x.load(p, step)
+					if(Konekti.plugin(p) === undefined ) one(p, step)
 					else step()
 				}else if( callback !== null ) callback()
 			}
 			step()
-		}		
+		}else one(args[0],callback)		
 	}
 
-	/**
-	 * Sets a module into a container and executes the callback function
-	 * @param container Id of the module's container
-	 * @param module A module to load (string version or JSON version)
-	 * @param callback function to be executed after initializing the plugin
-	 */
-	set(container, module, callback){
-		var x = this
-		if( typeof module === 'string' ) module = JSON.parse(module)
-		if( typeof module.css === 'string' ) x.resource.css(module.css)
-		container = this.vc(container)
-		container.innerHTML = module.html || ''
-		if( typeof module.js === 'string' ) eval(module.js)
-		if( callback !== undefined ) callback()
-	}
+}
 
-	/**
-	 * Loads a module and executes the callback function
-	 * @param container Id of the module's container
-	 * @param module_id Id of the module to load
-	 * @param callback function to be executed after loading the module
-	 */
-	module(container, module_id, callback, checkKonekti=false){
-		var x=this
-		function init(obj){ x.set(container, obj, callback) }
-		this.wrap(module_id, x.modulePath, init, checkKonekti?x.konektiModulePath:null)
-	}
-
-	/**
-	 * Defines the set of plugins that Konekti will use and executes the KonektiMain function
-	 * @param plugins An array of plugin ids
-	 */
-	uses(){ 
-		if(typeof arguments[arguments.length-1] === 'string' && KonektiMain !== undefined ) this.load(...arguments, KonektiMain) 
-		else this.load(...arguments)
-	}
-
-	/**
-	 * Resets the application
-	 */
-	reset(){ window.location.reload(true) }	
+/** Doom utility functions */
+class DOM{
+	constructor(){}
 
 	/**
 	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
@@ -465,7 +424,77 @@ class KonektiCore{
 		if( font.includes('w3-jumbo') ) return 64
 		return 15	
 	}
+
+	/**
+	 * Create an item configurstion using just the caption/id
+	 * @param id Id of the item to build
+	 * @return An item configuration 
+	 */
+	item(id){ return {'id':id, 'caption':id, 'icon':''} }
 	
+	/** 
+	 * Internationalization
+	 * @param id Resource id/configuration
+	 */
+	i18n( id ){
+		var x = this
+		if( typeof id ==='string' ) Konekti.resource.JSON( id, function(obj){ x.update(obj) } ) 
+		else this.update(id)
+	}
+
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param id Id of the component to change (or new configuration of the component)
+	 * @param attribute Attribute to change 
+	 * @param value New value for the component attribute
+	 */
+	update(id, attribute, value){
+		if( typeof id === 'string' ){
+			var c = Konekti.vc(id)
+			if( c===undefined || c===null ) return  
+			if( attribute == 'caption' ){
+				var i = Konekti.vc(id+'-icon')
+				if( i != null ) i.nextSibling.data = " "+value
+				else c.textContent = value
+			}else{ c[attribute] = value }
+		}else{
+			if( id.id === undefined ){
+				for( var i=0; i<id.components.length; i++ )
+					this.update(id.components[i])
+			}else Konekti.client(id.id).update(id)
+		}
+	}
+
+	/**
+	 * Creates a url from a http response
+	 * @param response Response provided by the http connection
+	 * @return A URL version of the provided response
+	 */
+	downloadURL( response ){ return URL.createObjectURL(new Blob([response], {type: 'application/octet-stream'})) }
+	
+	/**
+	 * Checks and stops process upto the visual components are rendered
+	 * @param back Function to be executed after components are checked
+	 * @param ... Id of the components to check
+	 */
+	check( back ){
+		function verify(c){ return c!==undefined && c!==null }
+		var x = arguments
+		function done(){
+			var i=1
+			while( i<x.length && verify(Konekti.vc(x[i])) && verify(Konekti.client(x[i])) ) i++
+			if( i<x.length ) setTimeout(done,300)
+			else back()
+		}
+		done()
+	}
+
+	/**
+	 * Resets the application
+	 */
+	reset(){ window.location.reload(true) }	
+
+
 	/**
 	 * Obtains the node with the given id (A shortcut of the <i>document.getElementById</i> method
 	 * @param id Id of the element being located
@@ -480,7 +509,7 @@ class KonektiCore{
 	 * @param class_style Style (class) of the div
 	 * @return A div HTML node with the given id 
 	 */
-	div(id, class_style=''){ return this.resource.html( "<div id='"+id+"' class='"+class_style+"'></div>") }
+	div(id, class_style=''){ return Konekti.resource.html( "<div id='"+id+"' class='"+class_style+"'></div>") }
 	
 	/**
 	 * Moves a component as child of another component
@@ -510,7 +539,7 @@ class KonektiCore{
 	 */
 	connect(id, plugin, thing){
 		config.id = id
-		return this.plugin[plugin].connect(config)
+		return Konekti.plugin(plugin).connect(config)
 	}
 
 	/**
@@ -523,12 +552,12 @@ class KonektiCore{
 	append(parent, plugin, thing){
 		var x = this
 		function connect(){
-			plugin = x.plugin[plugin]
+			plugin = Konekti.plugin(plugin)
 			x.vc( parent ).appendChild( x.div(thing.id, plugin.child_style) )
 			return plugin.connect(thing)
 		}
-		if( this.plugin[plugin] !== undefined && this.plugin[plugin] !== null ) return connect()
-		else this.load(plugin, connect)
+		if(Konekti.plugin(plugin) !== undefined) return connect()
+		else Konekti.load(plugin, connect)
 	}
 	
 	/**
@@ -541,48 +570,15 @@ class KonektiCore{
 	insertBefore(sister, plugin, thing){
 		var x = this
 		function connect(){
-			plugin = x.plugin[plugin] 
+			plugin = Konekti.plugin(plugin) 
 			var node = x.div( thing.id, plugin.child_style )
 			var sisterNode = x.vc( sister )
 			var parentNode = sisterNode.parentElement
 			parentNode.insertBefore( node, sisterNode )
 			return plugin.connect(thing)
 		}
-		if( this.plugin[plugin] !== undefined && this.plugin[plugin] !== null ) return connect()
-		else this.load(plugin, connect)
-	}
-
-	/** 
-	 * Internationalization
-	 * @param id Resource id/configuration
-	 */
-	i18n( id ){
-		var x = this
-		if( typeof id ==='string' ) this.resource.JSON( id, function(obj){ x.update(obj) } ) 
-		else this.update(id)
-	}
-
-	/**
-	 * Sets a component's attribute to the given value 
-	 * @param id Id of the component to change (or new configuration of the component)
-	 * @param attribute Attribute to change 
-	 * @param value New value for the component attribute
-	 */
-	update(id, attribute, value){
-		if( typeof id === 'string' ){
-			var c = Konekti.vc(id)
-			if( c===undefined || c===null ) return  
-			if( attribute == 'caption' ){
-				var i = Konekti.vc(id+'-icon')
-				if( i != null ) i.nextSibling.data = " "+value
-				else c.textContent = value
-			}else{ c[attribute] = value }
-		}else{
-			if( id.id === undefined ){
-				for( var i=0; i<id.components.length; i++ )
-					this.update(id.components[i])
-			}else Konekti.client(id.id).update(id)
-		}
+		if(Konekti.plugin(plugin) !== undefined) return connect()
+		else Konekti.load(plugin, connect)
 	}
 
 	/**
@@ -597,75 +593,83 @@ class KonektiCore{
 		for (var i = 0; i < components.length && c==null; i++) if( components[i].id == childId ) c = components[i]
 		return c
 	}
-
-	/**
-	 * Create an item configurstion using just the caption/id
-	 * @param id Id of the item to build
-	 * @return An item configuration 
-	 */
-	item(id){ return {'id':id, 'caption':id, 'icon':''} }
-	
-	/**
-	 * Creates a url from a http response
-	 * @param response Response provided by the http connection
-	 * @return A URL version of the provided response
-	 */
-	downloadURL( response ){ return URL.createObjectURL(new Blob([response], {type: 'application/octet-stream'})) }
 }
 
+/**
+ * Konekti Application program interface. Main object of the Konekti framework
+ */
+Konekti = null
+
 /** Aplication program interface. Plugins will be seen as methods of this class */
-class KonektiAPI{
+class API{
 	/**
-	 * Creates a Konekti API
+	 * Inits the konekti framework
+	 * @param callback Function that will be called after initializing the konekti framework
+	 * @param servlet Servlet that will be used by the Konekti server. If servlet==null a simple server is initialized
 	 */
 	constructor(){
-		this.core = new KonektiCore(this)
-		this.plugin = this.core.plugin
+		Konekti = this
+		this.resource = new Resource()
+		this.plugins = {}
+		this.clients = {'console':console}
+		this.loader = new PlugInLoader(this)
+		this.dom = new DOM(this)
+		
+		this.resource.stylesheet( 'https://konekti.numtseng.com/src/Konekti.css' )
+		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
+		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 	}
-    
+
+	/**
+	 * Loads a set of plugins and executes the callback function
+	 * @param plugins An array of plugin ids
+	 * @param callback function to be executed after loading plugins
+	 */
+	load(){ this.loader.load(...arguments) }	
+
 	/**
 	 * Defines the set of plugins that Konekti will use and executes the KonektiMain function
 	 * @param plugins An array of plugin ids
 	 */
-	uses(){ this.core.uses(...arguments) }
+	uses(){ 
+		if(typeof arguments[arguments.length-1] === 'string' && KonektiMain !== undefined ) this.load(...arguments, KonektiMain) 
+		else this.load(...arguments)
+	}
 	
 	/** 
 	 * Gets a client
 	 * @param id Client's id
 	 * @return The client with the given id, null if there is not client with the given id
 	 */
-	client(id){ return this.core.client[id] } 
+	client(id){ return this.clients[id] } 
 
 	/**
 	 * Gets the component with the given id
 	 * @param id Id of the component to get 
 	 * @return the component with the given id
 	 */
-	vc(id){ return this.core.vc(id) }
+	vc(id){ return this.dom.vc(id) }
 
 	/** 
 	 * Internationalization
 	 * @param id Resource id/configuration
 	 */
-	i18n( id ){ this.core.i18n(id) }
+	i18n( id ){ this.dom.i18n(id) }
 
 	/**
 	 * Gets the plugin with the given id
 	 * @param id Id of the plugin to get 
 	 * @return the plugin with the given id
 	 */
-	plugin(id){ return this.plugin[id] }
+	plugin(id){ return this.plugins[id] }
 }
 
-/**
- * Konekti Application program interface. Main object of the Konekti framework
- */
-Konekti = new KonektiAPI()
+new API()
 
 /**
  * A client for the application. Connection point between front and back
  */
-class KonektiClient{
+class Client{
 	/**
 	 * Creates a client with the given id/client information, and registers it into the Konekti framework
 	 * @param id Client id/client information
@@ -675,22 +679,22 @@ class KonektiClient{
 		else this.id = id.id
 		this.gui = this.vc()
 		this.listener = []
-		Konekti.core.client[this.id] = this
+		Konekti.clients[this.id] = this
 	}
 
 	/**
 	 * Sets a component's attribute to the given value 
 	 * @param thing Component configuration 
 	 */
-	update(thing){ Konekti.core.update( thing.id, thing.attribute, thing.value ) }
+	update(thing){ Konekti.dom.update( thing.id, thing.attribute, thing.value ) }
 
 	/**
 	 * Gets a visual component of submmodules of the client
 	 * @param submodule Submoduel visual component id
 	 */
 	vc(submodule){
-		if( typeof submodule == 'string' ) return Konekti.core.vc(this.id+submodule)
-		else return Konekti.core.vc(this.id)
+		if( typeof submodule == 'string' ) return Konekti.vc(this.id+submodule)
+		else return Konekti.vc(this.id)
 	}
 
 	/**
@@ -712,7 +716,7 @@ class KonektiClient{
 
 
 /** Konekti Plugin for items (icon/caption) */
-class ItemPlugIn extends KonektiPlugIn{
+class ItemPlugIn extends PlugIn{
 	/**
 	 * creates the item plugin
 	 */
@@ -742,7 +746,7 @@ new ItemPlugIn()
 /**
  * An item (icon/caption) manager
  */
-class Item extends KonektiClient{
+class Item extends Client{
 	/**
 	 * Creates an item client with the given id/information, and registers it into the Konekti framework
 	 * @param id Item id
@@ -766,17 +770,17 @@ class Item extends KonektiClient{
  * @param caption Caption of the item
  */
 Konekti.item = function(id, icon, caption){ 
-	id = (typeof id === 'string' )?Konekti.plugin.item.config(id,icon,caption):id
-	return Konekti.plugin.item(id)
+	id = (typeof id === 'string' )?Konekti.plugins.items.config(id,icon,caption):id
+	return Konekti.plugins.item.connect(id)
 }
 
 /**
  * An editor (text) manager
  */
-class KonektiEditor extends KonektiClient{
+class Editor extends Client{
 	/**
-	 * Creates a client with the given id/client information, and registers it into the Konekti framework
-	 * @param id Client id/client information
+	 * Creates an editor with the given id/client information, and registers it into the Konekti framework
+	 * @param id Editor id/client information
 	 */	
 	constructor(id){ super(id) }
 
@@ -836,7 +840,11 @@ class KonektiEditor extends KonektiClient{
 /**
  * A media manager.
  */
-class KonektiMedia extends KonektiClient{
+class MediaClient extends Client{
+	/**
+	 * Creates a media client with the given id/client information, and registers it into the Konekti framework
+	 * @param id Media client id/client information
+	 */	
 	constructor(thing){ super(thing) }
 
 	/**
@@ -854,4 +862,74 @@ class KonektiMedia extends KonektiClient{
 	 * @param time Time position for the media component
 	 */
 	seek(time){}
+}
+
+/**
+ * HyperMedia: A hypermedia component for Konekti
+ */
+class HyperMedia extends KonektiMedia{
+	/**
+	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
+	 * @param thing Hyper media client information
+	 */	
+	constructor(thing){
+		super(thing)
+		this.scripts = thing.scripts || []
+		this.media = thing.media
+		Konekti.client(this.media).addListener(this.id)
+	}
+
+	/**
+	 * Plays the media component
+	 * @param id The media id 
+	 */
+	play(id){ if( id === undefined ) this.media.play() }
+
+	/**
+	 * Pauses the media component
+	 * @param id The media id 
+	 */
+	pause(id){ if( id === undefined ) this.media.pause() }
+
+	/**
+	 * Locates the media component at the given time
+	 * @param time Time position for the media component
+	 */
+	locate(time){
+		var scripts = this.scripts
+		for( var i=0; i<scripts.length; i++ ){
+			var script = scripts[i]
+			var target = Konekti.client(script.target)
+			if(target !== undefined){
+				script.text =  script.text || target.getText()
+				script.current = script.current || -1
+				var k=script.mark.length-1
+				while( k>=0 && script.mark[k].time>time ){ k-- }
+				if(k!=script.current){
+					var text;
+					if(k>=0){
+						if(script.mark[k].txt === undefined){
+							var start = script.mark[k].start || 0
+							var end = script.mark[k].end || script.text.length
+							var add = script.mark[k].add || '' 
+							text = script.text.substring(start,end) + add
+						}else text = script.mark[k].txt
+					}else text = script.text
+					target.setText(text)
+					if(k>=0) target.scrollTop()
+					script.current = k
+				}
+			}
+		}
+	}
+
+	/**
+	 * Locates the media component at the given time
+	 * @param id The media id 
+	 * @param time Time position for the media component
+	 */
+	seek(id,time){
+		if(typeof id === 'string') this.locate(time)
+		else Konekti.client(this.media).seek(time)
+	}
 }

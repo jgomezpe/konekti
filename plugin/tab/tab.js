@@ -1,6 +1,6 @@
 
 /** Konekti Plugin for tab components */
-class TabPlugIn extends KonektiPlugIn{
+class TabPlugIn extends PlugIn{
     /** Creates a Plugin for tab components */
     constructor(){ super('tab') }
 
@@ -28,7 +28,7 @@ class TabPlugIn extends KonektiPlugIn{
 	ids( thing ){
 		thing.ids=[]
 		for( var i=0; i<thing.tab.length; i++ ){
-			if( typeof thing.tab[i] === 'string' ) thing.tab[i] = Konekti.core.item(thing.tab[i])
+			if( typeof thing.tab[i] === 'string' ) thing.tab[i] = Konekti.dom.item(thing.tab[i])
 			thing.ids.push(thing.tab[i].id)
 		}
 	}
@@ -75,7 +75,7 @@ class TabPlugIn extends KonektiPlugIn{
 		var btn = []
 		for(var i=2; i<arguments.length; i++){
 			if(typeof arguments[i]==='string'){
-				var item = Konekti.core.item(arguments[i])
+				var item = Konekti.dom.item(arguments[i])
 				btn.push(item)
 		  	}else{
 				btn.push(arguments[i])
@@ -86,7 +86,7 @@ class TabPlugIn extends KonektiPlugIn{
 }
 
 /** Tab manager */
-class TabClient extends KonektiClient{
+class TabClient extends Client{
 	/** 
 	 * Creates a tab component manager 
 	 * @param id Tab id
@@ -126,10 +126,6 @@ new TabPlugIn()
  * @param ... Tab configurations 
  */
 Konekti.tab = function(id, initial){
-	if( typeof id === 'string' ){
-		var tabs = []
-		for(var i=2; i<arguments.length; i++) tabs.push(arguments[i])
-		id = Konekti.plugin.tab.config(id, initial, ...tabs)
-	}
-	return Konekti.plugin.tab.connect(id)
+	if( typeof id === 'string' ) id = Konekti.plugins.tab.config(...arguments)
+	return Konekti.plugins.tab.connect(id)
 }

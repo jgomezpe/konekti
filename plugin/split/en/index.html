@@ -24,18 +24,18 @@
 Konekti.uses('header','split')
 
 function KonektiMain(){
-	var client = new KonektiClient('client')
+	var client = new Client('client')
 
 	Konekti.header('title','', 'Konekti Splits' )
 	Konekti.header('hsplit1','', 'Vertical Split', 4, 'w3-black' )
 	Konekti.split('split1', 'col', 70)
-	Konekti.core.move('left','split1-one')
-	Konekti.core.move('right','split1-two')
+	Konekti.dom.move('left','split1-one')
+	Konekti.dom.move('right','split1-two')
 
 	Konekti.header('hsplit2','', 'Horizontal Split', 4, 'w3-black' )
 	Konekti.split('split2', 'row', 40)
-	Konekti.core.move('up','split2-one')
-	Konekti.core.move('down','split2-two')
+	Konekti.dom.move('up','split2-one')
+	Konekti.dom.move('down','split2-two')
 
 }
 

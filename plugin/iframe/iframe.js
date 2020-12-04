@@ -1,5 +1,5 @@
 /** Konekti Plugin for iframe components */
-class IFramePlugIn extends KonektiPlugIn{
+class IFramePlugIn extends PlugIn{
     /** Creates a Plugin for iframe components */
     constructor(){ super('iframe') }
 
@@ -16,7 +16,7 @@ class IFramePlugIn extends KonektiPlugIn{
         		}
         		thing.src = getBlobURL(thing.src, 'text/html')
 		}
-		return this.core.fromTemplate( this.htmlTemplate, thing ) 
+		return Konekti.dom.fromTemplate( this.htmlTemplate, thing ) 
 	}
 
 	/**
@@ -34,7 +34,7 @@ class IFramePlugIn extends KonektiPlugIn{
 }
 
 /** Iframe component that works as an editor */
-class IFrameEditor extends KonektiEditor{
+class IFrameEditor extends Editor{
 	/**
 	 * Creates an iframe component that works as an editor
 	 * @param id Id of the iframe component
@@ -75,6 +75,6 @@ new IFramePlugIn()
  * @param url Url/code for the iframe component
  */
 Konekti.iframe = function(id, url){
-	if(typeof id==='string') id=Konekti.plugin.iframe.config(id,url)
-	return Konekti.plugin.iframe.connect(id)
+	if(typeof id==='string') id=Konekti.plugins.iframe.config(id,url)
+	return Konekti.plugins.iframe.connect(id)
 }

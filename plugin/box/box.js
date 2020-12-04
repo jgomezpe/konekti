@@ -1,5 +1,5 @@
 /** Konekti Plugin for boxes (containers) */
-class BoxPlugIn extends KonektiPlugIn{
+class BoxPlugIn extends PlugIn{
 	/** Creates a Plugin for sidebar applications */
 	constructor(){
 		super('box')
@@ -12,10 +12,12 @@ class BoxPlugIn extends KonektiPlugIn{
 	 */
 	connect(thing){
 		thing.gui = this.html(thing)
-		function back(){ Konekti[thing.plugin](...thing.args) }
-		thing.plugin = thing.plugin || 'html'
-		Konekti.core.uses(thing.plugin,back)
-		return this.client(thing)
+		function back(){ 
+			if( thing.args!==undefined ) Konekti[thing.inner](...thing.args)
+			else Konekti[thing.inner.plugin](thing.inner)
+		}
+		Konekti.uses((typeof thing.inner==='string')?thing.inner:thing.inner.plugin,back)
+		return null
 	}
 
 	/**
@@ -27,16 +29,15 @@ class BoxPlugIn extends KonektiPlugIn{
 	 * @param ... Component specific parameters
 	 */
 	config(id, cl, sty, plugin){
-		var args = [id]
-		for( var i=4; i<arguments.length; i++ )
-			args.push(arguments[i])
-		var thing = {}
-		thing.id = id
-		thing.args = args
-		thing.plugin = plugin
-		thing.sty = sty
-		thing.cl = cl
-		return thing
+		if( plugin===undefined || typeof plugin === 'string' ){
+			var args = [id]
+			for( var i=4; i<arguments.length; i++ )
+				args.push(arguments[i])
+			return {"id":id,"args":args,"inner":plugin||"html", "sty":sty, "cl":cl}
+		}else{
+			plugin.id = plugin.id || id
+			return {"id":id,"inner":plugin, "sty":sty, "cl":cl}
+		}
 	}
 }
 
@@ -51,8 +52,8 @@ class BoxPlugIn extends KonektiPlugIn{
  * @param ... Component specific parameters
  */
 Konekti.box = function(id, cl, sty, plugin){
-	if( typeof id === 'string' ) id = Konekti.plugin.box.config(...arguments)
-	return Konekti.plugin.box.connect(id)
+	if( typeof id === 'string' ) id = Konekti.plugins.box.config(...arguments)
+	return Konekti.plugins.box.connect(id)
 }
 
 /** Box class */

@@ -1,5 +1,5 @@
 /** Konekti Plugin for buttons */
-class BtnPlugIn extends KonektiPlugIn{
+class BtnPlugIn extends PlugIn{
 	/** Creates a Plugin for buttons */
 	constructor(){
 		super('btn')
@@ -34,7 +34,7 @@ class BtnPlugIn extends KonektiPlugIn{
 		thing.style = thing.style || 'w3-bar-item w3-xlarge'
 		thing.run = this.run(thing.id, thing.onclick)
 		new Item( thing.id+'-icon' )
-		return Konekti.core.fromTemplate(this.htmlTemplate, thing)
+		return Konekti.dom.fromTemplate(this.htmlTemplate, thing)
 	}
 
 	/**
@@ -78,7 +78,7 @@ class BtnPlugIn extends KonektiPlugIn{
 new BtnPlugIn()
 
 /** A Button manager */
-class Btn extends KonektiClient{
+class Btn extends Client{
 	/** 
 	 * Creates a Button Manager
 	 * @param thing Configuration of the button
@@ -93,7 +93,7 @@ class Btn extends KonektiClient{
 		var c = this.vc()
 		if( thing.title !== undefined ) c.title = thing.title
 		Konekti.client(this.id+'-icon').update(thing)
-		if( thing.onclick !== undefined ) c.onclick = Konekti.plugin.btn.run(thing.id, thing.onclick)
+		if( thing.onclick !== undefined ) c.onclick = Konekti.plugins.btn.run(thing.id, thing.onclick)
 	}
 }
 
@@ -110,6 +110,6 @@ class Btn extends KonektiClient{
  * @param title Message that will be shown when mouse is over the button
  */
 Konekti.btn = function(id, icon, caption, onclick, style, title){
-	if(typeof id === 'string') id=Konekti.plugin.btn.config(id, icon, caption, onclick, style, title)
-	return Konekti.plugin.btn.connect(id) 
+	if(typeof id === 'string') id=Konekti.plugins.btn.config(id, icon, caption, onclick, style, title)
+	return Konekti.plugins.btn.connect(id) 
 }

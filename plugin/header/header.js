@@ -1,5 +1,5 @@
 /** Konekti Plugin for Header components */
-class HeaderPlugIn extends KonektiPlugIn{
+class HeaderPlugIn extends PlugIn{
 	/** Creates a Plugin for Header components */
 	constructor(){ 
 		super('header') 
@@ -16,7 +16,7 @@ class HeaderPlugIn extends KonektiPlugIn{
 		
 		thing.style = thing.style || 'w3-center w3-blue'
 		thing.h = thing.h || 3
-		return Konekti.core.fromTemplate( this.htmlTemplate, thing )
+		return Konekti.dom.fromTemplate( this.htmlTemplate, thing )
 	}
 
         /**
@@ -39,7 +39,7 @@ class HeaderPlugIn extends KonektiPlugIn{
 }
 
 /** A Header manager */
-class Header extends KonektiClient{
+class Header extends Client{
 	/** 
 	 * Creates a Header Manager
 	 * @param thing Configuration of the header
@@ -73,6 +73,6 @@ new HeaderPlugIn()
  * @param style Style of the header
  */
 Konekti.header = function(id, icon, caption, h, style){
-    if(typeof id==='string') id=Konekti.plugin.header.config(id,icon,caption,h,style)
-    return Konekti.plugin.header.connect(id)
+    if(typeof id==='string') id=Konekti.plugins.header.config(id,icon,caption,h,style)
+    return Konekti.plugins.header.connect(id)
 }

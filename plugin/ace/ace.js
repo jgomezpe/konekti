@@ -1,5 +1,5 @@
 /** Konekti Plugin for ACE editors */
-class AcePlugIn extends KonektiPlugIn{
+class AcePlugIn extends PlugIn{
     /** Creates a Plugin for ACE editors */
     constructor(){
         super('ace')
@@ -200,7 +200,7 @@ class AcePlugIn extends KonektiPlugIn{
 }
 
 /** An Ace Editor */
-class Ace extends KonektiEditor{
+class Ace extends Editor{
 	/**
 	 * Creates an Ace Editor
 	 * @param thing Ace editor configuration
@@ -223,7 +223,7 @@ class Ace extends KonektiEditor{
 		if( thing.code != null ){
 			thing.code.cid = id
 			thing.code.mode = thing.mode
-			Konekti.plugin.ace.define(thing.code)
+			Konekti.plugins.ace.define(thing.code)
 		} 
 		
 		x.edit.setFontSize("16px")
@@ -232,8 +232,8 @@ class Ace extends KonektiEditor{
 			x.edit.setValue(thing.initial,1)
 		} 
 		
-		if( thing.mode!==null ) x.edit.session.setMode("ace/mode/"+thing.mode)
-		if( thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
+		if( thing.mode !== undefined && thing.mode!==null ) x.edit.session.setMode("ace/mode/"+thing.mode)
+		if( thing.theme !== undefined && thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
 		x.edit.setShowPrintMargin(false)
 
 		x.edit.session.on("changeAnnotation", function () {
@@ -342,10 +342,10 @@ class Ace extends KonektiEditor{
  * @param code Lexical configuration for the ace editor  
  */
 Konekti.ace = function(id, initial, mode, theme, code){
-	if(typeof id ==='string') id=Konekti.plugin.ace.config(id,initial,mode,theme,code)
-	return Konekti.plugin.ace.connect(id)
+	if(typeof id ==='string') id=Konekti.plugins.ace.config(id,initial,mode,theme,code)
+	return Konekti.plugins.ace.connect(id)
 }
 
 /** Ace class */
 new AcePlugIn()
-Konekti.core.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugin.ace.done() } )
+Konekti.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugins.ace.done() } )

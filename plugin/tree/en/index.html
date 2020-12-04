@@ -23,7 +23,7 @@
 Konekti.uses('header','tree')
 
 function KonektiMain(){
-	var client = new KonektiClient('client')
+	var client = new Client('client')
 	client.select = function(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 
 	// Main content
