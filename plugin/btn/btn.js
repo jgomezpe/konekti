@@ -74,9 +74,6 @@ class BtnPlugIn extends PlugIn{
 	}
 }
 
-/** Creates and registers the button plugin */
-new BtnPlugIn()
-
 /** A Button manager */
 class Btn extends Client{
 	/** 
@@ -97,6 +94,8 @@ class Btn extends Client{
 	}
 }
 
+/** Creates and registers the button plugin */
+if( Konekti.btn === undefined ) new BtnPlugIn()
 
 /**
  * Associates/Adds a button 

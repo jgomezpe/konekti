@@ -287,7 +287,7 @@ class Tree extends Client{
 }
 
 /** Tree component */
-new TreePlugIn()
+if(Konekti.tree===undefined) new TreePlugIn()
 
 /**
  * Associates/Adds a tree component

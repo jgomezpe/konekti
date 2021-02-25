@@ -66,7 +66,7 @@ class SideBarPlugIn extends PlugIn{
 }
 
 /** Side Bar class */
-new SideBarPlugIn()
+if(Konekti.sidebar===undefined) new SideBarPlugIn()
 
 /**
  * Associates/Adds a side bar component (includes navigation bar, and main component)

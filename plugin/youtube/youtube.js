@@ -113,7 +113,7 @@ class Youtube extends MediaClient{
 }
 
 /** Youtube class */
-new YoutubePlugIn()
+if(Konekti.youtube===undefined) new YoutubePlugIn()
 
 //  Using the youtube api
 window.onYouTubeIframeAPIReady = function(){ Konekti.plugins.youtube.done() }

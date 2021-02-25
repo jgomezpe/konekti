@@ -145,7 +145,7 @@ class Split extends Client{
 }
 
 /** SplitPanel class */
-new SplitPlugIn()
+if(Konekti.split===undefined) new SplitPlugIn()
 
 /**
  * Associates/adds Split panel

@@ -41,6 +41,9 @@ class BoxPlugIn extends PlugIn{
 	}
 }
 
+/** Box class */
+if( Konekti.box === undefined ) new BoxPlugIn()
+
 /**
  * Associates/adds a box component
  * @method
@@ -56,6 +59,4 @@ Konekti.box = function(id, cl, sty, plugin){
 	return Konekti.plugins.box.connect(id)
 }
 
-/** Box class */
-new BoxPlugIn()
 

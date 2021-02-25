@@ -674,9 +674,8 @@ class CanvasPlugIn extends PlugIn{
 }
 
 /** Canvas class */
-new CanvasPlugIn()
+if(Konekti.canvas === undefined ) new CanvasPlugIn()
 
-window.addEventListener("resize", Konekti.plugins.canvas.resize)
 
 /**
  * Associates/Adds a canvas
@@ -691,3 +690,4 @@ Konekti.canvas = function(id, initial, custom_commands){
 	return Konekti.plugins.canvas.connect(id)
 }
 
+window.addEventListener("resize", Konekti.plugins.canvas.resize)

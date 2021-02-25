@@ -100,7 +100,7 @@ class NavBar extends Client{
 }
 
 /** Navigation Bar class */
-new NavBarPlugIn()
+if(Konekti.navbar===undefined) new NavBarPlugIn()
 
 /**
  * Associates/adds a navigation bar component

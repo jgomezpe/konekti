@@ -13,9 +13,8 @@ class AcePlugIn extends PlugIn{
      */
     define( lang ){
         var id = lang.mode;
-        ace.define(
+        define(
             "ace/mode/"+lang.mode+"_highlight_rules",
-            ["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], 
             function(require, exports, module) {
                 "use strict";
                 var oop = require("../lib/oop");
@@ -33,12 +32,12 @@ class AcePlugIn extends PlugIn{
                     scopeName: 'source.'+lang.mode
                 };
                 oop.inherits(EditorHighlightRules, TextHighlightRules);
-                exports.EditorHighlightRules = EditorHighlightRules;
+                exports[id+'HighlightRules'] = EditorHighlightRules;
             }
         );
-        ace.define(
+
+        define(
             "ace/mode/folding/cstyle",
-            ["require","exports","module","ace/lib/oop","ace/range","ace/mode/folding/fold_mode"], 
             function(require, exports, module) {
                 "use strict";
                 var oop = require("../../lib/oop");
@@ -130,15 +129,14 @@ class AcePlugIn extends PlugIn{
                 }).call(FoldMode.prototype);
             }
         );
-        ace.define(
+        define(
             "ace/mode/"+id,
-            ["require","exports","module","ace/lib/oop","ace/mode/text","ace/mode/"+id+"_highlight_rules","ace/mode/folding/cstyle"],
             function(require, exports, module) {
                 "use strict";
                 var oop = require("../lib/oop");
-                var TextMode = require("./text").Mode;
-                var EditorHighlightRules = require("./"+id+"_highlight_rules").EditorHighlightRules;
-                var FoldMode = require("./folding/cstyle").FoldMode;
+               var TextMode = require("./text").Mode;
+                var EditorHighlightRules = require("./"+id+"_highlight_rules")[id+'HighlightRules'];
+                var FoldMode = require("ace/mode/folding/cstyle").FoldMode;
                 var Mode = function() {
                     this.HighlightRules = EditorHighlightRules;
                     this.foldingRules = new FoldMode();
@@ -171,8 +169,8 @@ class AcePlugIn extends PlugIn{
 	 * Load an ACE editor 
 	 * @param id If of the ACE editor
 	 */
-	load( id ){ 
-		this.view.push( id )
+	load( thing ){ 
+		this.view.push( thing )
 		if( this.loaded ) this.done()
 	}
 
@@ -183,7 +181,7 @@ class AcePlugIn extends PlugIn{
 	client(thing){ 
 		var editor = new Ace(thing) 
 		if( this.loaded ) editor.update(thing)
-		else this.view.push( thing )
+		else this.load( thing )
 		return editor
 	}
 
@@ -331,6 +329,10 @@ class Ace extends Editor{
 	}
 }
 
+/** Ace class */
+if( Konekti.ace === undefined ) new AcePlugIn()
+
+
 /**
  * Associates/adds an Ace editor component
  * @method
@@ -346,6 +348,4 @@ Konekti.ace = function(id, initial, mode, theme, code){
 	return Konekti.plugins.ace.connect(id)
 }
 
-/** Ace class */
-new AcePlugIn()
 Konekti.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugins.ace.done() } )

@@ -115,7 +115,7 @@ class Tab extends Client{
 }
 
 /** Tab class */
-new TabPlugIn()
+if(Konekti.tab===undefined) new TabPlugIn()
 
 /**
  * Associates/Adds a Tab panel

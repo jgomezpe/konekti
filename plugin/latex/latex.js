@@ -80,7 +80,7 @@ class Latex extends Editor{
 }
 
 /** Latex class */
-new LatexPlugIn()
+if(Konekti.latex===undefined) new LatexPlugIn()
 
 /**
  * Associates/Adds a latex component

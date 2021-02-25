@@ -65,7 +65,7 @@ class IFrameEditor extends Editor{
 }
 
 /** IFrame class */
-new IFramePlugIn()
+if(Konekti.iframe===undefined) new IFramePlugIn()
 
 /**
  * Associates/Adds an IFrame 

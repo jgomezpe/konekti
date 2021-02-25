@@ -105,7 +105,7 @@ class DropDown extends Client{
 }
 
 /** DropDown class */
-new DropDownPlugIn()
+if(Konekti.dropdown === undefined) new DropDownPlugIn()
 
 /**
  * Associates/Adds a dropdown

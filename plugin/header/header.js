@@ -60,7 +60,7 @@ class Header extends Client{
 }
 
 /** Header class */
-new HeaderPlugIn()
+if(Konekti.header===undefined) new HeaderPlugIn()
 
 /**
  * Associates/adds a header

@@ -45,7 +45,7 @@ class HTML extends Editor{
 }
 
 /** Embedded HTML class */
-new HTMLPlugIn()
+if(Konekti.html===undefined) new HTMLPlugIn()
 
 /**
  * Associates/Adds embedded html

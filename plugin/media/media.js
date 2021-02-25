@@ -91,7 +91,7 @@ class Media extends MediaClient{
 }
 
 /** Media class */
-new MediaPlugIn()
+if(Konekti.media===undefined) new MediaPlugIn()
 
 /**
  * Associates/Adds a general media component

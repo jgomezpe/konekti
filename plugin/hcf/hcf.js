@@ -61,7 +61,7 @@ class HCFPlugIn extends PlugIn{
 }
 
 /** Header/content/footer component */
-new HCFPlugIn()
+if(Konekti.hcf===undefined) new HCFPlugIn()
 
 /**
  * Associates/Adds a Header/Content/Footer component
