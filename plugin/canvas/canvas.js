@@ -20,8 +20,8 @@ class Canvas extends Editor{
 	custom_commands( custom ){
 		this.custom = {}
 		if( custom !== undefined ){
-			for( var i=0; i<custom.commands.length; i++ ){
-	        		this.custom[custom.commands[i].command] = custom.commands[i]
+			for( var i=0; i<custom.length; i++ ){
+	        		this.custom[custom[i].command] = custom[i]
 			}
 		}
 	}
@@ -617,7 +617,7 @@ class Canvas extends Editor{
 	draw(obj){
 		obj = this.init_command(obj)
 		var type = obj.command
-		if( type !== null ) this[type](obj)
+		if( type !== undefined ) this[type](obj)
 	}
 
 	/**

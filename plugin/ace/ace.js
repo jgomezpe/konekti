@@ -5,11 +5,12 @@ class AcePlugIn extends PlugIn{
         super('ace')
         this.loaded = false
         this.view = []
+        this.mode = {}
     }
     
     /**
      * Defines a dynamic language mode taking as basis the OOP mode
-     * @param lang Cinfiguration information for the defined language
+     * @param lang Configuration information for the defined language
      */
     define( lang ){
         var id = lang.mode;
@@ -151,6 +152,23 @@ class AcePlugIn extends PlugIn{
                 exports.Mode = Mode;
             }
         );
+        
+        this.mode[id] = true
+    }
+    
+    /**
+     * Registers and defines a dynamic language mode taking as basis the OOP mode
+     * @param lang Configuration information for the defined language
+     * @param edit Ace editor using the language
+     */
+    register( lang, edit ){
+    	var id = lang.mode
+    	if( this.mode[id] === undefined ){
+      	this.mode[id] = false
+      	this.define(lang)
+      	edit.session.setMode("ace/mode/"+id)
+			}else if( this.mode[id] ) edit.session.setMode("ace/mode/"+id)
+			else setTimeout(function() { Konekti.plugins.ace.register(lang, edit) }, 200)
     }
     
 	/**
@@ -218,11 +236,6 @@ class Ace extends Editor{
 		x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
 		x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
         
-		if( thing.code != null ){
-			thing.code.cid = id
-			thing.code.mode = thing.mode
-			Konekti.plugins.ace.define(thing.code)
-		} 
 		
 		x.edit.setFontSize("16px")
 		if(thing.initial !== undefined){
@@ -230,7 +243,6 @@ class Ace extends Editor{
 			x.edit.setValue(thing.initial,1)
 		} 
 		
-		if( thing.mode !== undefined && thing.mode!==null ) x.edit.session.setMode("ace/mode/"+thing.mode)
 		if( thing.theme !== undefined && thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
 		x.edit.setShowPrintMargin(false)
 
@@ -248,6 +260,14 @@ class Ace extends Editor{
 				if( l != null && l.onchange!=null ) l.onchange(id)
 			}
 		})
+		
+		if( thing.code != null ){
+			thing.code.cid = id
+			thing.code.mode = thing.mode
+			Konekti.plugins.ace.register(thing.code, x.edit)
+		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
+		
+		
 	}
 
 	/**
