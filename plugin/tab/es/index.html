@@ -23,7 +23,7 @@ function KonektiMain(){
 
 	Konekti.header('title','', 'Tabs de Konekti' )
 	
-	Konekti.tab('tab', "YouTube", {"id":"YouTube", "caption":"YouTube", "icon":"fa fa-youtube"}, "Editor", "Div")
+	Konekti.tab('tab', "YouTube", [{"id":"YouTube", "caption":"YouTube", "icon":"fa fa-youtube"}, "Editor", "Div"])
 	Konekti.youtube( 'YouTube', 'fv2Ms3C7Xrw' )
 	Konekti.ace( 'Editor', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
 	Konekti.dom.move('tab3','Div')

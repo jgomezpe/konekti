@@ -284,7 +284,7 @@ class PlugInLoader{
 		}
 
 		function use(obj, file){
-			if(obj.uses) Konekti.load(...obj.uses, function(){ js(obj,file) })
+			if(obj.uses !== undefined && obj.uses !== null) Konekti.load(...obj.uses, function(){ js(obj,file) })
 			else js(obj,file)
 		}
 
@@ -435,11 +435,19 @@ class DOM{
 	/** 
 	 * Internationalization
 	 * @param id Resource id/configuration
+	 * @param callback function called after updating components
 	 */
-	i18n( id ){
+	i18n( id, callback ){
 		var x = this
-		if( typeof id ==='string' ) Konekti.resource.JSON( id, function(obj){ x.update(obj) } ) 
-		else this.update(id)
+		if( typeof id ==='string' ) 
+			Konekti.resource.JSON( id, function(obj){
+			 x.update(obj) 
+			 if(callback !== undefined) callback()
+			} ) 
+		else{
+		 this.update(id)
+		 if( callback !== undefined ) callback()
+		} 
 	}
 
 	/**
@@ -619,6 +627,31 @@ class API{
 	}
 
 	/**
+	 * Determines the set of plugins required by a component
+	 * @param thing component to analize
+	 * @param plugins Array of plugins required by the component
+	 * @return Array of plugins required by the components
+	 */
+	analize(thing, plugins=[]){
+		if(thing===null || typeof thing === 'string' || typeof thing === 'number' || thing.byteLength !== undefined)
+			return plugins
+		if(thing.length!==undefined)
+			for(var i=0; i<thing.length; i++)
+				this.analize(thing[i], plugins)
+		else{
+			if( thing.plugin !== undefined ){
+				var k=0;
+				while(k<plugins.length && plugins[k]!==thing.plugin) k++
+				if(k==plugins.length) plugins.push(thing.plugin)
+			}
+			for(var k in thing){
+				this.analize(thing[k],plugins)
+			}
+		}
+		return plugins
+	}
+	
+	/**
 	 * Loads a set of plugins and executes the callback function
 	 * @param plugins An array of plugin ids
 	 * @param callback function to be executed after loading plugins
@@ -651,8 +684,9 @@ class API{
 	/** 
 	 * Internationalization
 	 * @param id Resource id/configuration
+	 * @param callback Function called after update components
 	 */
-	i18n( id ){ this.dom.i18n(id) }
+	i18n( id, callback ){ this.dom.i18n(id,callback) }
 
 	/**
 	 * Gets the plugin with the given id

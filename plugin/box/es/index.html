@@ -17,24 +17,24 @@ function KonektiMain(){
 
 	// Main content
 
-	Konekti.box("title", "", "", "header", '', 'Caja de Konekti' )
-	Konekti.box("root", "", "width:80%;height:60%", "sidebar", '200px', {"plugin":"tree", "id":"toc", "tree":{ "id":"Inicio", "client":"client",
+	Konekti.box("title", "", "", {"plugin":"header", 'caption':'Caja de Konekti'} )
+	Konekti.box("root", "", "width:80%;height:60%", 
+		{"plugin":"sidebar", 'width':'200px', "side":{"plugin":"tree", "id":"toc", "tree":{ "id":"Inicio", "client":"client",
 			"children":[
 				"Ayuda",
-				{"caption":"Acerca de", "children":[
+				{"caption":"Acerca de, "children":[
 					"Autor", "Derechos"
 				]},
-				"Test"
-			] 
+				"Prueba"
+			] 	
 		}}, 
-		{"plugin":"youtube", "id":"main", "video":"fv2Ms3C7Xrw"},
-		{"client":"client","method":"select","btn":[
+		"main":{"plugin":"youtube", "id":"main", "video":"fv2Ms3C7Xrw"},
+		"navbar":{"client":"client","method":"select","btn":[
 			{"id":"config","title":"Configurar","icon":"fa fa-cogs"},
-			{"id":"coffee","title":"Cafe","icon":"fa fa-coffee"},
+			{"id":"coffee","title":"Café","icon":"fa fa-coffee"},
 			{"id":"html","title":"HTML","icon":"fa fa-file-code-o"},
 			{"id":"file","title":"Archivo","icon":"fa fa-file-text-o"}
-		]})
-}
+		]}})
 </script>
 
 </body>

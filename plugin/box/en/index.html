@@ -17,8 +17,9 @@ function KonektiMain(){
 
 	// Main content
 
-	Konekti.box("title", "", "", "header", '', 'Konekti Box' )
-	Konekti.box("root", "", "width:80%;height:60%", "sidebar", '200px', {"plugin":"tree", "id":"toc", "tree":{ "id":"Home", "client":"client",
+	Konekti.box("title", "", "", {"plugin":"header", 'caption':'Konekti Box'} )
+	Konekti.box("root", "", "width:80%;height:60%", 
+		{"plugin":"sidebar", 'width':'200px', "side":{"plugin":"tree", "id":"toc", "tree":{ "id":"Home", "client":"client",
 			"children":[
 				"Help",
 				{"caption":"About", "children":[
@@ -27,13 +28,13 @@ function KonektiMain(){
 				"Test"
 			] 	
 		}}, 
-		{"plugin":"youtube", "id":"main", "video":"fv2Ms3C7Xrw"},
-		{"client":"client","method":"select","btn":[
+		"main":{"plugin":"youtube", "id":"main", "video":"fv2Ms3C7Xrw"},
+		"navbar":{"client":"client","method":"select","btn":[
 			{"id":"config","title":"Configure","icon":"fa fa-cogs"},
 			{"id":"coffee","title":"Coffe","icon":"fa fa-coffee"},
 			{"id":"html","title":"HTML","icon":"fa fa-file-code-o"},
 			{"id":"file","title":"File","icon":"fa fa-file-text-o"}
-		]})
+		]}})
 }
 </script>
 

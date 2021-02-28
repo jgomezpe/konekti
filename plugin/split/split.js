@@ -40,8 +40,9 @@ class SplitPlugIn extends PlugIn{
 	/**
 	 * Provides to a visual component the plugin's functionality 
 	 * @param thing Plugin instance information
+ 	* @param callback Function that will be executed as the box component is loaded
 	 */
-	connect(thing){
+	connect(thing, callback){
 		var x = this
 		thing.type = thing.type || 'col'
 		thing.start = thing.start || 50
@@ -53,11 +54,10 @@ class SplitPlugIn extends PlugIn{
 		function back(){
 			if(one.plugin!==undefined) Konekti[one.plugin](one)
 			if(two.plugin!==undefined) Konekti[two.plugin](two)
+			if(callback !== undefined) callback()
 		}
-		var uses = []
-		if(one.plugin!==undefined) uses.push(one.plugin)
-		if(two.plugin!==undefined) uses.push(two.plugin)
-		if( uses.length>0 ) Konekti.uses(...uses,back)
+		var uses = Konekti.analize(thing)
+		if( uses.length>0 ) Konekti.load(...uses,back)
 		else back()
 		return this.client(thing)
 	}
@@ -152,12 +152,14 @@ if(Konekti.split===undefined) new SplitPlugIn()
  * @method
  * split
  * @param id Id of the split component
- * @param type Type of split 'col' Vertical, 'row' Horizontal
+ * @param type Type of split 'col' Vertical, 'row' Horizontal or Function that will be executed as the box component is loaded
  * @param percentage Percentage of the first subcomponent relative to the component's size
  * @param one Left/Top component
  * @param two Right/Bottom component
+ 	* @param callback Function that will be executed as the box component is loaded
  */
-Konekti.split = function(id, type, percentage, one, two){
+Konekti.split = function(id, type, percentage, one, two, callback){
 	if(typeof id === 'string') id=Konekti.plugins.split.config(id,type,percentage,one,two)
-	return Konekti.plugins.split.connect(id)
+	else callback = type
+	return Konekti.plugins.split.connect(id, callback)
 }

@@ -9,35 +9,33 @@ class BoxPlugIn extends PlugIn{
 	/**
 	 * Provides to a visual component the plugin's functionality 
 	 * @param thing Plugin instance information
+	 * @param callback Function that will be executed as the box component is loaded
 	 */
-	connect(thing){
+	connect(thing, callback){
 		thing.gui = this.html(thing)
 		function back(){ 
 			if( thing.args!==undefined ) Konekti[thing.inner](...thing.args)
 			else Konekti[thing.inner.plugin](thing.inner)
+			if(callback !== undefined ) callback()
 		}
-		Konekti.uses((typeof thing.inner==='string')?thing.inner:thing.inner.plugin,back)
+		var luse = Konekti.analize(thing.inner)
+		if(typeof thing.inner==='string')
+			Konekti.load(thing.inner,back)
+		else 
+			Konekti.load(...luse,back)
 		return null
 	}
 
 	/**
 	 * Creates a config object from parameters
-	 * @param id Id/Configuration of the box component
+	 * @param thing Configuration of the box component
 	 * @param cl Box class
 	 * @param sty Box style
 	 * @param plugin Component connected to the box
-	 * @param ... Component specific parameters
 	 */
 	config(id, cl, sty, plugin){
-		if( plugin===undefined || typeof plugin === 'string' ){
-			var args = [id]
-			for( var i=4; i<arguments.length; i++ )
-				args.push(arguments[i])
-			return {"id":id,"args":args,"inner":plugin||"html", "sty":sty, "cl":cl}
-		}else{
-			plugin.id = plugin.id || id
-			return {"id":id,"inner":plugin, "sty":sty, "cl":cl}
-		}
+		plugin.id = plugin.id || id
+		return {"id":id,"inner":plugin, "sty":sty, "cl":cl}
 	}
 }
 
@@ -49,14 +47,15 @@ if( Konekti.box === undefined ) new BoxPlugIn()
  * @method
  * box
  * @param id Id/Configuration of the box component
- * @param cl Box class
+ * @param cl Box class or Function that will be executed as the box component is loaded 
  * @param sty Box style
  * @param plugin Component connected to the box
- * @param ... Component specific parameters
+ * @param callback Function that will be executed as the box component is loaded
  */
-Konekti.box = function(id, cl, sty, plugin){
+Konekti.box = function(id, cl, sty, plugin, callback){
 	if( typeof id === 'string' ) id = Konekti.plugins.box.config(...arguments)
-	return Konekti.plugins.box.connect(id)
+	else callback = cl
+	return Konekti.plugins.box.connect(id, callback)
 }
 
 

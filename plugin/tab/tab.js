@@ -43,8 +43,9 @@ class TabPlugIn extends PlugIn{
 	/** 
 	 * Connects the tab component with the GUI component
 	 * @param thing Tab component configuration
+ 	* @param callback Function that will be executed as the box component is loaded
 	 */
-	connect( thing ){
+	connect( thing, callback ){
 		this.ids(thing)
 		var content = {"plugin":"html", "initial":this.fillTabs(thing)}
 		Konekti.hcf( thing.id, content,  
@@ -52,13 +53,14 @@ class TabPlugIn extends PlugIn{
 		function back(){
 			for( var i=0; i<thing.tab.length; i++ )
 				if(thing.tab[i].plugin!==undefined) Konekti[thing.tab[i].plugin](thing.tab[i])
+			if( callback !== undefined ) callback()
 		}
-		var uses = []
 		for( var i=0; i<thing.tab.length; i++ ){
 			thing.tab[i].id = thing.tab[i].id.substring(0,thing.tab[i].id.length-4)
 			if(thing.tab[i].plugin !== undefined) uses.push(thing.tab[i].plugin)
 		}
-		if(uses.length>0) Konekti.uses(...uses,back)	
+		var uses = Konekti.analize(thing)
+		if(uses.length>0) Konekti.load(...uses,back)	
 		var client = this.client(thing)
 		setTimeout( function(){ client.open(thing.initial) }, 200 )
 		return client
@@ -122,10 +124,12 @@ if(Konekti.tab===undefined) new TabPlugIn()
  * @method
  * tab
  * @param id Id of the tab component
- * @param initial Id of the tab that will be initially open
- * @param ... Tab configurations 
+ * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
+ * @param tabs Tab configurations 
+ * @param callback Function that will be executed as the box component is loaded
  */
-Konekti.tab = function(id, initial){
-	if( typeof id === 'string' ) id = Konekti.plugins.tab.config(...arguments)
-	return Konekti.plugins.tab.connect(id)
+Konekti.tab = function(id, initial, tabs, callback){
+	if( typeof id === 'string' ) id = Konekti.plugins.tab.config(id, initial, ...tabs)
+	else callback = initial
+	return Konekti.plugins.tab.connect(id, callback)
 }

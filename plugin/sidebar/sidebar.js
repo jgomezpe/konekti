@@ -20,8 +20,9 @@ class SideBarPlugIn extends PlugIn{
 	/**
 	 * Provides to a visual component the plugin's functionality 
 	 * @param thing Plugin instance information
+ 	* @param callback Function that will be executed as the box component is loaded
 	 */
-	connect(thing){
+	connect(thing,callback){
 		thing.width = thing.width || "200px"
 		thing.side =  thing.side || {}
 		var side = thing.side
@@ -41,15 +42,14 @@ class SideBarPlugIn extends PlugIn{
 			"btn":[Konekti.plugins.btn.config(thing.id+'-side-btn', "fa fa-bars", "&times;",
 			'Konekti.plugins.sidebar.close("'+thing.id+'-side")',"w3-bar-item w3-xlarge w3-hide-large")]}
 		
-		thing.gui = this.html(thing)
 		function back(){
 			Konekti.hcf(thing.id+'-side', side, sidenavbar)
 			Konekti.hcf(thing.id+'-main', main, navbar)
+			if(callback !== undefined) callback()
 		}
-		var uses = []
-		if( side.plugin !== undefined ) uses.push(side.plugin)
-		if( main.plugin !== undefined ) uses.push(main.plugin)
-		Konekti.uses(...uses, back)
+		var uses = Konekti.analize(thing)
+		thing.gui = this.html(thing)
+		Konekti.load(...uses, back)
 		return this.client(thing)
 	}
 
@@ -72,14 +72,16 @@ if(Konekti.sidebar===undefined) new SideBarPlugIn()
  * Associates/Adds a side bar component (includes navigation bar, and main component)
  * @method
  * sidebar
- * @param id Id/Configuration of the sidebar component
+ * @param id Id/Configuration of the sidebar component or Function that will be executed as the box component is loaded 
  * @param width Width of the sidebar
  * @param side Side component configuration
  * @param main Main component configuration
  * @param navbar Navigation bar configuration
+ * @param callback Function that will be executed as the box component is loaded
  */
-Konekti.sidebar = function(id, width, side, main, navbar){
+Konekti.sidebar = function(id, width, side, main, navbar, callback){
 	if(typeof id === 'string') id=Konekti.plugins.sidebar.config(id,width,side,main,navbar)
-	return Konekti.plugins.sidebar.connect(id)
+	else callback = width
+	return Konekti.plugins.sidebar.connect(id,callback)
 }
 

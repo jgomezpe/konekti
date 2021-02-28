@@ -15,15 +15,15 @@ class HCFPlugIn extends PlugIn{
 	/**
 	 * Provides to a visual component the plugin's functionality 
 	 * @param thing Plugin instance information
+	 * @param callback Function that will be executed as the box component is loaded
 	 */
-	connect(thing){
+	connect(thing, callback){
 		var x = this
 		thing.header = thing.header || {}
 		thing.footer = thing.footer || {}
 		thing.idheader = thing.header.id || thing.id + '-header'
 		thing.idfooter = thing.footer.id || thing.id + '-footer'
 		thing.idcontent = thing.content.id || thing.id + '-content'
-		thing.gui = this.html(thing)
 		function size(){
 			var heighth = x.component(thing,'header')
 			var heightf = x.component(thing,'footer')
@@ -39,12 +39,11 @@ class HCFPlugIn extends PlugIn{
 			else height += '%'
 			thing.content.height = height
 			x.component(thing,'content')
+			if(callback!==undefined) callback()
 		}
-		var uses = []
-		if(thing.content.plugin!==undefined) uses.push(thing.content.plugin)
-		if(thing.header.plugin!==undefined) uses.push(thing.header.plugin)
-		if(thing.footer.plugin!==undefined) uses.push(thing.footer.plugin)
-		Konekti.uses(...uses,size)
+		var uses = Konekti.analize(thing)
+		thing.gui = this.html(thing)
+		Konekti.load(...uses,size)
 		return this.client(thing)
 	}
 
@@ -68,11 +67,13 @@ if(Konekti.hcf===undefined) new HCFPlugIn()
  * @method
  * hcf
  * @param id Id/Configuration of the header/content/footer component
- * @param content Content component configuration
+ * @param content Content component configuration or Function that will be executed as the box component is loaded 
  * @param header Header component configuration
  * @param footer Footer component configuration
+ * @param callback Function that will be executed as the box component is loaded
  */
-Konekti.hcf = function(id, content, header, footer){
+Konekti.hcf = function(id, content, header, footer, callback){
 	if(typeof id === 'string') id=Konekti.plugins.hcf.config(id,content,header,footer)
-	return Konekti.plugins.hcf.connect(id)
+	else callback = content
+	return Konekti.plugins.hcf.connect(id, callback)
 }
