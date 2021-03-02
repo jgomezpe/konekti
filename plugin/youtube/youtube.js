@@ -1,23 +1,23 @@
 /** Konekti Plugin for Youtube */
 class YoutubePlugIn extends PlugIn{
-    /** Creates a Plugin for Youtube */
-    constructor(){
-        super('youtube') 
-        this.video = []
-        this.APILoaded = false
-    }
+	/** Creates a Plugin for Youtube */
+	constructor(){
+		super('youtube') 
+		this.video = []
+		this.ready = false
+	}
     
-    /**
-     * Connects components as soon as the Youtube library is loaded
-     */
-    done(){
-        this.APILoaded=true
-        while( this.video.length > 0 ){
-            var thing = this.video[0]
-            this.video.shift()
-            Konekti.client(thing.id).load( thing )
-        }
-    }
+	/**
+	 * Connects components as soon as the Youtube library is loaded
+	 */
+	done(){
+		this.ready=true
+		while( this.video.length > 0 ){
+			var thing = this.video[0]
+			this.video.shift()
+			Konekti.client(thing.id).load( thing )
+		}
+	}
     
 	/**
 	 * Creates a client for the plugin's instance
@@ -25,7 +25,7 @@ class YoutubePlugIn extends PlugIn{
 	 */
 	client(thing){ 
 		var yt = new Youtube(thing) 
-		if( this.APILoaded ) yt.load(thing)
+		if( this.ready ) yt.load(thing)
 		else this.video.push( thing )
 		return yt
 	}

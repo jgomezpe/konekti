@@ -230,7 +230,12 @@ class PlugInLoader{
 			if( typeof js === 'string' ) eval(js)
 			else new PlugIn(plugin.id)
 			Konekti.plugin(plugin.id).htmlTemplate = html
-			if( callback !== null ) callback()
+			function loaded(){
+				var ready = Konekti.plugin(plugin.id).ready
+				if( ready !== undefined && !ready ) setTimeout(loaded,100)
+				else if( callback !== null ) callback()
+			}
+			loaded()
 		}
     
 		if( typeof plugin.css === 'string' ) Konekti.resource.css(plugin.css) 
@@ -491,7 +496,7 @@ class DOM{
 		function done(){
 			var i=1
 			while( i<x.length && verify(Konekti.vc(x[i])) && verify(Konekti.client(x[i])) ) i++
-			if( i<x.length ) setTimeout(done,300)
+			if( i<x.length ) setTimeout(done,100)
 			else back()
 		}
 		done()

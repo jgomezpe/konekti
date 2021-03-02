@@ -3,7 +3,7 @@ class AcePlugIn extends PlugIn{
     /** Creates a Plugin for ACE editors */
     constructor(){
         super('ace')
-        this.loaded = false
+        this.ready = false
         this.view = []
         this.mode = {}
     }
@@ -13,8 +13,9 @@ class AcePlugIn extends PlugIn{
      * @param lang Configuration information for the defined language
      */
     define( lang ){
-        var id = lang.mode;
-        define(
+			var id = lang.mode;
+     this.mode[id] = true
+       define(
             "ace/mode/"+lang.mode+"_highlight_rules",
             function(require, exports, module) {
                 "use strict";
@@ -152,8 +153,6 @@ class AcePlugIn extends PlugIn{
                 exports.Mode = Mode;
             }
         );
-        
-        this.mode[id] = true
     }
     
     /**
@@ -163,24 +162,20 @@ class AcePlugIn extends PlugIn{
      */
     register( lang, edit ){
     	var id = lang.mode
-    	if( this.mode[id] === undefined ){
-      	this.mode[id] = false
-      	this.define(lang)
-      	edit.session.setMode("ace/mode/"+id)
-			}else if( this.mode[id] ) edit.session.setMode("ace/mode/"+id)
-			else setTimeout(function() { Konekti.plugins.ace.register(lang, edit) }, 200)
+    	if( this.mode[id] === undefined ) this.define(lang)
+			edit.session.setMode("ace/mode/"+id)
     }
     
 	/**
-	 * Connects components as soon as the ACE library is loaded
+	 * Connects components as soon as the ACE library is ready
 	*/
 	done(){
-		this.loaded = true
 		while( this.view.length > 0 ){
 			var thing = this.view[0]
 			this.view.shift()
 			Konekti.client(thing.id).update(thing)    
 		}
+		this.ready = true
 	}
     
 	/**
@@ -189,7 +184,7 @@ class AcePlugIn extends PlugIn{
 	 */
 	load( thing ){ 
 		this.view.push( thing )
-		if( this.loaded ) this.done()
+		if( this.ready ) this.done()
 	}
 
 	/**
@@ -198,7 +193,7 @@ class AcePlugIn extends PlugIn{
 	 */
 	client(thing){ 
 		var editor = new Ace(thing) 
-		if( this.loaded ) editor.update(thing)
+		if( this.ready ) editor.update(thing)
 		else this.load( thing )
 		return editor
 	}
@@ -230,44 +225,44 @@ class Ace extends Editor{
 	update(thing){
 		var id = this.id
 		var x = this
-        
-		x.gui = x.vc('Ace')
-		x.edit = ace.edit(id+'Ace');
-		x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
-		x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
-        
-		
-		x.edit.setFontSize("16px")
-		if(thing.initial !== undefined){
-			//x.gui.setAttribute('initial', thing.initial)
-			x.edit.setValue(thing.initial,1)
-		} 
-		
-		if( thing.theme !== undefined && thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
-		x.edit.setShowPrintMargin(false)
+//		if( Konekti.ace.load ){     
+			x.gui = x.vc('Ace')
+			if( x.edit === undefined ){
+				x.edit = ace.edit(id+'Ace');
+				x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
+				x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
+				x.edit.setFontSize("16px")
+				x.edit.setShowPrintMargin(false)
 
-		x.edit.session.on("changeAnnotation", function () {
-			var annot = x.edit.session.getAnnotations();
-			for( var i=0; i<x.listener.length; i++ ){
-				var l = Konekti.client(x.listener[i])
-				if( l != null && l.annotation != null ) l.annotation(id, annot)
-			}             
-		});	
-            
-		x.edit.session.on('change', function(){ 
-			for( var i=0; i<x.listener.length; i++ ){
-				var l = Konekti.client(x.listener[i])
-				if( l != null && l.onchange!=null ) l.onchange(id)
-			}
-		})
-		
-		if( thing.code != null ){
-			thing.code.cid = id
-			thing.code.mode = thing.mode
-			Konekti.plugins.ace.register(thing.code, x.edit)
-		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
-		
-		
+				x.edit.session.on("changeAnnotation", function () {
+					var annot = x.edit.session.getAnnotations();
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client(x.listener[i])
+						if( l != null && l.annotation != null ) l.annotation(id, annot)
+					}             
+				});	
+					      
+				x.edit.session.on('change', function(){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client(x.listener[i])
+						if( l != null && l.onchange!=null ) l.onchange(id)
+					}
+				})
+			}    
+			
+			if(thing.initial !== undefined){
+				//x.gui.setAttribute('initial', thing.initial)
+				x.edit.setValue(thing.initial,1)
+			} 
+			
+			if( thing.theme !== undefined && thing.theme!==null) this.edit.setTheme("ace/theme/"+thing.theme)
+			
+			if( thing.code != null ){
+				thing.code.cid = id
+				thing.code.mode = thing.mode
+				Konekti.plugins.ace.register(thing.code, x.edit)
+			}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
+//		}else setTimeout(function(){ x.update(thing) },200)
 	}
 
 	/**
@@ -286,7 +281,7 @@ class Ace extends Editor{
 			if( x.edit !== undefined ){
 				x.edit.focus()
 				x.edit.setValue(txt, 1) 
-			}else setTimeout( checked, 200 )
+			}else setTimeout( checked, 100 )
 		}
 		checked()
 	}
@@ -368,4 +363,12 @@ Konekti.ace = function(id, initial, mode, theme, code){
 	return Konekti.plugins.ace.connect(id)
 }
 
-Konekti.resource.JS("https://ace.c9.io/build/src/ace", function (){ Konekti.plugins.ace.done() } )
+Konekti.resource.JS("https://ace.c9.io/build/src/ace", 
+	function (){
+		function check(){
+			if(ace === undefined) setTimeout( check, 100 )
+			else Konekti.plugins.ace.done()
+		}
+		check()	
+	} 
+)
