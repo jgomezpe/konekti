@@ -211,7 +211,7 @@ class PlugInLoader{
 	 */
 	constructor(){
 		this.path = {
-			"konekti":"https://konekti.numtseng.com/src/plugin/",
+			"konekti":"https://numtseng.com/modules/konekti/plugin/",
 			"local":"plugin/"
 		}
 	}
@@ -626,7 +626,7 @@ class API{
 		this.loader = new PlugInLoader(this)
 		this.dom = new DOM(this)
 		
-		this.resource.stylesheet( 'https://konekti.numtseng.com/src/Konekti.css' )
+		this.resource.stylesheet( 'https://numtseng.com/modules/konekti/Konekti.css' )
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 	}

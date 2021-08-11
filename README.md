@@ -5,13 +5,13 @@ Konekti is a Java Script connection library that allows to connect JS/HTML/CSS r
 &nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
 &nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
 
-&nbsp;Konekti url: <A HREF="https://konekti.numtseng.com/">https://konekti.numtseng.com</A>
+&nbsp;Konekti url: <A HREF="https://numtseng.com/konekti/">https://numtseng.com/konekti/</A>
 
-&nbsp;Ready to use: <A HREF="https://konekti.numtseng.com/src/">https://konekti.numtseng.com/src/</A>
+&nbsp;Ready to use: <A HREF="https://numtseng.com/modules/konekti/">https://numtseng.com/modules/konekti/</A>
 
 &nbsp;Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A>
 
-&nbsp;API documentation: <A HREF="https://konekti.numtseng.com/api/">https://konekti.numtseng.com/api/</A>
+&nbsp;API documentation: <A HREF="https://numtseng.com/konekti/api/">https://numtseng.com/konekti/api/</A>
 
 &nbsp;All rights reserved.
 
