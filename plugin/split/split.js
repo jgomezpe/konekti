@@ -50,7 +50,6 @@ class SplitPlugIn extends PlugIn{
 		var two = this.component(thing,'two')
 		var c = Konekti.dom.vc( thing.id )
 		if( c!==null ) c.innerHTML = this.fillLayout(thing)
-
 		function back(){
 			if(one.plugin!==undefined) Konekti[one.plugin](one)
 			if(two.plugin!==undefined) Konekti[two.plugin](two)

@@ -2,18 +2,14 @@
 
 /** Konekti Plugin for a Process Terminal */
 class TerminalPlugIn extends PlugIn{
-    /** Creates a Plugin for ACE editors */
-    constructor(){
-        super('terminal')
-    }
+    /** Creates a Plugin for a Process Terminal */
+    constructor(){ super('terminal') }
     
     /**
      * Creates a client for the plugin's instance
      * @param thing Instance configuration
      */
-    client(thing){
-        return new Terminal(thing) 
-    }
+    client(thing){ return new Terminal(thing) }
 
     /**
      * Creates a config object from parameters
@@ -28,8 +24,8 @@ new TerminalPlugIn()
 /** A Terminal Editor */
 class Terminal extends Editor{
     /**
-     * Creates an Ace Editor
-     * @param thing Ace editor configuration
+     * Creates the Process Terminal
+     * @param thing Terminal configuration
      */
     constructor(thing){ 
         super(thing) 
@@ -39,17 +35,24 @@ class Terminal extends Editor{
         this.server = null
     }
     
+    /**
+     * Initializes the terminal
+     */
     init(){
         this.edit.value = ""
         this.pos = -1
         this.input = ""
     }
     
+    /**
+     * Sets the Process server for input/output operations
+     * @param  Process server
+     */
     set( server ){ this.server = server; }
     
     /**
-     * Updates an Ace Editor
-     * @param thing Ace editor configuration
+     * Updates the Process Terminal
+     * @param thing Process terminal configuration
      */
     update(thing){
         var id = this.id
@@ -77,14 +80,14 @@ class Terminal extends Editor{
     }
     
     /**
-     * Gets current text in the editor
-     * @return Current text in the editor
+     * Gets current text in the terminal
+     * @return Current text in the terminal
      */
     getText(){ return this.edit.value }
     
     /**
-     * Sets text in the editor
-     * @param txt Text to set in the editor
+     * Sets text in the process terminal
+     * @param txt Text to set in the process terminal
      */
     setText(txt){
         var x = this
@@ -100,7 +103,11 @@ class Terminal extends Editor{
         checked()
     }
     
-    appendText(txt){
+    /**
+     * Adds text to the process terminal (output to the terminal)
+     * @param txt Text to be added to the process terminal (written to the terminal) 
+     */ 
+    output(txt){
         if( txt !== undefined && txt.length>0 ){
                this.edit.value = this.edit.value.substring(0,this.pos) + txt + this.input
                 this.edit.selectionStart += txt.length 
@@ -110,9 +117,9 @@ class Terminal extends Editor{
     }
     
     /**
-     * Sets current position in the editor
-     * @param row Row for the cursor
-     * @param column Column for the cursor
+     * Sets current position in the terminal (currently does nothing)
+     * @param row Row for the terminal cursor
+     * @param column Column for the terminal cursor
      */
     locateCursor(row, column){
         /*this.edit.moveCursorTo(row, column);
@@ -120,31 +127,31 @@ class Terminal extends Editor{
     }
     
     /**
-     * Gets current position in the editor
+     * Gets current position in the terminal (currently, returns 0)
      * @return [row,column] for the cursor
      */
     cursorLocation(){ return 0 /*this.edit.selection.getCursor()*/ }
     
     /**
-     * Highlights a row in the editor
+     * Highlights a row in the terminal (currently does nothing)
      * @param row Row to highlight
      */
     highlight(row){ this.locateCursor( row,1 ) }
     
     /**
-     * Gets current position in the editor (character count)
+     * Gets current position in the editor (character count), currently returns 0.
      * @return Position of the cursor (character count)
      */
     cursorIndex(){ return 0 /*this.edit.session.doc.positionToIndex(this.edit.selection.getCursor())*/ }
     
     /**
-     * Sets current position in the editor (character count)
+     * Sets current position in the terminal (character count), currently does nothing
      * @param pos Position of the cursor (character count)
      */
     locateCursorIndex(pos){ /*this.edit.selection.moveTo(this.edit.session.doc.indexToPosition(pos))*/ }
     
     /**
-     * Updates the position of the scroll associated to the editor
+     * Updates the position of the scroll associated to the terminal
      * @param pos New position for the scroll
      */
     scrollTop(pos){
@@ -152,6 +159,13 @@ class Terminal extends Editor{
     }
 }
 
+/**
+ * Associates/Adds a process terminal 
+ * @method
+ * terminal
+ * @param id Id/Configuration of the process terminal
+ * @param initial Initial text in the process terminal
+ */
 Konekti.terminal = function(id, initial){
     if(typeof id ==='string') id=Konekti.plugins.terminal.config(id,initial)
     var c = Konekti.plugins.terminal.connect(id)
