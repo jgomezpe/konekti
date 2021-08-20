@@ -13,10 +13,11 @@ class TerminalPlugIn extends PlugIn{
 
     /**
      * Creates a config object from parameters
-     * @param id Id/Configuration of the latex component
-     * @param tex Latex code
+     * @param id Id/Configuration of the terminal component
+     * @param initial Initial text in the terminal
+     * @param maxChars Maximum number of characters maintained by the terminal
      */
-    config(id, initial=''){ return {"id":id, 'initial':initial} }
+    config(id, initial='', maxChars=1000000){ return {"id":id, 'initial':initial, 'maximum':maxChars} }
 }
 
 new TerminalPlugIn()
@@ -48,34 +49,42 @@ class Terminal extends Editor{
      * Sets the Process server for input/output operations
      * @param  Process server
      */
-    set( server ){ this.server = server; }
+    set( server ){
+     this.server = server || null
+     x.edit.disable = this.server==null
+   }
     
     /**
      * Updates the Process Terminal
      * @param thing Process terminal configuration
      */
-    update(thing){
-        var id = this.id
-        var x = this        
-        x.edit = x.vc('Area')
-        x.edit.onkeyup = function(event){
-            if( x.pos < 0 ){
-                x.pos = x.edit.selectionEnd
-                x.value = x.edit.value
-            }
-            var npos = x.selectionEnd
-            if(npos<x.pos){
-                x.edit.selectionEnd = x.pos
-                x.edit.selectionStart = x.pos
-            }
-            x.input = x.edit.value.substring(x.pos,x.edit.value.length)
+	update(thing){
+		var id = this.id
+		var x = this     
+		this.maximum = thing.maximum || 1000000
+		x.locked = false   
+		x.edit = x.vc('Area')
+		x.edit.disabled = x.server==null
+		x.edit.onkeyup = function(event){
+			var length = x.edit.value.length
+			
+        	if( x.server !== null ){
+            	if( x.pos < 0 ) x.pos = x.edit.selectionEnd
+
+            	var npos = x.selectionEnd
+            	if(npos<x.pos){
+                	x.edit.selectionEnd = x.pos
+                	x.edit.selectionStart = x.pos
+            	}
+            	x.input = x.edit.value.substring(x.pos,length)
             
-            var key = event.keyCode;
-            if( key===13 && x.server !== null ){
-                x.server.input(x.input)
-                x.input = ""
-                x.pos = x.edit.value.length
-            }
+            	var key = event.keyCode;
+            	if( key===13 && x.server !== null ){
+                	x.server.input(x.input)
+                	x.input = ""
+                	x.pos = length
+            	}
+            }else x.pos = length
         }     
     }
     
@@ -90,9 +99,11 @@ class Terminal extends Editor{
      * @param txt Text to set in the process terminal
      */
     setText(txt){
+		if( txt === undefined || txt == null ) txt = ''
         var x = this
         function checked(){
             if( x.edit !== undefined ){
+            	if( txt.length > x.maximum ) txt = txt.substring(txt.length-x.maximum)
                 x.edit.value = txt 
                 x.edit.selectionStart = txt.length 
                 x.edit.selectionEnd = txt.length 
@@ -108,12 +119,32 @@ class Terminal extends Editor{
      * @param txt Text to be added to the process terminal (written to the terminal) 
      */ 
     output(txt){
-        if( txt !== undefined && txt.length>0 ){
-               this.edit.value = this.edit.value.substring(0,this.pos) + txt + this.input
-                this.edit.selectionStart += txt.length 
-                this.edit.selectionEnd += txt.length 
-                this.pos += txt.length
+    	if( txt === undefined || txt == null ) txt = ''
+        var x = this
+        function checked(){
+        	if( x.edit !== undefined ){
+        		if( txt.length > 0 ){
+        			setTimeout( function(){
+        				if(txt.length + x.edit.value.length < x.maximum ){
+        					if(x.input.length > 0) x.edit.value = x.edit.value.substring(0,x.pos) + txt + x.input
+ 							else x.edit.value += txt
+ 						
+                			x.edit.selectionStart += txt.length 
+                			x.edit.selectionEnd += txt.length 
+                			x.pos += txt.length
+                		}else{
+                			if( txt.length > x.maximum ) txt = txt.substring(txt.length-x.maximum)
+                			else txt = x.edit.value.substring(txt.length+x.maximum/10, x.pos) + txt
+                			x.pos = txt.length
+                			x.edit.selectionStart = x.pos
+                			x.edit.selectionEnd = x.pos
+                			x.edit.value = txt + x.input
+                		}
+                	}, 1 )
+               }
+			}else setTimeout( checked, 200 ) 
         } 
+        checked()
     }
     
     /**
@@ -165,9 +196,10 @@ class Terminal extends Editor{
  * terminal
  * @param id Id/Configuration of the process terminal
  * @param initial Initial text in the process terminal
+ * @param maxChars Maximum number of characters maintained by the terminal
  */
-Konekti.terminal = function(id, initial){
-    if(typeof id ==='string') id=Konekti.plugins.terminal.config(id,initial)
+Konekti.terminal = function(id, initial, maxChars=1000000){
+    if(typeof id ==='string') id=Konekti.plugins.terminal.config(id,initial,maxChars)
     var c = Konekti.plugins.terminal.connect(id)
     c.update(id)
     return c

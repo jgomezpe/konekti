@@ -16,15 +16,15 @@ class SplitPlugIn extends PlugIn{
 			thing.float='float:left'
 			thing.hOne = thing.hDrag = thing.hTwo = '100%'
 			thing.wOne = x + "%"
-			thing.wDrag = '1%'
-			thing.wTwo = (99-x)+'%'
+			thing.wDrag = '0.2%'
+			thing.wTwo = (99.8-x)+'%'
 		}else{
 			thing.mode = 'v'
 			thing.float = ''
 			thing.wOne = thing.wDrag = thing.wTwo = '100%'
 			thing.hOne = x + "%"
-			thing.hDrag = '1%'
-			thing.hTwo = (99-x)+'%'
+			thing.hDrag = '0.2%'
+			thing.hTwo = (99.8-x)+'%'  
 		}
 		return Konekti.dom.fromTemplate(this.htmlTemplate, thing)
 	}
@@ -122,16 +122,16 @@ class Split extends Client{
             if (this.type == "col") {
                 var leftPercentage = 100 * (e.pageX-r.left-window.scrollX) / r.width
                 if (leftPercentage > 5 && leftPercentage < 98) {
-                    var rightPercentage = 100-leftPercentage
+                    var rightPercentage = 100 - leftPercentage - 400 / r.width
                     Konekti.vc(this.one).style.width = (leftPercentage) + "%"
-                    Konekti.vc(this.two).style.width = (rightPercentage-1) + "%"
+                    Konekti.vc(this.two).style.width = (rightPercentage) + "%"
                 }
             } else {
                var leftPercentage = 100 * (e.pageY-r.top-window.scrollY) / r.height
                 if (leftPercentage > 5 && leftPercentage < 98) {
-                    var rightPercentage = 100-leftPercentage
+                    var rightPercentage = 100-leftPercentage - 400 / r.height
                     Konekti.vc(this.one).style.height = (leftPercentage) + "%"
-                    Konekti.vc(this.two).style.height = (rightPercentage-1) + "%"
+                    Konekti.vc(this.two).style.height = (rightPercentage) + "%"
                 }
             }
         }

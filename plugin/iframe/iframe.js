@@ -9,6 +9,7 @@ class IFramePlugIn extends PlugIn{
 	 * @return Html code associated to the tree component
 	 */
 	fillLayout(thing){
+		if( thing.src === undefined || thing.src === null ) thing.src = ''
 		if( !thing.src.startsWith('https://') ){
        			const getBlobURL = (code, type) => {
             			const blob = new Blob([code], {type})
