@@ -474,7 +474,10 @@ class DOM{
 			if( id.id === undefined ){
 				for( var i=0; i<id.components.length; i++ )
 					this.update(id.components[i])
-			}else Konekti.client(id.id).update(id)
+			}else{
+				var cl = Konekti.client(id.id)
+				if( cl !== undefined && cl !== null ) cl.update(id)
+			}
 		}
 	}
 

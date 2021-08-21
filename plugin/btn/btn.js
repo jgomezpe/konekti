@@ -90,7 +90,7 @@ class Btn extends Client{
 		var c = this.vc()
 		if( thing.title !== undefined ) c.title = thing.title
 		Konekti.client(this.id+'-icon').update(thing)
-		if( thing.onclick !== undefined ) c.onclick = Konekti.plugins.btn.run(thing.id, thing.onclick)
+		if( thing.onclick !== undefined ) c.setAttribute('onclick', Konekti.plugins.btn.run(thing.id, thing.onclick))
 	}
 }
 
