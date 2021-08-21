@@ -30,7 +30,6 @@ class Terminal extends Editor{
      */
     constructor(thing){ 
         super(thing) 
-        this.pos = -1
         this.input = ""
         this.update(thing)
         this.server = null
@@ -40,8 +39,8 @@ class Terminal extends Editor{
      * Initializes the terminal
      */
     init(){
+    	this.value = ''
         this.edit.value = ""
-        this.pos = -1
         this.input = ""
     }
     
@@ -49,10 +48,7 @@ class Terminal extends Editor{
      * Sets the Process server for input/output operations
      * @param  Process server
      */
-    set( server ){
-     this.server = server || null
-     x.edit.disable = this.server==null
-   }
+    set( server ){ this.server = server || null }
     
     /**
      * Updates the Process Terminal
@@ -62,29 +58,21 @@ class Terminal extends Editor{
 		var id = this.id
 		var x = this     
 		this.maximum = thing.maximum || 1000000
-		x.locked = false   
 		x.edit = x.vc('Area')
-		x.edit.disabled = x.server==null
 		x.edit.onkeyup = function(event){
 			var length = x.edit.value.length
-			
-        	if( x.server !== null ){
-            	if( x.pos < 0 ) x.pos = x.edit.selectionEnd
-
-            	var npos = x.selectionEnd
-            	if(npos<x.pos){
-                	x.edit.selectionEnd = x.pos
-                	x.edit.selectionStart = x.pos
+            	var npos = Math.min(x.selectionEnd,x.selectionStart)
+            	if(npos<x.value.length){
+                	x.edit.selectionEnd = x.value.length
+                	x.edit.selectionStart = x.value.length
             	}
-            	x.input = x.edit.value.substring(x.pos,length)
-            
+            	x.input = x.edit.value.substring(x.value.length,length)
             	var key = event.keyCode;
             	if( key===13 && x.server !== null ){
                 	x.server.input(x.input)
                 	x.input = ""
-                	x.pos = length
+                	x.value += x.input
             	}
-            }else x.pos = length
         }     
     }
     
@@ -100,16 +88,16 @@ class Terminal extends Editor{
      */
     setText(txt){
 		if( txt === undefined || txt == null ) txt = ''
+        else if( txt.length > this.maximum ) txt = txt.substring(txt.length-Math.floor(9*x.maximum/10))
         var x = this
+        x.value = txt
+        x.input = ''
         function checked(){
             if( x.edit !== undefined ){
-            	if( txt.length > x.maximum ) txt = txt.substring(txt.length-x.maximum)
                 x.edit.value = txt 
                 x.edit.selectionStart = txt.length 
-                x.edit.selectionEnd = txt.length 
-                x.pos = txt.length
-                x.input = ""
-            }else setTimeout( checked, 200 )
+                x.edit.selectionEnd = txt.length
+            }else setTimeout( checked, 50 )
         }
         checked()
     }
@@ -119,30 +107,20 @@ class Terminal extends Editor{
      * @param txt Text to be added to the process terminal (written to the terminal) 
      */ 
     output(txt){
-    	if( txt === undefined || txt == null ) txt = ''
+    	if( txt === undefined || txt == null || txt.length == 0 ) return;
         var x = this
+        x.value += txt
+        if( x.value.length > x.maximum ) x.value = x.value.substring(x.value.length-Math.floor(9*x.maximum/10))
         function checked(){
         	if( x.edit !== undefined ){
-        		if( txt.length > 0 ){
-        			setTimeout( function(){
-        				if(txt.length + x.edit.value.length < x.maximum ){
-        					if(x.input.length > 0) x.edit.value = x.edit.value.substring(0,x.pos) + txt + x.input
- 							else x.edit.value += txt
- 						
-                			x.edit.selectionStart += txt.length 
-                			x.edit.selectionEnd += txt.length 
-                			x.pos += txt.length
-                		}else{
-                			if( txt.length > x.maximum ) txt = txt.substring(txt.length-x.maximum)
-                			else txt = x.edit.value.substring(txt.length+x.maximum/10, x.pos) + txt
-                			x.pos = txt.length
-                			x.edit.selectionStart = x.pos
-                			x.edit.selectionEnd = x.pos
-                			x.edit.value = txt + x.input
-                		}
-                	}, 1 )
-               }
-			}else setTimeout( checked, 200 ) 
+        		setTimeout( function(){
+        			if(x.input.length > 0) x.edit.value = x.value + x.input
+ 					else x.edit.value += txt
+ 					
+               		x.edit.selectionStart = x.value.length 
+               		x.edit.selectionEnd = x.value.length 
+              	}, 1 )
+			}else setTimeout( checked, 50 ) 
         } 
         checked()
     }
