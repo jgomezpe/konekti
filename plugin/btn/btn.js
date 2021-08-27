@@ -12,6 +12,7 @@ class BtnPlugIn extends PlugIn{
 	 * @param onclick Button run configuration
 	 */
 	run(id, onclick){
+		if(onclick===undefined || onclick===null) return 'run("'+id+'")'
 		if(typeof onclick==='object'){
 			onclick = onclick || {}
 			var client = onclick.client || 'client'

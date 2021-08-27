@@ -59,6 +59,12 @@ class Media extends MediaClient{
 	}
 
 	/**
+	 * Updates a Media player
+	 * @param thing Media player configuration
+	 */
+	update(thing){ Konekti.media(thing) }
+
+	/**
 	 * Pauses the media component
 	 */
 	pause(){

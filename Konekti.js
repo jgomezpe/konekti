@@ -766,6 +766,15 @@ class ItemPlugIn extends PlugIn{
 	}
 
 	/**
+	 * Creates the HTML resource of an instance of the PlugIn. Uses the information provided for the instance <i>dictionary</i>
+	 * @param thing Information of the instance of the PlugIn
+	 * @return The HTML resource of an instance of the PlugIn.
+	 */
+	fillLayout(thing){ 
+		return Konekti.dom.fromTemplate( this.htmlTemplate, thing ) 
+	}
+	
+	/**
 	 * Creates a client for the plugin's instance
 	 * @param thing Instance configuration
 	 */
@@ -919,7 +928,18 @@ class HyperMedia extends MediaClient{
 		this.media = thing.media
 		Konekti.client(this.media).addListener(this.id)
 	}
-
+	
+	/**
+	 * Updates the hypermedia client
+	 * @param thing Hyper media client information
+	 * 
+         */
+	update(thing){
+		this.scripts = thing.scripts || []
+		this.media = thing.media
+		Konekti.client(this.media).addListener(this.id)
+	}
+         
 	/**
 	 * Plays the media component
 	 * @param id The media id 

@@ -241,6 +241,13 @@ class Ace extends Editor{
 						if( l != null && l.annotation != null ) l.annotation(id, annot)
 					}             
 				});	
+
+				x.gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client(x.listener[i])
+						if( l != null && l.onkeyup!=null ) l.onkeyup(id, event)
+					}
+				})
 					      
 				x.edit.session.on('change', function(){ 
 					for( var i=0; i<x.listener.length; i++ ){

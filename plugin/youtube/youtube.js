@@ -44,7 +44,20 @@ class Youtube extends MediaClient{
 	constructor(thing){ super(thing) }
 
 	/**
-	 * Loads a Youtube palyer
+	 * Updates a Youtube player
+	 * @param thing Youtube player configuration
+	 */
+	update(thing){ 
+		var ytp = Konekti.plugins.youtube
+		var i=0
+		while( i<ytp.video.length && ytp.video[i].id != this.id ) i++
+		if( i<ytp.video.length ) ytp.video[i].video.slice(i,i+1)
+
+		Konekti.youtube(this.id, thing.video)
+	}
+
+	/**
+	 * Loads a Youtube player
 	 * @param thing Youtube configuration
 	 */
 	load(thing){

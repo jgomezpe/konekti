@@ -44,7 +44,15 @@ class Latex extends Editor{
 	constructor(thing){
 		super(thing) 
 		this.innergui = this.vc('content')
-		this.setText(thing.initial)
+		if( thing.initial !== undefined && thing.initial !== null ) this.setText(thing.initial)
+	}
+
+	/**
+	 * Updates a Latex Editor
+	 * @param thing Latex editor configuration
+	 */
+	update(thing){
+		if( thing.initial !== undefined && thing.initial !== null ) this.setText(thing.initial)
 	}
 	
 	/**
