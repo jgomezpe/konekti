@@ -218,7 +218,7 @@ class KonektiAPI{
 		this.plugins = {}
 		this.loading = 0
 		this.root = new Client()
-		this.path = "https://github.com/jgomezpe/konekti/blob/master/"
+		this.path = "https://jgomezpe.github.io/konekti/src/"
 		this.dom = new DOM(this)
 		
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
