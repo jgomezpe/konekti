@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti ACE</title>
+	<script type='text/javascript' src='https://numtseng.com/modules/konekti/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<div id="log" style='width:100%'>Los eventos del editor aparecen aquí...</div>
+
+<script>
+
+Konekti.uses('btn','header','ace')
+
+class TheClient{
+	constructor(){
+		Konekti.client['client'] = this 
+		this.id = 'client'
+	}
+	annotation( id, annot ){ Konekti.vc("log").innerHTML = 'Anotaciones de '+id+' cambiaron, ahora se tienen '+annot.length+' anotaciones' }
+	onchange(id){  Konekti.vc("log").innerHTML = 'Contenido del editor '+id+' cambió'}
+}
+
+function copy(){ Konekti.client['ace4'].setText(Konekti.client['ace3'].getText()) }
+
+function KonektiMain(){
+	var client = new TheClient()
+
+	Konekti.header('title','', 'Editor ACE Konekti', 2, 'w3-green' )
+	Konekti.header('hace1','', 'Editor en modo JavaScript y tema por defecto', 4, 'w3-black' )
+	var ed = Konekti.ace( 'ace1', "100%", "40%", "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
+	ed.addListener(client.id)
+
+	Konekti.header('hace2','', 'Editor en modo HTML y tema xcode', 4, 'w3-black' )
+	Konekti.ace( 'ace2', "100%", "40%", "<div>Un editor de texto ACE</div>", 'html', 'xcode' )
+
+	Konekti.header('hace3','', 'Editor en modo FunPL/Quilt (usa el parámetro code) y tema xcode', 4, 'w3-black' )
+	// El analizador léxico del lenguaje de programación FunPL/Quilt desarrollado por el Profesor Jonatan Gómez
+	// ver https://quilt.numtseng.com and https://github.com/jgomezpe/quilt 
+	lexer = { 
+		"qName":"Quilt", 
+		"fileTypes":["qmp", "quilt"],
+		"tokens":{
+			"start":[
+				{ "token": "variable.parameter", "regex": "\\b[A-Z$]\\w*\\b" },
+				{ "token": "paren.lparen", "regex" : "[\\(]"},
+				{ "token": "paren.rparen", "regex" : "[\\)]"},
+				{ "token": "punctuation.separator.parameters", "regex": "," },
+				{ "token": "keyword.operator.definition", "regex": "="},
+				{ "token": "keyword.operator", "regex": "[@|]"},
+				{ "token": [ "punctuation.definition.comment", "comment.line.percentage" ], "regex": "(%)(.*$)"  },
+				{ "token": "constant.language", "regex": "\\b(?:-|/|<|_)+\\b" },
+				{ "token": "keyword", "regex": "\\b(?:rot|sew)\\b" },
+				{ "token": "constant.other.atom.quilt", "regex": "\\b[a-z][a-zA-Z0-9_]*\\b" },
+				{ "token": "text", "regex": "[^\\s]" } 
+			]
+		}, 
+		"parser":null, 
+		"meaner":null 
+		}	
+	Konekti.ace( 'ace3', "50%", "30%", "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer )
+
+	Konekti.header('hace4','', 'Copia de ace3 al editor ace4 (sin tema ni modo)', 4, 'w3-black' )
+	Konekti.ace( 'ace4', "70%", "30%" )
+
+	Konekti.btn('btn',"fa fa-copy", "Copy","copy()",'w3-bar-item w3-large',"Copiar")
+}
+
+</script>
+
+</body>
+</html>
