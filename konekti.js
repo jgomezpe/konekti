@@ -218,7 +218,7 @@ class KonektiAPI{
 		this.plugins = {}
 		this.loading = 0
 		this.root = new Client()
-		//this.loader = new PlugInLoader(this)
+		this.path = "https://github.com/jgomezpe/konekti/blob/master/"
 		this.dom = new DOM(this)
 		
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
@@ -227,6 +227,8 @@ class KonektiAPI{
 		//this.root = new MainClient(components)
 		window.addEventListener("resize", Konekti.resize);
 	}
+	
+	setPath( path ){ this.path = path }
     
 	resize(){ Konekti.root.setParentSize(window.innerWidth, window.innerHeight) }
     
@@ -262,7 +264,7 @@ class KonektiAPI{
 		}
 		
 		for( var i=0; i<n; i++ ){
-			if( args[i].indexOf('https://') < 0 ) args[i] = 'https://numtseng.com/modules/konekti/'+args[i]
+			if( args[i].indexOf('https://') < 0 ) args[i] = this.path+args[i]
 			this.resource.JS(args[i],plugin_back)
 		}	
 	}	
