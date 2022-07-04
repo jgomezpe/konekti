@@ -21,7 +21,8 @@
 				if(page=='api') window.open("https://numtseng.com/api/konekti/")
 				else if( this.page != page ){			
 					this.page = page
-					Konekti.resource.load('https://jgomezpe.github.io/konekti/demo/en/'+page+'.html', function(txt){
+					var url = 'https://jgomezpe.github.io/konekti/demo/en/'+page+'.html'
+					Konekti.resource.load(url, function(txt){
 						Konekti.client['coder'].setText(txt) 
 						Konekti.client['viewer'].setText(txt)
 						Konekti.resize()
@@ -39,7 +40,7 @@
 		function KonektiMain(){
 			var client = new KMain()
 
-			var toc = Konekti.tocConfig({ "id": "home", "caption":"Home", "client":"client", "width":"100%", "children":[
+			var toc = Konekti.tocConfig({ "id": "index", "caption":"Home", "client":"client", "width":"100%", "children":[
 				{"id":"ace", "icon":"fa fa-file-text-o", "caption": "Ace Editor"},
 				{"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Button"},
 				{"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
@@ -80,7 +81,7 @@
 
 			Konekti.sidebar('root', '100%', '100%', toc, main)	
 
-			client.select('home')
+			client.select('youtube')
 		}
 	</script>
 </body>
