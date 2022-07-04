@@ -76,6 +76,7 @@ Konekti.dropdown = function(id, icon, caption, style, title, content){
  Konekti.dropdownListConfig = function(id, icon, caption, style, title, options, onclick, parent='KonektiMain'){
 	for( var i=0; i<options.length; i++ )
 		if( typeof options[i] == 'string' ) options[i] = Konekti.btnConfig(options[i], "", options[i], onclick, 'w3-bar-item', options[i])
+		else options[i] = Konekti.btnConfig(options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title)
 	return Konekti.dropdownConfig(id, icon, caption, style, title, options, parent)
 }
 
