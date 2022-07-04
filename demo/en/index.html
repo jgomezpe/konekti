@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+</head>
+
+<body>
+
+	<script>
+		Konekti.uses('accordion','sidebar','navbar','dropdown','ace','iframe','split')
+
+		class KMain extends Client{
+			constructor(){
+				super('client')
+				this.page = ''
+			}
+
+			select(page){
+				if(page=='api') window.open("https://numtseng.com/api/konekti/")
+				else if( this.page != page ){			
+					this.page = page
+					Konekti.resource.load('https://jgomezpe.github.io/konekti/demo/en/'+page+'.html', function(txt){
+						Konekti.client['coder'].setText(txt) 
+						Konekti.client['viewer'].setText(txt)
+					})
+				}
+			}
+
+			language(lang){
+				if( lang != 'en' ) window.open("https://jgomezpe.github.io/konekti/demo/"+lang+"/index.html","_self")
+			}
+
+			run(){ Konekti.client['viewer'].setText( Konekti.client['coder'].getText() ) }
+		}
+
+		function KonektiMain(){
+			var client = new KMain()
+
+			var toc = Konekti.tocConfig({ "id": "index", "caption":"Home", "client":"client", "width":"100%", "children":[
+				{"id":"ace", "icon":"fa fa-file-text-o", "caption": "Ace Editor"},
+				{"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Button"},
+				{"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
+				{"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
+				{"id":"header", "icon":"fa fa-header", "caption": "Header"},
+				{"id":"div", "icon":"fa fa-code", "caption": "HTML"},
+				{"id":"iframe", "icon":"fa fa-link", "caption": "IFrame"},
+				{"id":"latex", "icon":"fa fa-superscript", "caption": "Latex"},
+				{"id":"media", "icon":"fa fa-film",  "caption": "Media", "children":[
+					{"id":"audio", "icon":"fa fa-volume-up", "caption":"Audio"},
+					{"id":"video", "icon":"fa fa-video-camera", "caption":"Video"}
+				]},
+				{"id":"navbar", "icon":"fa fa-ellipsis-h",  "caption": "Navigation Bar"},
+				{"id":"sidebar", "icon":"fa fa-bookmark-o", "caption": "Side Bar"},
+				{"id":"split", "icon":"fa fa-columns", "caption": "Split"},
+				{"id":"tab", "icon":"fa fa-clone", "caption": "Tab"},
+				{"id":"accordion", "icon":"fa fa-sitemap", "caption": "Accordion"},
+				{"id":"youtube", "icon":"fa fa-youtube", "caption": "Youtube"},
+				{"id":"api", "caption": "API"}
+			]}, 4, '', {'client':'client', 'method':'select'},true)
+
+			var btn=[
+				Konekti.btnConfig("play", "fa-play", '', '', "w3-blue-grey", "Run"),
+				Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-red ', 'Language', ["English", "Español"], {"client":'client', "method":"language"})
+			]
+			var navbar = Konekti.navbarConfig('main-navbar', '', btn, 'client', 'select' ) 
+
+			var control = Konekti.splitConfig('coderviewer', '100%', 'rest', 'col', 50, 
+				Konekti.aceConfig('coder', '100%','100%', '', 'html'),
+				Konekti.iframeConfig('viewer', '100%', '100%', '')
+			)
+
+			var main = Konekti.divConfig('main-content','100%','100%', '', [navbar,control])
+
+			Konekti.sidebar('root', '100%', '100%', toc, main)	
+
+			client.select('home')
+		}
+	</script>
+</body>
+</html>

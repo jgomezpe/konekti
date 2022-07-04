@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Accordion</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+</head>
+
+<body>
+    <div id="log" style='width:100%'>The selected TOC entry will appear here...</div>
+<script>
+
+Konekti.uses('accordion', 'iframe')
+
+function select(id){ Konekti.vc('log').innerHTML = 'Selected TOC entry..'+id }
+
+function KonektiMain(){
+
+	Konekti.header('aHeader', '', 'Testing an accordion', 3, 'w3-green')
+	Konekti.accordion('anAccordion', 'fa-link', 'Showing wikipedia', 4, 'w3-blue-grey', Konekti.iframeConfig('aIframe', '80%', '40%', 'https://wikipedia.com'), false)
+	
+	Konekti.header('aHeader2', 'fa-home', 'Testing a Table of Content (TOC)', 3, 'w3-yellow')	
+	Konekti.toc({'id':'aTOC', 'caption':'Home', 'icon':'fa-folder', 'children':[{'id':'child1', 'caption':'Topic A', 'icon':'fa-arrow-left'}, {'id':'child2', 'caption':'Topic B', 'icon':'fa-smile-o', 'children':[{'id':'child21', 'caption':'Topic D', 'icon':'fa-edit'}, {'id':'child22', 'caption':'Topic E', 'icon':'fa-copy'}]}, {'id':'child3', 'caption':'Topic C', 'icon':'fa-edit'}]}, 4, '', select, true)
+}
+
+</script>
+
+</body>
+</html>
+
+
+

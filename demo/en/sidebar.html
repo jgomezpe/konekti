@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Side Bar</title>
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
+</head>
+
+<body>
+<div id='log'>Selected option will appear here...</div>
+
+<script>
+
+Konekti.uses('sidebar','header','accordion','youtube')
+
+function select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
+
+function KonektiMain(){
+	Konekti.header('title','', 'Konekti Sidebar', 4, 'w3-green' )
+
+	var toc = Konekti.tocConfig({'id':'aTOC', 'caption':'Home', 'icon':'fa-folder', 'children':[{'id':'child1', 'caption':'Topic A', 'icon':'fa-arrow-left'}, {'id':'child2', 'caption':'Topic B', 'icon':'fa-smile-o', 'children':[{'id':'child21', 'caption':'Topic D', 'icon':'fa-edit'}, {'id':'child22', 'caption':'Topic E', 'icon':'fa-copy'}]}, {'id':'child3', 'caption':'Topic C', 'icon':'fa-edit'}]}, 4, '', select, true)
+	var main = Konekti.youtubeConfig('main','100%','100%',"fv2Ms3C7Xrw")
+	Konekti.sidebar('root', '100%', '100%', toc, main)
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Header</title>
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
+</head>
+
+<body>
+
+<script>
+
+Konekti.uses('header')
+
+/* Konekti's main function*/
+function KonektiMain(){
+	/* Connecting components */
+	Konekti.header('header1','fa-gavel', 'Header using size 3, blue-grey color, and center aligned text', 3, 'w3-blue-grey w3-center' )
+	Konekti.header('header2', 'fa-smile-o','Header with size 4, black color, and left aligned text (default alignment)', 4, 'w3-black' )
+	Konekti.header('header3', '','Header without icon, size 2, orange color, and right aligned text', 2, 'w3-orange w3-right-align' )
+}
+
+</script>
+
+</body>
+</html>

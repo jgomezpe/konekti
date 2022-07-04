@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Navigation Bar</title>
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
+</head>
+
+<body>
+<div id="log" style='width:100%'>Selected option will appear here...</div>
+<script>
+
+Konekti.uses('navbar','header')
+
+function add(){
+    Konekti.append("navbar3", Konekti.btnConfig('soccer','fa-soccer-ball-o','','','w3-blue-grey'))
+}
+
+function del(){
+    Konekti.client["navbar3"].remove("soccer")
+}
+
+class TheClient extends Client{
+	constructor(){ super({'id':'client'}) }
+	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
+	language(optId){ Konekti.vc("log").innerHTML =  'Language: '+ optId; }
+	
+	addleaf(){ Konekti.append("navbar4", Konekti.btnConfig('leaf', 'fa-leaf','','','w3-blue-grey', 'Leaf')) }
+	addmobile(){ Konekti.append("navbar4", Konekti.btnConfig('mobile','fa-mobile','', '', 'w3-blue-grey', 'Mobile')) }
+	addmoon(){ Konekti.client["navbar4"].insertBefore('keep', Konekti.btnConfig('moon','fa-moon-o','', '', 'w3-blue-grey', 'Moon')) }
+	keep(){ Konekti.client["navbar4"].keep(['addleaf','addmobile', 'addmoon', 'keep']) }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+
+	Konekti.header('title','', 'Konekti Navigation Bars', 3, 'w3-green' )
+	Konekti.header('header1','', 'Navbar with default style', 4, 'w3-black' )	
+	var btn=[
+		Konekti.btnConfig("config", "fa-cogs", '', '', "w3-blue-grey", "Configure"),
+		Konekti.btnConfig("coffee", "fa-coffee", '', '', "w3-blue-grey", "Coffe"),
+		Konekti.btnConfig("html", "fa-file-code-o", '', '', "w3-blue-grey", "HTML"),
+		Konekti.btnConfig("file", "fa-file-text-o", '', '', "w3-blue-grey", "File"),
+		Konekti.dropdownListConfig( "dd3", "fa-language", "", 'w3-red ', 'Selecting language', ["English", "Español"], {"client":'client', "method":"language"})
+	]		
+	var navbar = Konekti.navbar('navbar1', '', btn, 'client', 'select' ) 
+/*
+	// Adds language dropdown
+	navbar.add( {'plugin':'dropdown', "id":"lang", "icon":"fa fa-language", "method":"select", 
+				"options":[{"id":"es","caption":"Español"}, {"id":"en","caption":"English"}]} )
+*/
+	Konekti.header('header2','', 'Navbar with orange style and large icons', 4, 'w3-black' )	
+	var btn2=[
+		Konekti.btnConfig("hand", "fa-hand-paper-o", '', '', '', 'Hand'),
+		Konekti.btnConfig("arrow","fa-arrow-left", '', '', '', 'Arrow'),
+		Konekti.btnConfig("face","fa-smile-o", '', '', '', 'Face')
+	]		
+	var navbar2 = Konekti.navbar('navbar2', 'w3-orange w3-large', btn2, 'client', 'select') 
+	Konekti.header('header3','', 'Adds and removes a button', 4, 'w3-black' )	
+	var btn3=[
+		Konekti.btnConfig("add", "fa-plus", "", "add()", "", "Add button"),
+		Konekti.btnConfig("remove", "fa-minus", "", "del()", "", "Remove button")
+	]		
+	var navbar3 = Konekti.navbar('navbar3', 'w3-teal w3-xlarge', btn3, 'client', 'select' )
+
+	Konekti.header('header4','', 'Dynamic Navbar', 4, 'w3-black' )	
+	var btn4=[
+		Konekti.btnConfig("addleaf","fa-key", "", {"client":'client', "method":"addleaf"}, "", "Add leaf button"),
+		Konekti.btnConfig("addmobile","fa-pencil", "", {"client":'client', "method":"addmobile"}, "", "Add mobile button"),
+		Konekti.btnConfig("addmoon", "fa-lemon-o", "", {"client":'client', "method":"addmoon"}, "", "Insert moon button"),
+		Konekti.btnConfig("keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Keeps original buttons")
+	]		
+	var navbar4 = Konekti.navbar('navbar4', 'w3-blue w3-xlarge', btn4, 'client', 'select' )
+}
+
+</script>
+
+</body>
+</html>

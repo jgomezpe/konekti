@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Tab Panel</title>
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
+</head>
+
+<body>
+<script>
+
+Konekti.uses('header','tab','youtube','ace')
+
+function KonektiMain(){
+	Konekti.header('title','', 'Konekti Tabs', 3, 'w3-green' )
+	
+	Konekti.tab('aTab', '50%', '40%', "YouTubeTab", [
+		{'caption':"YouTube", 'icon':"fa fa-youtube", 'title':'Youtube Tab','content':Konekti.youtubeConfig("YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw')}, 
+		{'caption':"Editor", 'icon':'fa fa-edit', 'title':'Ace Tab', 'content':Konekti.aceConfig( 'EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )}
+	])
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Split Component</title>
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<script>
+
+Konekti.uses('header','split','youtube','iframe','ace','latex')
+
+function KonektiMain(){
+	Konekti.header('title','', 'Konekti Splits', 3, 'w3-green')
+	Konekti.header('vsplit1','', 'Vertical Split', 4, 'w3-black' )
+
+	Konekti.split('vSplit', '100%', '50%', 'col', 70, 
+		Konekti.aceConfig('aceview', '100%','100%', '<div>Inside an ACE editor</div>', 'html'),
+		Konekti.latexConfig('latexview', '100%', '100%', 'When \\(a \\ne 0\\), there are two solutions to \\(ax^2 + bx + c = 0\\) and they are $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$')
+	)
+
+	Konekti.header('hsplit2','', 'Horizontal Split', 4, 'w3-black' )
+
+	Konekti.split('hSplit', '100%', '100%', 'row', 50, 
+		Konekti.iframeConfig('aIframe', '100%', '100%', 'https://wikipedia.com'),
+		Konekti.youtubeConfig('youtube', '100%', '100%', 'rPjpA4sn7yI')
+	)
+}
+
+</script>
+
+</body>
+</html>
