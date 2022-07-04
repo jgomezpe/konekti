@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: tab.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,70 +17,118 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: tab.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Konekti</h1>
-<p>Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents. It includes split panels, media (video/audio) panels, youtube panels, tab panels, navigation bars, side-bars, latex panels, editor panels, and much more.</p>
-<h3>Version 1.0</h3>
-<h3>Copyright (c)</h3>
-&nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
-&nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
-<p> Konekti url: <A HREF="https://jgomezpe.github.io/konekti/">https://jgomezpe.github.io/konekti/</A></p>
-<p> Konekti demo (English): <A HREF="https://jgomezpe.github.io/konekti/demo/en/">https://jgomezpe.github.io/konekti/demo/en/</A></p>
-<p> Konekti demo (Español): <A HREF="https://jgomezpe.github.io/konekti/demo/es/">https://jgomezpe.github.io/konekti/demo/es/</A></p>
-<p> Ready to use: <A HREF="https://jgomezpe.github.io/konekti/src/konekti.js">https://jgomezpe.github.io/konekti/src/konekti.js</A></p>
-<p> Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A></p>
-<p> API documentation: <A HREF="https://github.com/jgomezpe/konekti/api/">https://github.com/jgomezpe/konekti/api/</A></p>
-<p> All rights reserved.</p>
-<h3>Licence</h3>
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-<ul>
-	<li> Redistributions of source code must retain the above copyright notice,
-			this list of conditions and the following disclaimer.</li>
-	<li> Redistributions in binary form must reproduce the above copyright notice,
-			this list of conditions and the following disclaimer in the documentation
-			and/or other materials provided with the distribution.</li>
-	<li> Neither the name of the copyright owners, their employers, nor the
-			names of its contributors may be used to endorse or promote products
-			derived from this software without specific prior written permission.</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></article>
+        <article>
+            <pre class="prettyprint source linenums"><code>Konekti.uses('navbar')
+/** Konekti Plugin for tab components */
+class TabPlugIn extends PlugIn{
+	/** Creates a Plugin for tab components */
+	constructor(){ super('tab') }
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param config Instance configuration
+	 */
+	client(config){ return new Tab(config) }
+}
+
+/** Tab manager */
+class Tab extends Client{
+	/** 
+	 * Creates a tab component manager 
+	 * @param id Tab id
+	 * @param tabs Collection of tabs managed by the component
+	 */
+	constructor( config ){ 
+		super(config) 
+		this.open(config.initial+'Btn')
+	}
+	
+	/**
+	 * Sets the parent's size (adjust each of its children components)
+	 * @param parentWidth Parent's width
+	 * @param parentHeight Parent's height
+	 */
+	setParentSize( parentWidth, parentHeight ){
+		this.updateSize( parentWidth, parentHeight )
+		var bar = this.children[0]
+		var tabs = this.children[1]
+		bar.setParentSize(this.width,this.height)
+		tabs.setParentSize(this.width,this.height-bar.height)
+	}	
+
+	/**
+	 * Shows the given tab
+	 * @param page Tab to display
+	 */
+	open(page) {
+		page = page.substring(0,page.length-3)
+		if(this.current===undefined) this.current=page
+		var btn
+		if(this.current!==page){
+			btn = Konekti.vc(this.current+'Btn')
+			btn.className = btn.className.replace("w3-grey", "w3-light-grey")
+		}
+		this.current=page
+		var tabs = this.children[1].children
+		btn = Konekti.vc(this.current+'Btn')
+		btn.className = btn.className.replace("w3-light-grey", "w3-grey")
+		for( var c in tabs ) tabs[c].vc().style.display = "none"  
+		Konekti.vc(page).style.display = "initial"
+		var ta = Konekti.vc(page).getElementsByTagName('textarea')
+		for( var k=0; k&lt;ta.length; k++ ) ta[k].focus()
+	}
+}
+
+/** Tab class */
+if(Konekti.tab===undefined) new TabPlugIn()
+
+/**
+ * Creates a Tab panel configuration object 
+ * @method
+ * tabConfig
+ * @param id Id of the tab component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
+ * @param tabs Tab configurations 
+ * @param parent Parent component
+ */
+Konekti.tabConfig = function(id, width, height, initial, tabs, parent='KonektiMain'){
+	var btns = []
+	var contents = []
+	for( var i=0; i&lt;tabs.length; i++){
+		btns.push(Konekti.btnConfig(tabs[i].content.id+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title))
+		contents.push(tabs[i].content)
+	}
+	var bar = Konekti.navbarConfig(id+'Bar', 'w3-light-grey w3-medium', btns, id, 'open', id )
+	var content = Konekti.divConfig(id+'Content', 'rest', 'rest', '', '', id)
+	content.children = contents
+	return {'plugin':'tab', 'id':id, 'initial':initial, 'children':[bar,content], 'width':width, 'height':height, 'parent':parent}
+}
+/**
+ * Associates/Adds a Tab panel
+ * @method
+ * tab
+ * @param id Id of the tab component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
+ * @param tabs Tab configurations 
+ */
+Konekti.tab = function(id, width, height, initial, tabs){
+	return Konekti.build(Konekti.tabConfig(id, width, height, initial, tabs))
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

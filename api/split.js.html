@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: split.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: split.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+/** Konekti Split Client */
+class SplitClient extends Client{
+	/** 
+	 * Creates a Split client
+	 * @param config Split configuration
+	 */
+	constructor( config ){
+		super(config)
+		// this.fitRect = true
+		this.type = config.type
+		this.start = config.start
+		var x = this
+		var c = this.children[1].vc()
+		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
+		c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
+		this.vc('Over').addEventListener("mouseleave", function(e){ x.dragend(e);} )
+		window.addEventListener("mousemove", function(e){ x.dragmove(e); } )
+		window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
+		window.addEventListener("mouseup", function(){ x.dragend(); } )
+		window.addEventListener("touchend", function(){ x.dragend(); } )
+	}
+
+	html(config){
+		config.config = config.config || ''
+		return "&lt;div id='"+this.id+"' "+config.config+">&lt;div id='"+this.id+"Over' style='left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'>&lt;/div>&lt;/div>" 
+	}
+
+	/**
+	 * Inits the drag of the split bar
+	 * @param e Event information
+	 */
+	dragstart(e) {
+		e.preventDefault()
+		this.dragging = true
+		var over = this.vc('Over')
+		over.style.width = window.innerWidth
+		over.style.height = window.innerHeight
+		over.style.display = 'block'
+	}
+    
+	/**
+	 * Checks the drag of the split bar
+	 * @param e Event information
+	 */
+	dragmove(e) {
+		var id = this.id
+		if (this.dragging){
+			var c = this.vc()
+			var r = c.getBoundingClientRect()
+			var x = e.pageX-r.left-window.scrollX
+			var y = e.pageY-r.top-window.scrollY
+			if(this.type=='col'){
+				if(x>4 &amp;&amp; x&lt;this.width-4){
+					this.children[0].defWidth = (x-4) + 'px'
+					this.children[2].defWidth = (this.width-4-x) + 'px'
+					this.children[0].setParentSize(this.width, this.height)
+					this.children[2].setParentSize(this.width, this.height)
+				}
+			}else{
+				if(y>4 &amp;&amp; y&lt;this.height-4){
+					this.children[0].defHeight = (y-4) + 'px'
+					this.children[2].defHeight = (this.height-4-y) + 'px'
+					this.children[0].setParentSize(this.width, this.height)
+					this.children[2].setParentSize(this.width, this.height)
+				}
+			}
+    	}
+	}
+	
+	/**
+	 * Stops the drag of the split bar
+	 */
+	dragend() { 
+		if(this.dragging){
+			this.dragging = false 
+			this.vc('Over').style.display = 'none'
+		}
+	}    
+	
+	/**
+	 * Sets the parent's size (adjust each of its children components)
+	 * @param parentWidth Parent's width
+	 * @param parentHeight Parent's height
+	 */
+	setParentSize( parentWidth, parentHeight ){
+		this.updateSize(parentWidth, parentHeight)
+		parentWidth = this.width
+		parentHeight = this.height
+		var s = this.start
+		if(s!=0){
+			if(this.type=='col'){
+				this.children[0].defWidth = Math.round(s*(parentWidth-8)/100)	+ 'px'
+				this.children[2].defWidth = Math.round((100-s)*(parentWidth-8)/100)	+ 'px'  
+				this.children[0].defHeight = '100%'	
+				this.children[2].defHeight = '100%'	  
+			}else{
+				this.children[0].defHeight = Math.round(s*(parentHeight-8)/100)	+ 'px'
+				this.children[2].defHeight = Math.round((100-s)*(parentHeight-8)/100)	+ 'px'  
+				this.children[0].defWidth = '100%'	
+				this.children[2].defWidth = '100%'	  
+			}
+			this.start = 0
+		}else{
+			if(this.type=='col'){
+				this.children[2].defWidth = (parentWidth - this.children[0].width - 8) + 'px'
+			}else{
+				this.children[2].defHeight = (parentHeight - this.children[0].height - 8) + 'px'
+			}		
+		}
+		for( var i=0; i&lt;this.children.length; i++ ) this.children[i].setParentSize(this.width,this.height)
+	} 
+}
+
+/** Konekti Split PlugIn */
+class SplitPlugIn extends PlugIn{
+	/** Creates a Plugin for split components */
+	constructor(){ super('split') }
+	
+	/**
+	 * Gets a client for a Split component
+	 * @param config Split configuration
+	 */  
+	client( config ){ return new SplitClient(config) }    
+}
+
+/** SplitPanel class */
+if(Konekti.split===undefined) new SplitPlugIn()
+
+/**
+ * Creates a Split configuration object
+ * @method
+ * splitConfig
+ * @param id Id of the split component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param type Type of split 'col' Vertical or 'row' Horizontal
+ * @param percentage Percentage of the left/top subcomponent relative to the component's size
+ * @param one Left/Top component
+ * @param two Right/Bottom component
+ * @param parent Parent component
+ */
+Konekti.splitConfig = function(id, width, height, type, percentage, one, two, parent='KonektiMain'){
+	percentage = percentage || 50
+	type = type || 'col'
+	var xfloat = type=='col'?'float:left;':''
+	var xheight = type=='col'?'100%':'8px'
+	var xwidth = type=='col'?'8px':'100%'
+	var done = Konekti.divConfig( id + 'One', xwidth, xheight, "style='"+xfloat+"'", '', id)
+	var bar = Konekti.divConfig( id + 'Bar', xwidth, xheight, "style='cursor:"+type+'-resize;'+xfloat+"' class='w3-sand'", '', id)
+	var dtwo = Konekti.divConfig( id + 'Two', xwidth, xheight, "style='"+xfloat+"'", '', id)
+	
+	if( one !== undefined ){
+		one.parent = id + 'One'
+		one.width = '100%'
+		one.height = '100%'
+		done.children = [one]
+	}
+	if( two !== undefined ){
+		two.width = '100%'
+		two.height = '100%'
+		two.parent = id + 'Two'
+		dtwo.children = [two]
+	}
+
+	var children = [done, bar, dtwo] 
+	return {'plugin':'split','id':id, 'width':width, 'height':height, 'type':type, 'start':percentage, 'children':children, 'parent':parent}
+}
+
+/**
+ * Associates/adds Split panel
+ * @method
+ * split
+ * @param id Id of the split component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param type Type of split 'col' Vertical or 'row' Horizontal
+ * @param percentage Percentage of the left/top subcomponent relative to the component's size
+ * @param one Left/Top component
+ * @param two Right/Bottom component
+ */
+Konekti.split = function(id, width, height, type, percentage, one, two){
+	return Konekti.build(Konekti.splitConfig(id, width, height, type, percentage, one, two))
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Accordion.html">Accordion</a></li><li><a href="AccordionPlugIn.html">AccordionPlugIn</a></li><li><a href="Ace.html">Ace</a></li><li><a href="AcePlugIn.html">AcePlugIn</a></li><li><a href="Btn.html">Btn</a></li><li><a href="BtnPlugIn.html">BtnPlugIn</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="CanvasPlugIn.html">CanvasPlugIn</a></li><li><a href="Client.html">Client</a></li><li><a href="DivClient.html">DivClient</a></li><li><a href="DivPlugIn.html">DivPlugIn</a></li><li><a href="DOM.html">DOM</a></li><li><a href="DropDownPlugIn.html">DropDownPlugIn</a></li><li><a href="Editor.html">Editor</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderPlugIn.html">HeaderPlugIn</a></li><li><a href="IFrameEditor.html">IFrameEditor</a></li><li><a href="IFramePlugIn.html">IFramePlugIn</a></li><li><a href="Item.html">Item</a></li><li><a href="ItemPlugIn.html">ItemPlugIn</a></li><li><a href="KonektiAPI.html">KonektiAPI</a></li><li><a href="Latex.html">Latex</a></li><li><a href="LatexPlugIn.html">LatexPlugIn</a></li><li><a href="MainClient.html">MainClient</a></li><li><a href="Media.html">Media</a></li><li><a href="MediaClient.html">MediaClient</a></li><li><a href="MediaPlugIn.html">MediaPlugIn</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="NavBarPlugIn.html">NavBarPlugIn</a></li><li><a href="PlugIn.html">PlugIn</a></li><li><a href="Resource.html">Resource</a></li><li><a href="SideBar.html">SideBar</a></li><li><a href="SideBarPlugIn.html">SideBarPlugIn</a></li><li><a href="SplitClient.html">SplitClient</a></li><li><a href="SplitPlugIn.html">SplitPlugIn</a></li><li><a href="Tab.html">Tab</a></li><li><a href="TabPlugIn.html">TabPlugIn</a></li><li><a href="Youtube.html">Youtube</a></li><li><a href="YoutubePlugIn.html">YoutubePlugIn</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accordion">accordion</a></li><li><a href="global.html#accordionConfig">accordionConfig</a></li><li><a href="global.html#ace">ace</a></li><li><a href="global.html#aceConfig">aceConfig</a></li><li><a href="global.html#audio">audio</a></li><li><a href="global.html#audioConfig">audioConfig</a></li><li><a href="global.html#btn">btn</a></li><li><a href="global.html#btnConfig">btnConfig</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#canvasConfig">canvasConfig</a></li><li><a href="global.html#div">div</a></li><li><a href="global.html#divConfig">divConfig</a></li><li><a href="global.html#dropdown">dropdown</a></li><li><a href="global.html#dropdownConfig">dropdownConfig</a></li><li><a href="global.html#header">header</a></li><li><a href="global.html#headerConfig">headerConfig</a></li><li><a href="global.html#iframe">iframe</a></li><li><a href="global.html#iframeConfig">iframeConfig</a></li><li><a href="global.html#Konekti">Konekti</a></li><li><a href="global.html#latex">latex</a></li><li><a href="global.html#latexConfig">latexConfig</a></li><li><a href="global.html#media">media</a></li><li><a href="global.html#mediaConfig">mediaConfig</a></li><li><a href="global.html#mp4">mp4</a></li><li><a href="global.html#mp4Config">mp4Config</a></li><li><a href="global.html#navbar">navbar</a></li><li><a href="global.html#navbarConfig">navbarConfig</a></li><li><a href="global.html#sidebar">sidebar</a></li><li><a href="global.html#sideConfig">sideConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitConfig">splitConfig</a></li><li><a href="global.html#tab">tab</a></li><li><a href="global.html#tabConfig">tabConfig</a></li><li><a href="global.html#tocConfig">tocConfig</a></li><li><a href="global.html#video">video</a></li><li><a href="global.html#videoConfig">videoConfig</a></li><li><a href="global.html#youtube">youtube</a></li><li><a href="global.html#youtubeConfig">youtubeConfig</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Sun Jul 03 2022 23:09:16 GMT-0500 (Colombia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

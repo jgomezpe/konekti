@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: iframe.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,70 +17,108 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: iframe.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Konekti</h1>
-<p>Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents. It includes split panels, media (video/audio) panels, youtube panels, tab panels, navigation bars, side-bars, latex panels, editor panels, and much more.</p>
-<h3>Version 1.0</h3>
-<h3>Copyright (c)</h3>
-&nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
-&nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
-<p> Konekti url: <A HREF="https://jgomezpe.github.io/konekti/">https://jgomezpe.github.io/konekti/</A></p>
-<p> Konekti demo (English): <A HREF="https://jgomezpe.github.io/konekti/demo/en/">https://jgomezpe.github.io/konekti/demo/en/</A></p>
-<p> Konekti demo (Español): <A HREF="https://jgomezpe.github.io/konekti/demo/es/">https://jgomezpe.github.io/konekti/demo/es/</A></p>
-<p> Ready to use: <A HREF="https://jgomezpe.github.io/konekti/src/konekti.js">https://jgomezpe.github.io/konekti/src/konekti.js</A></p>
-<p> Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A></p>
-<p> API documentation: <A HREF="https://github.com/jgomezpe/konekti/api/">https://github.com/jgomezpe/konekti/api/</A></p>
-<p> All rights reserved.</p>
-<h3>Licence</h3>
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-<ul>
-	<li> Redistributions of source code must retain the above copyright notice,
-			this list of conditions and the following disclaimer.</li>
-	<li> Redistributions in binary form must reproduce the above copyright notice,
-			this list of conditions and the following disclaimer in the documentation
-			and/or other materials provided with the distribution.</li>
-	<li> Neither the name of the copyright owners, their employers, nor the
-			names of its contributors may be used to endorse or promote products
-			derived from this software without specific prior written permission.</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></article>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Konekti Plugin for iframe components */
+class IFramePlugIn extends PlugIn{
+	/** Creates a Plugin for iframe components */
+	constructor(){ super('iframe') }
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param config Instance configuration
+	 */
+	client(config){ return new IFrameEditor(config) }
+}
+
+/** Iframe component that works as an editor */
+class IFrameEditor extends Editor{
+	/**
+	 * Creates an iframe component that works as an editor
+	 * @param id Id of the iframe component
+	 */
+	constructor(id){ super(id) }
+	
+	getBlobURL(code, type){
+		const blob = new Blob([code], {type})
+		return URL.createObjectURL(blob)
+	}
+
+	/**
+	 * Associated html code
+	 * @param config Client configuration
+	 */
+	html( config ){ 
+		if( config.src === undefined || config.src === null ) config.src = ''
+		if( !config.src.startsWith('https://') ){
+			/*const getBlobURL = (code, type) => {
+				const blob = new Blob([code], {type})
+				return URL.createObjectURL(blob)
+			}*/
+			config.src = this.getBlobURL(config.src, 'text/html')
+		}
+		return "&lt;iframe id='"+this.id+"' name='"+this.id+"' src='"+config.src+"' frameBorder='0'>&lt;/iframe>" 
+	}  
+	 
+	/**
+	 * Gets current html code in the iframe component
+	 * @return Current html code in the iframe component
+	 */
+	getText(){ return this.gui.contentWindow.document.documentElement.outerHTML }
+
+	/**
+	 * Sets html code for the iframe component
+	 * @param txt Html code to set in the iframe component
+	 */
+	setText(txt){
+		/*const getBlobURL = (code, type) => {
+			const blob = new Blob([code], {type})
+			return URL.createObjectURL(blob)
+		}*/
+    
+		this.vc().src = this.getBlobURL(txt, 'text/html')
+	}
+}
+
+/** IFrame class */
+if(Konekti.iframe===undefined) new IFramePlugIn()
+
+/**
+ * Creates an IFrame configuration object
+ * @method
+ * iframeConfig
+ * @param id Id of the iframe container
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param src Url/code for the iframe component
+ * @param parent Parent component
+ */
+Konekti.iframeConfig = function(id, width, height, src, parent='KonektiMain'){
+	return {'plugin':'iframe', 'id':id, 'width':width,'height':height, 'src':src, 'parent':parent}
+}
+
+/**
+ * Associates/Adds an IFrame 
+ * @method
+ * iframe
+ * @param id Id of the iframe container
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param src Url/code for the iframe component
+ */
+Konekti.iframe = function(id, width, height, src){
+	return Konekti.build(Konekti.iframeConfig(id, width, height, src))
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

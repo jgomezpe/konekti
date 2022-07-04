@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: latex.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,70 +17,117 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: latex.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Konekti</h1>
-<p>Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents. It includes split panels, media (video/audio) panels, youtube panels, tab panels, navigation bars, side-bars, latex panels, editor panels, and much more.</p>
-<h3>Version 1.0</h3>
-<h3>Copyright (c)</h3>
-&nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
-&nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
-<p> Konekti url: <A HREF="https://jgomezpe.github.io/konekti/">https://jgomezpe.github.io/konekti/</A></p>
-<p> Konekti demo (English): <A HREF="https://jgomezpe.github.io/konekti/demo/en/">https://jgomezpe.github.io/konekti/demo/en/</A></p>
-<p> Konekti demo (Español): <A HREF="https://jgomezpe.github.io/konekti/demo/es/">https://jgomezpe.github.io/konekti/demo/es/</A></p>
-<p> Ready to use: <A HREF="https://jgomezpe.github.io/konekti/src/konekti.js">https://jgomezpe.github.io/konekti/src/konekti.js</A></p>
-<p> Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A></p>
-<p> API documentation: <A HREF="https://github.com/jgomezpe/konekti/api/">https://github.com/jgomezpe/konekti/api/</A></p>
-<p> All rights reserved.</p>
-<h3>Licence</h3>
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-<ul>
-	<li> Redistributions of source code must retain the above copyright notice,
-			this list of conditions and the following disclaimer.</li>
-	<li> Redistributions in binary form must reproduce the above copyright notice,
-			this list of conditions and the following disclaimer in the documentation
-			and/or other materials provided with the distribution.</li>
-	<li> Neither the name of the copyright owners, their employers, nor the
-			names of its contributors may be used to endorse or promote products
-			derived from this software without specific prior written permission.</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></article>
+        <article>
+            <pre class="prettyprint source linenums"><code>if(typeof window.MathJax=='undefined'){
+	Konekti.resource.script('text/javascript', 'https://polyfill.io/v3/polyfill.min.js?features=es6')
+	Konekti.resource.JS('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js')
+}
+
+/** Konekti Plugin for latex (MathJax) components */
+class LatexPlugIn extends PlugIn{
+	/** Creates a Plugin for latex components */
+	constructor(){ super('latex') }
+
+	/**
+	 * Creates a client for the plugin
+	 * @param config Instance configuration
+	 */
+	client( config ){ return new Latex(config) }
+
+}
+
+/** Latex editor */
+class Latex extends Editor{
+	/**
+	 * Creates a latex editor
+	 * @param config Latex component configuration
+	 */
+	constructor(config){
+		super(config) 
+		this.gui = this.vc()
+		this.innergui = this.vc('content')
+		this.setText(config.initial)
+	}
+
+	/**
+	 * Associated html code
+	 * @param config Client configuration
+	 */
+	html( config ){ return "&lt;div id='"+this.id+"'>&lt;div id='"+this.id+"content' style='padding:8px;'>&lt;/div>&lt;/div>" }
+
+	/**
+	 * Gets current latex code in the component
+	 * @return Current latex code in the component
+	 */
+	getText(){ return this.gui.getAttribute('initial') }
+
+	/**
+	 * Sets latex code for the latex component
+	 * @param tex latex code to set in the latex component
+	 */
+	setText(tex){
+		if( tex === undefined || tex===null) text=''
+		this.gui.setAttribute('initial', tex)
+		var output = this.innergui
+		var tout = null
+		function set(){
+			if(window.MathJax!==undefined){
+				if( tout !=null ) clearTimeout(tout)
+				output.innerHTML = tex.trim()
+				window.MathJax.texReset()
+				window.MathJax.typesetClear()
+				window.MathJax.typesetPromise([output]).catch(function(err){
+					output.innerHTML = ''
+					output.appendChild(document.createTextNode(err.message))
+				}).then(function(){});
+			}else{ tout = setTimeout(set,100) }
+		}
+		set()
+	}
+}
+
+/** Latex class */
+if(Konekti.latex===undefined) new LatexPlugIn()
+
+/**
+ * Creates a Latex config object 
+ * @method
+ * latexConfig
+ * @param id Id of the latex component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param tex Latex code
+ * @param parent Parent component
+ */
+Konekti.latexConfig = function(id, width, height, tex, parent='KonektiMain'){
+	return {"plugin":"latex", "id":id, "initial":tex, 'width':width, 'height':height, 'parent':parent}
+}
+
+/**
+ * Associates/Adds a latex component
+ * @method
+ * latex
+ * @param id Id of the latex component
+ * @param width Width of the split component
+ * @param height Height of the split component
+ * @param tex Latex code
+ * @param parent Parent component
+ */
+Konekti.latex = function(id, width, height, tex){
+	return Konekti.build(Konekti.latexConfig(id, width, height, tex))
+}
+
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

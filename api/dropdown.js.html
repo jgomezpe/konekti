@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: dropdown.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,70 +17,115 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: dropdown.js</h1>
 
     
 
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
     <section>
-        <article><h1>Konekti</h1>
-<p>Konekti is a Java Script connection library that allows to connect JS/HTML/CSS resources as plug-ins in HTML documents. It includes split panels, media (video/audio) panels, youtube panels, tab panels, navigation bars, side-bars, latex panels, editor panels, and much more.</p>
-<h3>Version 1.0</h3>
-<h3>Copyright (c)</h3>
-&nbsp;Author: <A HREF="https://disi.unal.edu.co/~jgomezpe/"> Jonatan Gomez-Perdomo </A>
-&nbsp;E-mail: <A HREF="mailto:jgomezpe@unal.edu.co">jgomezpe@unal.edu.co</A>
-<p> Konekti url: <A HREF="https://jgomezpe.github.io/konekti/">https://jgomezpe.github.io/konekti/</A></p>
-<p> Konekti demo (English): <A HREF="https://jgomezpe.github.io/konekti/demo/en/">https://jgomezpe.github.io/konekti/demo/en/</A></p>
-<p> Konekti demo (Español): <A HREF="https://jgomezpe.github.io/konekti/demo/es/">https://jgomezpe.github.io/konekti/demo/es/</A></p>
-<p> Ready to use: <A HREF="https://jgomezpe.github.io/konekti/src/konekti.js">https://jgomezpe.github.io/konekti/src/konekti.js</A></p>
-<p> Source code: <A HREF="https://github.com/jgomezpe/konekti/">https://github.com/jgomezpe/konekti/</A></p>
-<p> API documentation: <A HREF="https://github.com/jgomezpe/konekti/api/">https://github.com/jgomezpe/konekti/api/</A></p>
-<p> All rights reserved.</p>
-<h3>Licence</h3>
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-<ul>
-	<li> Redistributions of source code must retain the above copyright notice,
-			this list of conditions and the following disclaimer.</li>
-	<li> Redistributions in binary form must reproduce the above copyright notice,
-			this list of conditions and the following disclaimer in the documentation
-			and/or other materials provided with the distribution.</li>
-	<li> Neither the name of the copyright owners, their employers, nor the
-			names of its contributors may be used to endorse or promote products
-			derived from this software without specific prior written permission.</li>
-</ul>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE
-LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p></article>
+        <article>
+            <pre class="prettyprint source linenums"><code>Konekti.uses('btn')
+
+/** Konekti Plugin for DropDown components */
+class DropDownPlugIn extends PlugIn{
+	/** Creates a Plugin for Dropdown components */
+	constructor(){ super('dropdown') }    
+
+	/**
+	 * Gets a client for a Dropdown component
+	 * @param config Dropdown configuration
+	 */  
+	client( config ){ 
+		var client = new Btn(config)
+		client.drop = function(){
+			var x = this.vc('Drop')
+			if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
+			else x.className = x.className.replace(" w3-show", "")	
+		} 
+		return client 
+	}    
+}
+
+/** DropDown class */
+if(Konekti.dropdown === undefined) new DropDownPlugIn()
+
+/**
+ * Creates a dropdown configuration object
+ * @method
+ * dropdownConfig
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param content Content
+ * @param parent Parent component
+ */
+Konekti.dropdownConfig = function(id, icon, caption, style, title, content, parent='KonektiMain'){
+	var btn = Konekti.btnConfig(id, icon, caption, {"method":"drop", "client":id}, style, title, parent)
+	var drop = Konekti.divConfig(id+'Drop', '', '', "class='w3-dropdown-content w3-bar-block' style='margin-left:-16px;margin-top:6px'", '', id)
+	if(Array.isArray(content) ) drop.children = content
+	else drop.children = [content]
+	btn.children.push(drop)
+	btn.plugin = 'dropdown'
+	return btn
+}
+
+/**
+ * Associates/Adds a dropdown
+ * @method
+ * dropdown
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param content Content
+ * @param parent Parent component
+ */
+Konekti.dropdown = function(id, icon, caption, style, title, content){
+	return Konekti.build(Konekti.dropdownConfig(id, icon, caption, style, title, content)) 
+}
+
+/**
+ * dropdownList configuration object
+ * @method
+ * dropdown
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param options List of options
+ * @param parent Parent component
+ */
+ Konekti.dropdownListConfig = function(id, icon, caption, style, title, options, onclick, parent='KonektiMain'){
+	for( var i=0; i&lt;options.length; i++ )
+		if( typeof options[i] == 'string' ) options[i] = Konekti.btnConfig(options[i], "", options[i], onclick, 'w3-bar-item', options[i])
+		else options[i] = Konekti.btnConfig(options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title)
+	return Konekti.dropdownConfig(id, icon, caption, style, title, options, parent)
+}
+
+/**
+ * Associates/Adds a dropdown with an option list
+ * @method
+ * dropdown
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param options List of options
+ * @param parent Parent component
+ */
+ Konekti.dropdownList = function(id, icon, caption, style, title, options, onclick){
+	return Konekti.build(Konekti.dropdownListConfig(id, icon, caption, style, title, options, onclick))
+}
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

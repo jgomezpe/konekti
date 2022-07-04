@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: canvas.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: canvas.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/** Canvas Editor */
+class Canvas extends Editor{
+	/**
+	 * Creates a CanvasEditor
+	 * @param config Canvas configuration
+	 */
+	constructor(config){
+		super(config)
+		this.gui = this.vc()
+		this.custom_commands(config.custom)
+		this.commands = config.commands || {}
+		Konekti.plugins.canvas.render[this.id] = this
+		this.redraw()
+	}
+	
+	/**
+	 * Associated html code
+	 * @param config Client configuration
+	 */
+	html( config ){ return "&lt;canvas id='"+this.id+"' style='border:1px solid #d3d3d3'>&lt;/canvas>" }   	
+	
+	/**
+	 * Sets the custom commands of the canvas
+	 * @param custom Custom commands
+	 */
+	custom_commands( custom ){
+		this.custom = {}
+		if( custom !== undefined ){
+			for( var i=0; i&lt;custom.length; i++ ){
+	        		this.custom[custom[i].command] = custom[i]
+			}
+		}
+	}
+
+	/**
+	 * Gets the context of the canvas
+	 * @return context of the command
+	 */	
+	getContext(){  return this.gui.getContext('2d') }
+
+	/**
+	 * Cleans the canvas
+	 */
+	clear(){ 
+		this.commands = {}
+		this.getContext().strokeRect(0,0,this.width,this.height) 
+	}
+
+	/**
+	 * Redraws the canvas
+	 */
+	redraw(){
+		this.resize()
+		this.draw(this.commands) 
+	}
+	
+	/**
+	 * Scales the inner commands of a compound command
+	 * @param obj Compound command
+	 * @param sx Scaling factor for the x coordinate
+	 * @param sy Scaling factor for the y coordinate
+	 * @return A scaled version of the command
+	 */
+	inner_scale( obj, sx, sy ){
+		var c = this.copy(obj)
+		if( typeof obj.commands !== 'undefined' ){
+			var commands = []
+			for(var i=0; i&lt;obj.commands.length; i++ ) 
+				commands[i] = this.inner_scale(obj.commands[i],sx,sy)
+			c.commands = commands
+		}
+		if( typeof obj.x !== 'undefined' ){
+			if( Array.isArray(obj.x) ){
+				var nx = []
+				var ny = []
+				for(var i=0; i&lt;obj.x.length; i++){
+					nx.push(obj.x[i]*sx)
+					ny.push(obj.y[i]*sy)
+				}
+				c.x = nx
+				c.y = ny
+			}else{
+				c.x = obj.x * sx
+				c.y = obj.y * sy
+			}
+		}    
+		return c
+	}
+	
+	/**
+	 * Applies a scale command
+	 * @param obj Scale command. It is defined by attributes:
+	 * &lt;i>command='scale'&lt;/i>, 
+	 * &lt;i>x&lt;/i> x coordinate scale, and
+	 * &lt;i>y&lt;/i> y coordinate scale 
+	 * @return A scaled version of the command
+	 */
+	scale( obj ){
+		obj.command = 'compound'
+		var sx = obj.x
+		var sy = obj.y
+		var nobj = this.inner_scale(obj,sx,sy)
+		obj.x = sx
+		obj.y = sy
+		obj.command = 'scale'
+		return nobj
+	}
+
+	/**
+	 * Translates the inner commands of a compound command
+	 * @param obj Compound command
+	 * @param sx Translation delta for the x coordinate
+	 * @param sy Translation delta for the y coordinate
+	 * @return A translated version of the command
+	 */
+	inner_translate( obj, dx, dy ){
+	    var c = this.copy(obj)
+		if( typeof obj.commands !== 'undefined' ){
+		    var commands = []
+			for(var i=0; i&lt;obj.commands.length; i++ ) 
+                commands[i] = this.inner_translate(obj.commands[i],dx,dy)
+			c.commands = commands
+		}
+		if( typeof obj.x !== 'undefined' ){
+            if( Array.isArray(obj.x) ){
+                var nx = []
+                var ny = []
+                for(var i=0; i&lt;obj.x.length; i++){
+                    nx.push(obj.x[i]+dx)
+                    ny.push(obj.y[i]+dy)
+                }    
+                c.x = nx
+                c.y = ny
+            }else{
+                c.x = obj.x + dx
+                c.y = obj.y + dy
+            }
+		}    
+		return c
+	}
+	
+	/**
+	 * Applies a translation command
+	 * @param obj Translation command. It is defined by attributes: 
+	 * &lt;i>command='translation'&lt;/i>, 
+	 * &lt;i>x&lt;/i> x coordinate delta, and 
+	 * &lt;i>y&lt;/i> y coordinate delta 
+	 * @return A translated version of the command
+	 */
+	translate( obj ){
+        obj.command = 'compound'
+        var x = obj.x
+        var y = obj.y
+        var nobj = this.inner_translate(obj,x,y)
+        obj.x = x
+        obj.y = y
+        obj.command = 'translate'
+        return nobj
+	}
+
+	/**
+	 * Computes the angle defined by two points &lt;i>(x1,y1), (x2,y2)&lt;/i> (order preserved) 
+	 * @param x1 x coordinate of the first (origin) point
+	 * @param y1 y coordinate of the first (origin) point
+	 * @param x2 x coordinate of the second (target) point
+	 * @param y2 y coordinate of the second (target) point
+	 * @return Angle defined by points &lt;i>(x1,y1), (x2,y2)&lt;/i> (order preserved)
+	 */
+	angle( x1, y1, x2, y2 ){
+		var a = (x2-x1) 
+		var b = (y2-y1)
+		var r = Math.sqrt(a*a+b*b)
+		if( r>1e-6 ){
+			var alpha = Math.acos(a/r)
+			if( b&lt;0 ) alpha = 2.0*Math.PI - alpha
+			return alpha
+		}else return 0.0
+	}
+	
+	/**
+	 * Rotates point &lt;i>(px,py)&lt;/i> the given angle having as center of rotation point &lt;i>(cx,cy)&lt;/i> 
+	 * @param cx x coordinate of the center of rotation
+	 * @param cy y coordinate of the center of rotation
+	 * @param px x coordinate of the point to rotate
+	 * @param py y coordinate of the point to rotate
+	 * @param angle Rotation angle
+	 * @return Rotated point
+	 */
+	rotate_point( cx, cy, px, py, angle ){
+		var alpha = this.angle( cx, cy, px, py ) + angle
+		if( alpha>1e-6 ){
+			var a = (px-cx)
+            var b = (py-cy)
+			var r = Math.sqrt(a*a+b*b)
+			return [cx + r*Math.cos(alpha), cy + r*Math.sin(alpha)]
+		}else return [px,py]			
+	}
+	
+	/**
+	 * Rotates the inner commands of a compound command
+	 * @param obj Compound command
+	 * @param cx x coordinate of the rotation center
+	 * @param cy y coordinate of the rotation center
+	 * @param angle Rotation angle
+	 * @return A rotated version of the command
+	 */
+	inner_rotate( obj, cx, cy, angle ){
+		var c = this.copy(obj)
+		if( typeof obj.commands !== 'undefined' ){
+			var commands = []
+			for(var i=0; i&lt;obj.commands.length; i++ ) 
+    			commands[i] = this.inner_rotate(obj.commands[i],cx,cy,angle)
+			c.commands = commands
+		}
+		if( obj.command == 'image' ) c.r = obj.r + angle
+		else{
+			var p
+    		if( typeof obj.x !== 'undefined' ){
+				if( Array.isArray(obj.x) ){
+					var nx = []
+					var ny = []
+					for(var i=0; i&lt;obj.x.length; i++){
+						p = this.rotate_point( cx, cy, obj.x[i], obj.y[i], angle )
+						nx.push(p[0])
+						ny.push(p[1])
+					}    
+					c.x = nx
+					c.y = ny
+				}else{
+					p = this.rotate_point( cx, cy, obj.x, obj.y, angle )
+					c.x = p[0]
+					c.y = p[1]
+				}
+			}    
+		}
+		return c
+	}
+	
+	/**
+	 * Applies a rotation command
+	 * @param obj Rotation command.It is defined by attributes:
+	 * &lt;i>command='rotate'&lt;/i>,
+	 * &lt;i>r&lt;/r> rotation angle,
+	 * &lt;i>x&lt;/i> x coordinate of the rotation center, and
+	 * &lt;i>y&lt;/i> y coordinate of the rotation center 
+	 * @return A rotated version of the command
+	 */
+	rotate( obj ){
+		obj.command = 'compound'
+		var x = obj.x
+		var y = obj.y
+		var a = obj.r
+		var nobj = this.inner_rotate(obj,x,y,a)
+		obj.x = x
+		obj.y = y
+		obj.r = a
+		obj.command = 'rotate'
+		return nobj
+	}
+	
+	/**
+	 * Applies a fit command (scales unit to container's component size)
+	 * @param obj Fit command. It is defined by attributes:
+	 * &lt;i>command='fit'&lt;/i>,
+	 * &lt;i>r&lt;/r> a boolean indicating if keeping aspect ratio or not,
+	 * &lt;i>x&lt;/i> x coordinate unit, and
+	 * &lt;i>y&lt;/i> y coordinate unit  
+	 * @return A fitted version of the command
+	 */
+	fit( obj ){
+		var c = this.copy(obj)
+		c.command = 'scale'
+		var x = obj.x
+		var y = obj.y
+		var keepAspectRatio = obj.r
+		var w = this.width
+		var h = this.height
+		if(keepAspectRatio) {
+			var s
+			if( w*x &lt; h*y ) s = w*x
+			else s = h*y
+			x = s
+			y = s
+		}else {
+			x *= w
+			y *= h
+		}
+		c.x = x
+		c.y = y
+		c.commands = obj.commands
+		return this.scale(c)
+	}
+
+	/**
+	 * Resizes commands according to client container's size
+	 */
+	resize(){
+		var ctx = this.getContext()
+		ctx.canvas.width = this.width
+		ctx.canvas.height = this.height
+	}
+
+	/**
+	 * Draws an image
+	 * @param obj Image to draw. It is defined by attributes:
+	 * &lt;i>command='image'&lt;/i>, &lt;i>id&lt;/i> image identifier,
+	 * &lt;i>src&lt;/i> URL of the image,
+	 * &lt;i>r&lt;/i> rotation angle in r*pi/2 values (r must be an integer value),
+	 * &lt;i>x&lt;/i> x coordinate of the rotation center, 
+	 * &lt;i>y&lt;/i> y coordinate of the rotation center,
+	 * &lt;i>width&lt;/i> Width of the image, and
+	 * &lt;i>height&lt;/i> height of the image. 
+	 */
+	image(obj){
+		var img = Konekti.vc(obj.id)
+		if( img==undefined || img==null ){
+			img = component.new('img', obj.id)
+			img.src = obj.src
+			img.alt = 'Undefined'
+		}   
+     
+		var rotate = obj.r || 0.0
+
+		var x = obj.x 
+		var y = obj.y 
+		var width = obj.width 
+		var height = obj.height
+
+		var ctx = this.getContext()
+	     
+		if( rotate!=0.0 ){
+			ctx.save()
+			var rx = x + width/2
+			var ry = y + height/2
+			ctx.translate(rx, ry)
+			ctx.rotate(rotate * Math.PI/2)
+			ctx.drawImage(img, -width/2, -height/2, width, height)
+			ctx.restore()
+		}else ctx.drawImage(img, x, y, width, height)
+	}
+
+	/**
+	 * Draws a compound command
+	 * @param obj Compound command. It is defined by attributes:
+	 * &lt;i>command='compound'&lt;/i>, and 
+	 * &lt;i>commands&lt;/i> an array of commands. 
+	 */
+	compound(obj){
+		var objs = obj.commands;
+		for( var i=0; i&lt;objs.length; i++ ) this[objs[i].command](objs[i])
+	}
+
+	/**
+	 * Stats a path
+	 * @param obj Begin path command. It is defined by attribute:
+	 * &lt;i>command='beginPath'&lt;/i>. 
+	 */
+	beginPath(obj){ this.getContext().beginPath() }
+
+	/**
+	 * Closes a path
+	 * @param obj Close path command. It is defined by attribute: &lt;i>command='closePath'&lt;/i>. 
+	 */
+	closePath(obj){ this.getContext().closePath() }
+
+	/**
+	 * Moves the drawing cursor to a given position.
+	 * @param obj Move to command. It is defined by attributes:
+	 * &lt;i>command='moveTo'&lt;/i>,
+	 * &lt;i>x&lt;/i> x coordinate to move the drawing cursor, 
+	 * &lt;i>y&lt;/i> y coordinate to move the drawing cursor. 
+	 */
+	moveTo(obj){
+		var ctx = this.getContext()
+		var x = obj.x 
+		var y = obj.y
+		ctx.moveTo(x,y)
+	}
+
+	/**
+	 * Draws a line from the given drawing cursor's position to the given one.
+	 * @param obj Line to command. It is defined by attributes:
+	 * &lt;i>command='lineTo'&lt;/i>,
+	 * &lt;i>x&lt;/i> Final x coordinate of the line, 
+	 * &lt;i>y&lt;/i> Final y coordinate of the line. 
+	 */
+	lineTo(obj){
+		var ctx = this.getContext()
+		var x = obj.x
+		var y = obj.y
+		ctx.lineTo(x,y)
+	}
+
+	/**
+	 * Draws a quadratic curve from the given drawing cursor's position using the given control points.
+	 * @param obj Quadratic to command. It is defined by attributes:
+	 * &lt;i>command='quadTo'&lt;/i>, 
+	 * &lt;i>x&lt;/i> an array with the x coordinates of the control point and final point of the cuadratic curve, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of the control point and final point of the cuadratic curve. 
+	 */
+	quadTo(obj){
+		var ctx = this.getContext()
+		var cp1x = obj.x[0] 
+		var cp1y = obj.y[0]
+		var x = obj.x[1]
+		var y = obj.y[1]
+		ctx.quadraticCurveTo(cp1x, cp1y, x, y) 
+	}
+
+	/**
+	 * Draws a Bezier curve from the given drawing cursor's position using the given control points.
+	 * @param obj Curve to command. It is defined by attributes:
+	 * &lt;i>command='curveTo'&lt;/i>, 
+	 * &lt;i>x&lt;/i> an array with the x coordinates of two controls points and final point of the Bezier curve, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of two controls points and final point of the Bezier curve. 
+	 */
+	curveTo(obj){
+		var ctx = this.getContext()
+		var cp1x = obj.x[0] 
+		var cp1y = obj.y[0]
+		var cp2x = obj.x[1]
+		var cp2y = obj.y[1]
+		var x = obj.x[2]
+		var y = obj.y[2]
+		ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+	}
+
+	/**
+	 * Draws a line using the given control points.
+	 * @param obj Line command. It is defined by attributes:
+	 * &lt;i>command='line'&lt;/i>, 
+	 * &lt;i>x&lt;/i> an array with the x coordinates of the initial and final point of the line, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of the initial and final point of the line. 
+	 */
+	line(obj){
+		this.beginPath(obj)
+		this.moveTo({x:obj.x[0],y:obj.y[0]})
+		this.lineTo({x:obj.x[1],y:obj.y[1]})
+		this.stroke(obj)
+	}
+
+	/**
+	 * Defines a polyline object (polyline or polygon) according to the given control points.
+	 * @param obj poly command. It is defined by attributes:
+	 * &lt;i>x&lt;/i> an array with the x coordinates of the polyline object, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of polyline object. 
+	 */
+	poly(obj){
+		this.beginPath(obj)
+		var px = obj.x
+		var py = obj.y
+		this.moveTo({x:px[0],y:py[0]})
+		for( var i=1; i&lt;px.length; i++) this.lineTo({x:px[i],y:py[i]})
+	}
+
+	/**
+	 * Draws a polyline according to the given control points.
+	 * @param obj poly command. It is defined by attributes:
+	 * &lt;i>command='polyline'&lt;/i>,
+	 * &lt;i>x&lt;/i> an array with the x coordinates of the polyline, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of polyline. 
+	 */
+	polyline(obj){
+		this.poly(obj)
+		this.stroke(obj)
+	}
+
+	/**
+	 * Draws a polygon according to the given control points.
+	 * @param obj poly command. It is defined by attributes:
+	 * &lt;i>command='polygon'&lt;/i>,
+	 * &lt;i>x&lt;/i> an array with the x coordinates of the polygon, and 
+	 * &lt;i>y&lt;/i> an array with the y coordinates of polygon. 
+	 */
+	polygon(obj){
+		this.poly(obj)
+		this.fill(obj)
+	}
+
+	/**
+	 * Creates a string version of a color (rgba)
+	 * @param obj poly command. It is defined by attributes:
+	 * &lt;i>command='rgba'&lt;/i>,
+	 * &lt;i>red&lt;/i> red component of the color,
+	 * &lt;i>green&lt;/i> green component of the color,
+	 * &lt;i>blue&lt;/i> blue component of the color,
+	 * &lt;i>alpha&lt;/i> alpha component of the color
+	 */
+    rgba( obj ){ return "rgba("+obj.red+","+obj.green+","+obj.blue+","+obj.alpha+")"; }
+
+	/**
+	 * Applies and returns a drawing style
+	 * @param obj Drawing style. It is defined by attributes:
+	 * &lt;i>startcolor&lt;/i> Start color if a gradient style is defined,
+	 * &lt;i>endcolor&lt;/i> End color if a gradient style is defined,
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined,
+	 * &lt;i>x&lt;/i> x coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient,
+	 * &lt;i>y&lt;/i> y coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient, and
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined
+	 * @return A drawing style
+	 */
+	style(obj){
+		if( obj.color != null )	return this.rgba(obj.color)
+		if( obj.startcolor == null ) return null
+		var c1 = this.rgba(obj.startcolor)
+		var c2 = this.rgba(obj.endcolor)
+		var ctx = this.getContext()
+		var gradient
+		if( obj.r != null ){
+			var r = obj.r
+			var x = obj.x 
+			var y = obj.y
+			gradient = ctx.createRadialGradient(x, y, 1, x, y, r)
+		}else{
+			var x1 = obj.x[0] 
+			var y1 = obj.y[0] 
+			var x2 = obj.x[1] 
+			var y2 = obj.y[1] 
+			gradient = ctx.createLinearGradient(x1, y1, x2, y2)
+		}
+		gradient.addColorStop("0", c1)
+		gradient.addColorStop("1", c2)
+		return gradient
+	}
+
+	/**
+	 * Applies a stroke style
+	 * @param obj Stroke style. It is defined by attributes:
+	 * &lt;i>startcolor&lt;/i> Start color if a gradient style is defined,
+	 * &lt;i>endcolor&lt;/i> End color if a gradient style is defined,
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined,
+	 * &lt;i>x&lt;/i> x coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient,
+	 * &lt;i>y&lt;/i> y coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient,
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined, and
+	 * &lt;i>lineWidth&lt;/i> Line width of the stroke style
+	 */
+	strokeStyle(obj){
+		var ctx = this.getContext() 
+		ctx.strokeStyle = this.style(obj)
+		if( obj.lineWidth != null ) ctx.lineWidth = obj.lineWidth
+	}
+
+	/**
+	 * Applies a fill style
+	 * @param obj Fill style. It is defined by attributes:
+	 * &lt;i>command='fillStyle'&lt;/i>,
+	 * &lt;i>startcolor&lt;/i> Start color if a gradient style is defined,
+	 * &lt;i>endcolor&lt;/i> End color if a gradient style is defined,
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined,
+	 * &lt;i>x&lt;/i> x coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient,
+	 * &lt;i>y&lt;/i> y coordinate of the center of the radial gradient or an array with the coordinates of the line defining the linear gradient, and
+	 * &lt;i>r&lt;/i> Radius of the radial gradient if defined.
+	 */
+	fillStyle(obj){
+		var ctx = this.getContext()
+		ctx.fillStyle = this.style(obj)
+	}
+
+	/** 
+	 * Starts a stroke drawing
+	 * @param obj Stroke command. It is defined by attribute:
+	 * &lt;i>command='stroke'&lt;/i>
+	 */
+	stroke(obj){ this.getContext().stroke() }
+
+	/** 
+	 * Starts a fill drawing
+	 * @param obj Fill command. It is defined by attribute:
+	 * &lt;i>command='fill'&lt;/i>
+	 */
+	fill(obj){
+		var ctx = this.getContext()
+		ctx.closePath()
+		ctx.fill()
+	}
+	
+	/**
+	 * Creates a hard copy of the command
+	 * @param c Command to clone
+	 * @return A hard copy of the command
+	 */
+	copy(c){
+	    var cc = {}
+	    for( var x in c ){
+	        cc[x] = c[x]
+	    }
+	    return cc 
+	}
+
+	/**
+	 * Initializes the command for drawing it in the canvas
+	 * @param c Command to be initialized
+	 * @return An initialized version of the command
+	 */
+	init_command( c ) {
+	    if(typeof c.command === 'undefined') return c
+	    var cc = this.custom[c.command]
+	    if( typeof cc !== 'undefined' ) {
+		    c = this.copy(cc)
+		    c.command = 'compound'
+	    }
+
+	    if(typeof c.commands !=='undefined') {
+	        c = this.copy(c)
+	        var obj = []
+	        for(var i=0; i&lt;c.commands.length; i++)
+                obj.push(this.init_command(c.commands[i]))
+            c.commands = obj
+	    }
+	    
+	    if(c.command === 'translate' )	return this.translate(c)
+	    if(c.command === 'rotate' )	return this.rotate(c)
+	    if(c.command === 'scale' )	return this.scale(c)
+	    if(c.command === 'fit' )	return this.fit(c)
+	    return c
+	}
+
+	/**
+	 * Draws a command
+	 * @param Command to draw
+	 */
+	draw(obj){
+		obj = this.init_command(obj)
+		var type = obj.command
+		if( type !== undefined ) this[type](obj)
+	}
+
+	/**
+	 * Gets the drawing commands in text format
+	 * @return A stringify representation of the commands drawn by the canvas
+	 */
+	getText(){ return JSON.stringify(commands) }
+
+	/**
+	 * Sets the drawing commands in text format
+	 * @param text A stringify representation of the commands to be drawn by the canvas
+	 */
+	setText(txt){ 
+		this.commands = JSON.parse(txt)
+		this.redraw()
+	}
+	
+	/**
+	 * Sets the parent's size (adjust each of its children components)
+	 * @param parentWidth Parent's width
+	 * @param parentHeight Parent's height
+	 */
+	setParentSize( parentWidth, parentHeight ){
+		super.setParentSize( parentWidth, parentHeight )
+		this.redraw()
+	}	
+}
+
+/** Konekti Plugin for canvas */
+class CanvasPlugIn extends PlugIn{
+	/** Creates a Plugin for canvas */
+	constructor(){ 
+		super('canvas') 
+		this.render = {}
+	}
+
+	/**
+	 * Resizes all the canvas that have beien registered
+	 */
+	resize(){
+		var canvas = Konekti.plugins.canvas;
+		for( var cc in canvas.render ) canvas.render[cc].redraw()
+	}
+
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param config Instance configuration
+	 */
+	client( config ){ return new Canvas(config) } 
+
+}
+
+/** Canvas class */
+if(Konekti.canvas === undefined ) new CanvasPlugIn()
+
+/**
+ * Creates a canvas config object
+ * @method
+ * canvasConfig
+ * @param id Id of the canvas
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param initial Initial set of commands to run (as JSON object or stringify object)
+ * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+ * @param parent Parent component
+ */
+Konekti.canvasConfig = function(id, width, height, initial, custom_commands, parent='KonektiMain'){
+	if( typeof initial === 'string' ) initial = JSON.parse(initial)
+	if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
+	return {'plugin':'canvas', "id":id, "custom":custom_commands, "commands":initial, 'width':width, 'height':height, 'parent':parent}
+}
+
+/**
+ * Associates/Adds a canvas
+ * @method
+ * canvas
+ * @param id Id of the canvas
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param initial Initial set of commands to run (as JSON object or stringify object)
+ * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+ */
+Konekti.canvas = function(id, width, height, initial, custom_commands){
+	return Konekti.build(Konekti.canvasConfig(id, width, height, initial, custom_commands))
+}
+
+window.addEventListener("resize", Konekti.plugins.canvas.resize)
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Accordion.html">Accordion</a></li><li><a href="AccordionPlugIn.html">AccordionPlugIn</a></li><li><a href="Ace.html">Ace</a></li><li><a href="AcePlugIn.html">AcePlugIn</a></li><li><a href="Btn.html">Btn</a></li><li><a href="BtnPlugIn.html">BtnPlugIn</a></li><li><a href="Canvas.html">Canvas</a></li><li><a href="CanvasPlugIn.html">CanvasPlugIn</a></li><li><a href="Client.html">Client</a></li><li><a href="DivClient.html">DivClient</a></li><li><a href="DivPlugIn.html">DivPlugIn</a></li><li><a href="DOM.html">DOM</a></li><li><a href="DropDownPlugIn.html">DropDownPlugIn</a></li><li><a href="Editor.html">Editor</a></li><li><a href="Header.html">Header</a></li><li><a href="HeaderPlugIn.html">HeaderPlugIn</a></li><li><a href="IFrameEditor.html">IFrameEditor</a></li><li><a href="IFramePlugIn.html">IFramePlugIn</a></li><li><a href="Item.html">Item</a></li><li><a href="ItemPlugIn.html">ItemPlugIn</a></li><li><a href="KonektiAPI.html">KonektiAPI</a></li><li><a href="Latex.html">Latex</a></li><li><a href="LatexPlugIn.html">LatexPlugIn</a></li><li><a href="MainClient.html">MainClient</a></li><li><a href="Media.html">Media</a></li><li><a href="MediaClient.html">MediaClient</a></li><li><a href="MediaPlugIn.html">MediaPlugIn</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="NavBarPlugIn.html">NavBarPlugIn</a></li><li><a href="PlugIn.html">PlugIn</a></li><li><a href="Resource.html">Resource</a></li><li><a href="SideBar.html">SideBar</a></li><li><a href="SideBarPlugIn.html">SideBarPlugIn</a></li><li><a href="SplitClient.html">SplitClient</a></li><li><a href="SplitPlugIn.html">SplitPlugIn</a></li><li><a href="Tab.html">Tab</a></li><li><a href="TabPlugIn.html">TabPlugIn</a></li><li><a href="Youtube.html">Youtube</a></li><li><a href="YoutubePlugIn.html">YoutubePlugIn</a></li></ul><h3>Global</h3><ul><li><a href="global.html#accordion">accordion</a></li><li><a href="global.html#accordionConfig">accordionConfig</a></li><li><a href="global.html#ace">ace</a></li><li><a href="global.html#aceConfig">aceConfig</a></li><li><a href="global.html#audio">audio</a></li><li><a href="global.html#audioConfig">audioConfig</a></li><li><a href="global.html#btn">btn</a></li><li><a href="global.html#btnConfig">btnConfig</a></li><li><a href="global.html#canvas">canvas</a></li><li><a href="global.html#canvasConfig">canvasConfig</a></li><li><a href="global.html#div">div</a></li><li><a href="global.html#divConfig">divConfig</a></li><li><a href="global.html#dropdown">dropdown</a></li><li><a href="global.html#dropdownConfig">dropdownConfig</a></li><li><a href="global.html#header">header</a></li><li><a href="global.html#headerConfig">headerConfig</a></li><li><a href="global.html#iframe">iframe</a></li><li><a href="global.html#iframeConfig">iframeConfig</a></li><li><a href="global.html#Konekti">Konekti</a></li><li><a href="global.html#latex">latex</a></li><li><a href="global.html#latexConfig">latexConfig</a></li><li><a href="global.html#media">media</a></li><li><a href="global.html#mediaConfig">mediaConfig</a></li><li><a href="global.html#mp4">mp4</a></li><li><a href="global.html#mp4Config">mp4Config</a></li><li><a href="global.html#navbar">navbar</a></li><li><a href="global.html#navbarConfig">navbarConfig</a></li><li><a href="global.html#sidebar">sidebar</a></li><li><a href="global.html#sideConfig">sideConfig</a></li><li><a href="global.html#split">split</a></li><li><a href="global.html#splitConfig">splitConfig</a></li><li><a href="global.html#tab">tab</a></li><li><a href="global.html#tabConfig">tabConfig</a></li><li><a href="global.html#tocConfig">tocConfig</a></li><li><a href="global.html#video">video</a></li><li><a href="global.html#videoConfig">videoConfig</a></li><li><a href="global.html#youtube">youtube</a></li><li><a href="global.html#youtubeConfig">youtubeConfig</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Sun Jul 03 2022 23:09:16 GMT-0500 (Colombia Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
