@@ -242,7 +242,6 @@ class KonektiAPI{
 		if( Array.isArray(components) ){
 			var plugs = []
 			for( var i=0; i<components.length; i++ ){
-				console.log(components[i])
 				plugs.push(this.plugins[components[i].plugin].client(components[i]))
 			}	
 			return plugs
@@ -389,13 +388,11 @@ class Client{
 			var h = 0
 			var w = 0
 			var p = Konekti.client[this.parent]
-			console.log(p)
 			for(var i=0; i<p.children.length-1; i++){
 				var r = p.children[i].vc().getBoundingClientRect()
 				h += r.height
 				w += r.width
 			}
-			console.log(w+','+h)
 			if(setWidth) return size - w
 			else return size - h
 		}else return parseInt(defSize.substring(0,n-1))
@@ -447,7 +444,6 @@ class Client{
 	 */
 	html( config ){ 
 		config.config = config.config || ''
-		console.log(config.config)
 		config.inner = config.inner || ''
 		return "<div id='"+this.id+"' "+config.config+">"+config.inner+"</div>" 
 	}  

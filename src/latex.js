@@ -59,7 +59,6 @@ class Latex extends Editor{
 				window.MathJax.typesetPromise([output]).catch(function(err){
 					output.innerHTML = ''
 					output.appendChild(document.createTextNode(err.message))
-					console.error(err)
 				}).then(function(){});
 			}else{ tout = setTimeout(set,100) }
 		}

@@ -29,7 +29,6 @@ class SideBar extends Client{
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize( parentWidth, parentHeight )
 		var side = this.children[0].vc()
-		console.log(this.height)
 		if(parentWidth > 992){
 			this.children[0].setParentSize(200,this.height)
 			this.children[2].setParentSize(this.width-200, this.height)
