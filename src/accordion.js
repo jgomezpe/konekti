@@ -50,13 +50,13 @@ class Accordion extends Client{
 			if( x.className.indexOf("w3-show") == -1){
 				x.className += " w3-show"				
 				if(this.expand !== undefined){
-					if(this.expand == 'function') this.expand(this.id)
+					if(typeof this.expand == 'function') this.expand(this.id)
 					else Konekti.client[this.expand.client][this.expand.method](this.id)
 				}  
   			}else x.className = x.className.replace(" w3-show", "");
   		}else{ 
 			if(this.expand !== undefined){
-				if(this.expand == 'function') this.expand(this.id)
+				if(typeof this.expand == 'function') this.expand(this.id)
 				else Konekti.client[this.expand.client][this.expand.method](this.id)
 			}  
 	  	}			
