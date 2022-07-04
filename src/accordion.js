@@ -2,7 +2,7 @@ Konekti.uses('header')
 
 /** Konekti Plugin for Accordion components */
 class AccordionPlugIn extends PlugIn{
-	/** Creates a Plugin for Dropdown components */
+	/** Creates a Plugin for Accordion components */
 	constructor(){ super('accordion') }
     
 	/**
@@ -15,18 +15,16 @@ class AccordionPlugIn extends PlugIn{
 /** An Accordion component */
 class Accordion extends Client{
 	/**
-	 * Creates a dropdown component
-	 * @param config Dropdown configuration
+	 * Creates an accordion component
+	 * @param config Accordion configuration
 	 */
 	constructor( config ){ 
 		super(config)
 		var x = this
-		this.header = config.children[0].id
-		this.content = config.children.length>1?config.children[1].id:null
 		this.expand = config.expand
-		this.children[this.header].vc().onclick = function(){ x.show() }
-		this.children[this.header].vc().style.cursor = 'pointer'
-		if( this.content !== null ) Konekti.vc(this.content).className += "w3-container w3-hide w3-show"
+		this.children[0].vc().onclick = function(){ x.show() }
+		this.children[0].vc().style.cursor = 'pointer'
+		if( this.children.length == 2 ) this.children[1].vc().className += "w3-container w3-hide" + (config.open?" w3-show":"")
 	}
 
 	/**
@@ -35,9 +33,10 @@ class Accordion extends Client{
 	 * @param parentHeight Parent's height
 	 */
 	setParentSize( parentWidth, parentHeight ){
-		this.children[this.header].setParentSize(parentWidth,parentHeight)
-		if(this.content!=null) this.children[this.content].setParentSize(parentWidth,parentHeight)
-		this.height = this.children[this.header].height + ((this.content!=null)?this.children[this.content].height:0)
+		for( var i=0; i<this.children.length; i++ ) this.children[i].setParentSize(parentWidth,parentHeight)
+		var h = 0
+		for( var i=0; i<this.children.length; i++ ) h += this.children[i].height
+		this.height = h
 		this.vc().style.height = this.height
 	} 
 
@@ -46,16 +45,21 @@ class Accordion extends Client{
 	 * Shows/hides the drop option list
 	 */
 	show(){
-		var x = Konekti.vc(this.content)
-		if (x!==undefined && x!==null){ 
+		if(this.children.length>1){
+			var x = Konekti.vc(this.children[1].id)
 			if( x.className.indexOf("w3-show") == -1){
-				x.className += " w3-show"
-				
-				if(this.expand !== undefined) this.expand(this.id) 
+				x.className += " w3-show"				
+				if(this.expand !== undefined){
+					if(this.expand == 'function') this.expand(this.id)
+					else Konekti.client[this.expand.client][this.expand.method](this.id)
+				}  
   			}else x.className = x.className.replace(" w3-show", "");
   		}else{ 
-  			if(this.expand !== undefined) this.expand(this.id)
-  		}			
+			if(this.expand !== undefined){
+				if(this.expand == 'function') this.expand(this.id)
+				else Konekti.client[this.expand.client][this.expand.method](this.id)
+			}  
+	  	}			
 	}	
 }
 
@@ -74,16 +78,17 @@ if(Konekti.accordion === undefined) new AccordionPlugIn()
  * @param h Size of the header (1,2,3..)
  * @param style Style of the header
  * @param content Content component
+ * @param open If content component should be displayed or not
  * @param parent Parent component
  */
-Konekti.accordionConfig = function(id, icon, caption, h, style, content, parent){
+Konekti.accordionConfig = function(id, icon, caption, h, style, content, open, parent='KonektiMain'){
 	var children = [Konekti.headerConfig(id+'Item', icon, caption, h, style, id)]
 	if(content!=null){
 		content.parent = content.parent || id
 		content.id = content.id || id+'Content'
 		children.push(content)
 	}
-	return {'plugin':'accordion', 'id':id, 'parent':parent, 'children':children}
+	return {'plugin':'accordion', 'id':id, 'parent':parent, 'open':open, 'children':children}
 }
 
 /**
@@ -96,10 +101,10 @@ Konekti.accordionConfig = function(id, icon, caption, h, style, content, parent)
  * @param h Size of the header (1,2,3..)
  * @param style Style of the header
  * @param content Content component
- * @param parent Parent component
+ * @param open If content component should be displayed or not
  */
-Konekti.accordion = function(id, icon, caption, h, style, content, parent){
-	return Konekti.build(Konekti.accordionConfig(id, icon, caption, h, style, content, parent))
+Konekti.accordion = function(id, icon, caption, h, style, content, open){
+	return Konekti.build(Konekti.accordionConfig(id, icon, caption, h, style, content, open))
 }
 
 /**
@@ -107,21 +112,23 @@ Konekti.accordion = function(id, icon, caption, h, style, content, parent){
  * @method
  * tocConfig
  * @param tree Table of Content component 
- * @param h Size of the main content (1,2,3..)
+ * @param h Size of the main content (1,2,3..) recommended 3 or 4, maximum 6
  * @param style Style of the toc
  * @param onclick Method called when an item is selected
+ * @param open If toc component should be displayed or not
  * @param parent Parent component
  */
-Konekti.tocConfig = function(tree, h, style, onclick, parent){
+Konekti.tocConfig = function(tree, h, style, onclick, open, parent='KonektiMain'){
+	h = Math.min(h,6)
 	var content =null
 	if(tree.children !== undefined){
 		content = Konekti.divConfig(tree.id+'Content', '', '', '', '', tree.id)		
 		content.children = []
 		for( var i=0; i<tree.children.length; i++ ){
-			content.children.push(Konekti.tocConfig(tree.children[i], h+1, style, onclick, tree.id+'Content'))
+			content.children.push(Konekti.tocConfig(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
 		}
 	}
-	var item = Konekti.accordionConfig(tree.id, tree.icon, tree.caption, h, style, content, parent)
+	var item = Konekti.accordionConfig(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
 	item.expand = onclick
 	return item
 }
@@ -134,8 +141,8 @@ Konekti.tocConfig = function(tree, h, style, onclick, parent){
  * @param h Size of the main content (1,2,3..)
  * @param style Style of the toc
  * @param onclick Method called when an item is selected
- * @param parent Parent component
+ * @param open If toc component should be displayed or not
  */
-Konekti.toc = function(tree, h, style, onclick, parent){
-	return Konekti.build(Konekti.tocConfig(tree, h, style, onclick, parent))
+Konekti.toc = function(tree, h, style, onclick, open){
+	return Konekti.build(Konekti.tocConfig(tree, h, style, onclick, open))
 }

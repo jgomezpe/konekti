@@ -5,16 +5,9 @@ class IFramePlugIn extends PlugIn{
 
 	/**
 	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
+	 * @param config Instance configuration
 	 */
-	client(thing){ return new IFrameEditor(thing) }
-
-	/**
-	 * Creates a config object from parameters 
-	 * @param id Id of the iframe container
-	 * @param url Url/code for the iframe component
-	 */
-	config(id, url=''){ return {"id":id, "src":url} }
+	client(config){ return new IFrameEditor(config) }
 }
 
 /** Iframe component that works as an editor */
@@ -62,7 +55,7 @@ class IFrameEditor extends Editor{
 			return URL.createObjectURL(blob)
 		}*/
     
-		this.gui.src = this.getBlobURL(txt, 'text/html')
+		this.vc().src = this.getBlobURL(txt, 'text/html')
 	}
 }
 
@@ -79,7 +72,7 @@ if(Konekti.iframe===undefined) new IFramePlugIn()
  * @param src Url/code for the iframe component
  * @param parent Parent component
  */
-Konekti.iframeConfig = function(id, width, height, src, parent){
+Konekti.iframeConfig = function(id, width, height, src, parent='KonektiMain'){
 	return {'plugin':'iframe', 'id':id, 'width':width,'height':height, 'src':src, 'parent':parent}
 }
 
@@ -91,8 +84,7 @@ Konekti.iframeConfig = function(id, width, height, src, parent){
  * @param width Width of the div's component
  * @param height Height of the div's component
  * @param src Url/code for the iframe component
- * @param parent Parent component
  */
-Konekti.iframe = function(id, width, height, src, parent){
-	return Konekti.build(Konekti.iframeConfig(id, width, height, src, parent))
+Konekti.iframe = function(id, width, height, src){
+	return Konekti.build(Konekti.iframeConfig(id, width, height, src))
 }

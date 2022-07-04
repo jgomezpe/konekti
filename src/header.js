@@ -39,7 +39,7 @@ if(Konekti.header===undefined) new HeaderPlugIn()
  * @param style Style of the header
  * @param parent Parent component
  */
-Konekti.headerConfig = function(id, icon, caption, h, style, parent){
+Konekti.headerConfig = function(id, icon, caption, h, style, parent='KonektiMain'){
 	return {'plugin':'header', 'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[Konekti.itemConfig(id+'Item', icon, caption, id)]}
 }
 
@@ -52,8 +52,7 @@ Konekti.headerConfig = function(id, icon, caption, h, style, parent){
  * @param caption Caption of the header
  * @param h Size of the header (1,2,3..)
  * @param style Style of the header
- * @param parent Parent component
  */
-Konekti.header = function(id, icon, caption, h, style, parent){
-	return Konekti.build(Konekti.headerConfig(id, icon, caption, h, style, parent))
+Konekti.header = function(id, icon, caption, h, style){
+	return Konekti.build(Konekti.headerConfig(id, icon, caption, h, style))
 }

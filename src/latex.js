@@ -80,7 +80,7 @@ if(Konekti.latex===undefined) new LatexPlugIn()
  * @param tex Latex code
  * @param parent Parent component
  */
-Konekti.latexConfig = function(id, width, height, tex, parent){
+Konekti.latexConfig = function(id, width, height, tex, parent='KonektiMain'){
 	return {"plugin":"latex", "id":id, "initial":tex, 'width':width, 'height':height, 'parent':parent}
 }
 
@@ -94,7 +94,7 @@ Konekti.latexConfig = function(id, width, height, tex, parent){
  * @param tex Latex code
  * @param parent Parent component
  */
-Konekti.latex = function(id, width, height, tex, parent){
-	return Konekti.build(Konekti.latexConfig(id, width, height, tex, parent))
+Konekti.latex = function(id, width, height, tex){
+	return Konekti.build(Konekti.latexConfig(id, width, height, tex))
 }
 

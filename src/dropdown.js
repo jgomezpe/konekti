@@ -9,37 +9,15 @@ class DropDownPlugIn extends PlugIn{
 	 * Gets a client for a Dropdown component
 	 * @param config Dropdown configuration
 	 */  
-	client( config ){ return new DropDown(config) }    
-}
-
-/** A Dropdown component */
-class DropDown extends Client{
-	/**
-	 * Creates a dropdown component
-	 * @param config Dropdown configuration
-	 */
-	constructor( config ){ super(config) }
-	
-	/**
-	 * Associated html code
-	 * @param config Client configuration
-	 */
-	html( config ){ return "<div id='"+this.id+"' class='w3-dropdown-click w3-bar-block'></div>" }   
-
-        /**
-	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
-	 */
-	client( thing ){ return new DropDown(thing) }
-
-	/**
-	 * Shows/hides the drop option list
-	 */
-	drop(){
-		var x = this.vc('Drop')
-		if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
-		else x.className = x.className.replace(" w3-show", "")
-	}
+	client( config ){ 
+		var client = new Btn(config)
+		client.drop = function(){
+			var x = this.vc('Drop')
+			if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
+			else x.className = x.className.replace(" w3-show", "")	
+		} 
+		return client 
+	}    
 }
 
 /** DropDown class */
@@ -57,11 +35,14 @@ if(Konekti.dropdown === undefined) new DropDownPlugIn()
  * @param content Content
  * @param parent Parent component
  */
-Konekti.dropdownConfig = function(id, icon, caption, style, title, content, parent){
-	var btn = Konekti.btnConfig(id+'Btn', icon, caption, {"method":"drop", "client":id}, style, title, id)
-	var drop = Konekti.divConfig(id+'Drop', '', '', "class='w3-dropdown-content w3-card'", id)
-	drop.children = [content]
-	return {'plugin':'dropdown', 'id':id, 'children':[btn, drop]}
+Konekti.dropdownConfig = function(id, icon, caption, style, title, content, parent='KonektiMain'){
+	var btn = Konekti.btnConfig(id, icon, caption, {"method":"drop", "client":id}, style, title, parent)
+	var drop = Konekti.divConfig(id+'Drop', '', '', "class='w3-dropdown-content w3-bar-block' style='margin-left:-16px;margin-top:6px'", '', id)
+	if(Array.isArray(content) ) drop.children = content
+	else drop.children = [content]
+	btn.children.push(drop)
+	btn.plugin = 'dropdown'
+	return btn
 }
 
 /**
@@ -76,6 +57,40 @@ Konekti.dropdownConfig = function(id, icon, caption, style, title, content, pare
  * @param content Content
  * @param parent Parent component
  */
-Konekti.dropdown = function(id, icon, caption, style, title, content, parent){
-	return Konekti.build(Konekti.dropdownConfig(id, icon, caption, style, title, content, parent)) 
+Konekti.dropdown = function(id, icon, caption, style, title, content){
+	return Konekti.build(Konekti.dropdownConfig(id, icon, caption, style, title, content)) 
+}
+
+/**
+ * dropdownList configuration object
+ * @method
+ * dropdown
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param options List of options
+ * @param parent Parent component
+ */
+ Konekti.dropdownListConfig = function(id, icon, caption, style, title, options, onclick, parent='KonektiMain'){
+	for( var i=0; i<options.length; i++ )
+		if( typeof options[i] == 'string' ) options[i] = Konekti.btnConfig(options[i], "", options[i], onclick, 'w3-bar-item', options[i])
+	return Konekti.dropdownConfig(id, icon, caption, style, title, options, parent)
+}
+
+/**
+ * Associates/Adds a dropdown with an option list
+ * @method
+ * dropdown
+ * @param id Id of the dropdown
+ * @param icon Icon of the dropdown
+ * @param caption Caption of the dropdown
+ * @param style Style of the dropdown
+ * @param title Message that will be shown when mouse is over the dropdown
+ * @param options List of options
+ * @param parent Parent component
+ */
+ Konekti.dropdownList = function(id, icon, caption, style, title, options, onclick){
+	return Konekti.build(Konekti.dropdownListConfig(id, icon, caption, style, title, options, onclick))
 }

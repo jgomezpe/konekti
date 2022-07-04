@@ -146,7 +146,7 @@ if(Konekti.youtube===undefined) new YoutubePlugIn()
  * @param video youtube id of the video
  * @param parent Parent component
  */
-Konekti.youtubeConfig = function(id, width, height, video, parent){
+Konekti.youtubeConfig = function(id, width, height, video, parent='KonektiMain'){
 	return {'plugin':'youtube', 'id':id, 'video':video, 'width':width, 'height':height, 'parent':parent}
 }
 /**
@@ -159,6 +159,6 @@ Konekti.youtubeConfig = function(id, width, height, video, parent){
  * @param video youtube id of the video
  * @param parent Parent component
  */
-Konekti.youtube = function(id, width, height, video, parent){
-	return Konekti.build(Konekti.youtubeConfig(id, width, height, video, parent))
+Konekti.youtube = function(id, width, height, video){
+	return Konekti.build(Konekti.youtubeConfig(id, width, height, video))
 }

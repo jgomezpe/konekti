@@ -95,7 +95,9 @@ if(Konekti.media===undefined) new MediaPlugIn()
  * @param src url of media to connect
  * @param parent Parent component
  */
-Konekti.mediaConfig = function(id, width, height, media, type, src, parent){ return {"plugin":"media", "id":id, "media":media, "type":type, "src":src, 'width':width, 'height':height, 'parent':parent } }
+Konekti.mediaConfig = function(id, width, height, media, type, src, parent='KonektiMain'){ 
+	return {"plugin":"media", "id":id, "media":media, "type":type, "src":src, 'width':width, 'height':height, 'parent':parent } 
+}
 
 /**
  * Associates/Adds a general media component
@@ -107,10 +109,24 @@ Konekti.mediaConfig = function(id, width, height, media, type, src, parent){ ret
  * @param media Type of media to connect (audio/video)
  * @param type Type of media to connect
  * @param src url of media to connect
+ */
+Konekti.media = function(id, width, height, media, type, src){
+	return Konekti.build(Konekti.mediaConfig(id, width, height, media, type, src))
+}
+
+/**
+ * Creates a video configuration object
+ * @method
+ * videoConfig
+ * @param id Id of the video component
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param type Type of video to connect
+ * @param src url of video to connect
  * @param parent Parent component
  */
-Konekti.media = function(id, width, height, media, type, src, parent){
-	return Konekti.build(Konekti.mediaConfig(id, width, height, media, type, src, parent))
+ Konekti.videoConfig = function(id, width, height, type, src, parent='KonektiMain'){
+    return this.mediaConfig(container, width, height, "video", type, src, parent)
 }
 
 /**
@@ -122,10 +138,23 @@ Konekti.media = function(id, width, height, media, type, src, parent){
  * @param height Height of the div's component
  * @param type Type of video to connect
  * @param src url of video to connect
+ */
+ Konekti.video = function(id, width, height, type, src){
+    return this.media(container, width, height, "video", type, src)
+}
+
+/**
+ * Creates a mp4 video configuration object
+ * @method
+ * mp4Config
+ * @param id Id of the mp4 component
+ * @param width Width of the div's component
+ * @param height Height of the div's component
+ * @param src url of video to connect
  * @param parent Parent component
  */
-Konekti.video = function(id, width, height, type, src, parent){
-    return this.media(container, width, height, "video", type, src, parent)
+ Konekti.mp4Config = function(id, width, height, src, parent='KonektiMain'){
+    return this.mediaConfig(id, width, height, "video", "mp4", src, parent)
 }
 
 /**
@@ -133,11 +162,25 @@ Konekti.video = function(id, width, height, type, src, parent){
  * @method
  * mp4
  * @param id Id of the mp4 component
+ * @param width Width of the div's component
+ * @param height Height of the div's component
  * @param src url of video to connect
+ */
+ Konekti.mp4 = function(id, width, height, src){
+    return this.media(id, width, height, "video", "mp4", src)
+}
+
+/**
+ * Creates a general audio configuration object
+ * @method
+ * audioConfig
+ * @param id Id of the audio component
+ * @param type Type of audio to connect
+ * @param src url of audio to connect
  * @param parent Parent component
  */
-Konekti.mp4 = function(id, src, parent){
-    return this.media(id, '', '', "video", "mp4", src,  parent)
+ Konekti.audioConfig = function(id, type, src, parent='KonektiMain'){
+    return this.mediaConfig(id, '', '', "audio", type, src, parent)
 }
 
 /**
@@ -147,10 +190,9 @@ Konekti.mp4 = function(id, src, parent){
  * @param id Id of the audio component
  * @param type Type of audio to connect
  * @param src url of audio to connect
- * @param parent Parent component
  */
-Konekti.audio = function(id, type, src, parent){
-    return this.media(id, '', '', "audio", type, src, parent)
+ Konekti.audio = function(id, type, src){
+    return this.media(id, '', '', "audio", type, src)
 }
 
 /**
@@ -159,9 +201,18 @@ Konekti.audio = function(id, type, src, parent){
  * mp4
  * @param id Id of the audio component
  * @param src url of audio to connect
- * @param parent Parent component
  */
-Konekti.mp3 = function(id, src, parent){
-    return this.audio(id, "mp3", src, parent)
+Konekti.mp3Config = function(id, src, parent='KonektiMain'){
+    return this.audioConfig(id, "mp3", src, parent)
 }
 
+/** 
+* Associates/Adds a mp3 audio component
+* @method
+* mp4
+* @param id Id of the audio component
+* @param src url of audio to connect
+*/
+Konekti.mp3 = function(id, src){
+   return this.audio(id, "mp3", src)
+}

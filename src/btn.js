@@ -3,11 +3,11 @@ class BtnPlugIn extends PlugIn{
 	/** Creates a Plugin for buttons */
 	constructor(){ super('btn') }
 
-        /**
+    /**
 	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
+	 * @param config Instance configuration
 	 */
-	client( thing ){ return new Btn(thing) }
+	client( config ){ return new Btn(config) }
 }
 
 /** A Button manager */
@@ -51,7 +51,7 @@ if( Konekti.btn === undefined ) new BtnPlugIn()
  * @param title Message that will be shown when mouse is over the button
  * @param parent Parent component
  */
-Konekti.btnConfig = function(id, icon, caption, onclick, style, title, parent){
+Konekti.btnConfig = function(id, icon, caption, onclick, style, title, parent='KonektiMain'){
 	return {'plugin':'btn', 'id':id, 'style':style, 'run':onclick, 'title':title, 'parent':parent, 'children':[{'plugin':'item', 'id':id+'Item', 'icon':icon, 'caption':caption, 'parent':id}]}
 }
 
@@ -65,8 +65,7 @@ Konekti.btnConfig = function(id, icon, caption, onclick, style, title, parent){
  * @param onclick Information of the method that will be executed when the button is pressed
  * @param style Style of the header
  * @param title Message that will be shown when mouse is over the button
- * @param parent Parent component
  */
-Konekti.btn = function(id, icon, caption, onclick, style, title, parent){
-	return Konekti.build(Konekti.btnConfig(id, icon, caption, onclick, style, title, parent))
+Konekti.btn = function(id, icon, caption, onclick, style, title){
+	return Konekti.build(Konekti.btnConfig(id, icon, caption, onclick, style, title))
 }

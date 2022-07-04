@@ -19,21 +19,8 @@ class SideBar extends Client{
 	 * @param id Tab id
 	 * @param tabs Collection of tabs managed by the component
 	 */
-	constructor( config ){ 
-		super(config)
-		this.side = config.children[0].id
-		this.main = config.children[1].id
-	}
-	
-	/**
-	 * Associated html code
-	 * @param config Client configuration
-	 */
-	html( config ){ 
-		var client = 'Konekti.client["'+this.id+'"].'
-		return "<div id='"+this.id+"'><div id='"+this.id+"Bar' onmouseleave='"+client+"close()' class='konekti-sidebar w3-card w3-animate-left'></div><div id='"+this.id+"Resize' onmouseenter='"+client+"open()' style='float:left' class='w3-xlarge konekti-buttonsidebar'>&#9776;</div><div id='"+this.id+"Main' class='konekti-main' style='margin-left:200px'></div></div>"
-	}
-		
+	constructor( config ){ super(config) }
+			
 	/**
 	 * Sets the parent's size (adjust each of its children components)
 	 * @param parentWidth Parent's width
@@ -41,10 +28,16 @@ class SideBar extends Client{
 	 */
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize( parentWidth, parentHeight )
-		var side = this.vc('Bar')
-		var main = this.vc('Main')
-		if(side.style.display == 'initial') this.children[this.side].setParentSize(200,this.height)
-		this.children[this.main].setParentSize(this.width-200, this.height)
+		var side = this.children[0].vc()
+		console.log(this.height)
+		if(parentWidth > 992){
+			this.children[0].setParentSize(200,this.height)
+			this.children[2].setParentSize(this.width-200, this.height)
+			this.children[2].vc().style.marginLeft = 200 + 'px'
+		}else{
+			this.children[2].setParentSize(this.width-20, this.height)
+			this.children[2].vc().style.marginLeft = 20 + 'px'
+		}	
 	}
 
 
@@ -52,18 +45,13 @@ class SideBar extends Client{
 	 * Displays the sidebar
 	 * @param barId Sidebar's id
 	 */
-	open(){ 
-		this.vc('Bar').style.display = 'initial' 
-		this.children[this.side].setParentSize(200,this.height)
-	}
+	open(){ this.vc('Bar').style.display = 'initial' }
 
 	/**
 	 * Hides the sidebar
 	 * @param barId Sidebar's id
 	 */
-	close(){ 
-		this.vc('Bar').style.display = 'none' 
-	}
+	close(){ this.vc('Bar').style.display = 'none' }
 }
 
 
@@ -81,10 +69,14 @@ if(Konekti.sidebar===undefined) new SideBarPlugIn()
  * @param main Main component
  * @param parent Parent component
  */
-Konekti.sidebarConfig = function(id, width, height, side, main, parent){
-	side.parent = id+'Bar'
-	main.parent = id+'Main'
-	return {'plugin':'sidebar', 'id':id, 'children':[side,main], 'width':width, 'height':height, 'parent':parent}
+Konekti.sidebarConfig = function(id, width, height, side, main, parent='KonektiMain'){
+	var client = 'Konekti.client["'+id+'"].'
+	var one = Konekti.divConfig(id+'Bar', '', '', "onmouseleave='"+client+"close()' class='konekti-sidebar w3-card w3-animate-left'",'', id)
+	var two = Konekti.divConfig(id+'Resize', '', '', "onmouseenter='"+client+"open()' style='float:left' class='w3-xlarge konekti-buttonsidebar'", '&#9776;', id)
+	var three = Konekti.divConfig(id+'Main', '100%', '100%', "", '', id)
+	one.children = [side]
+	three.children = [main]
+	return {'plugin':'sidebar', 'id':id, 'width':width, 'height':height, 'children':[one,two,three], 'parent':parent}
 }
 
 /**
@@ -96,9 +88,8 @@ Konekti.sidebarConfig = function(id, width, height, side, main, parent){
  * @param height Height of the div's component
  * @param side Sidebar component
  * @param main Main component
- * @param parent Parent component
  */
-Konekti.sidebar = function(id, width, height, side, main, parent){
-	return Konekti.build(Konekti.sidebarConfig(id, width, height, side, main, parent))
+Konekti.sidebar = function(id, width, height, side, main){
+	return Konekti.build(Konekti.sidebarConfig(id, width, height, side, main))
 }
 

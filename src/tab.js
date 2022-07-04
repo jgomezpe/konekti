@@ -30,10 +30,10 @@ class Tab extends Client{
 	 */
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize( parentWidth, parentHeight )
-		var bar = this.children[this.id+'Bar']
-		var tabs = this.children[this.id+'Content']
-		bar.setParentSize(this.width-2,this.height)
-		tabs.setParentSize(this.width-2,this.height-bar.height-2)
+		var bar = this.children[0]
+		var tabs = this.children[1]
+		bar.setParentSize(this.width,this.height)
+		tabs.setParentSize(this.width,this.height-bar.height)
 	}	
 
 	/**
@@ -49,8 +49,7 @@ class Tab extends Client{
 			btn.className = btn.className.replace("w3-grey", "w3-light-grey")
 		}
 		this.current=page
-		console.log(this.current)
-		var tabs = this.children[this.id+'Content'].children
+		var tabs = this.children[1].children
 		btn = Konekti.vc(this.current+'Btn')
 		btn.className = btn.className.replace("w3-light-grey", "w3-grey")
 		for( var c in tabs ) tabs[c].vc().style.display = "none"  
@@ -74,16 +73,15 @@ if(Konekti.tab===undefined) new TabPlugIn()
  * @param tabs Tab configurations 
  * @param parent Parent component
  */
-Konekti.tabConfig = function(id, width, height, initial, tabs, parent){
+Konekti.tabConfig = function(id, width, height, initial, tabs, parent='KonektiMain'){
 	var btns = []
 	var contents = []
 	for( var i=0; i<tabs.length; i++){
-		console.log(tabs[i].caption)
 		btns.push(Konekti.btnConfig(tabs[i].content.id+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title))
 		contents.push(tabs[i].content)
 	}
 	var bar = Konekti.navbarConfig(id+'Bar', 'w3-light-grey w3-medium', btns, id, 'open', id )
-	var content = Konekti.divConfig(id+'Content', '100%', '100%', '', '', id)
+	var content = Konekti.divConfig(id+'Content', 'rest', 'rest', '', '', id)
 	content.children = contents
 	return {'plugin':'tab', 'id':id, 'initial':initial, 'children':[bar,content], 'width':width, 'height':height, 'parent':parent}
 }
@@ -96,8 +94,7 @@ Konekti.tabConfig = function(id, width, height, initial, tabs, parent){
  * @param height Height of the split component
  * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
  * @param tabs Tab configurations 
- * @param parent Parent component
  */
-Konekti.tab = function(id, width, height, initial, tabs, parent){
-	return Konekti.build(Konekti.tabConfig(id, width, height, initial, tabs, parent))
+Konekti.tab = function(id, width, height, initial, tabs){
+	return Konekti.build(Konekti.tabConfig(id, width, height, initial, tabs))
 }

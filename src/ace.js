@@ -220,49 +220,48 @@ class Ace extends Editor{
 	update(thing){
 		var id = this.id
 		var x = this
-			x.gui = x.vc('Ace')
-			if( x.edit === undefined ){
-				x.edit = ace.edit(id+'Ace');
-				x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
-				x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
-				x.edit.setFontSize("16px")
-				x.edit.setShowPrintMargin(false)
+		x.gui = x.vc('Ace')
+		if( x.edit === undefined ){
+			x.edit = ace.edit(id+'Ace');
+			x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
+			x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
+			x.edit.setFontSize("16px")
+			x.edit.setShowPrintMargin(false)
 
-				x.edit.session.on("changeAnnotation", function () {
-					var annot = x.edit.session.getAnnotations();
-					for( var i=0; i<x.listener.length; i++ ){
-						var l = Konekti.client[x.listener[i]]
-						if( l != null && l.annotation != null ) l.annotation(id, annot)
-					}             
-				});	
+			x.edit.session.on("changeAnnotation", function () {
+				var annot = x.edit.session.getAnnotations();
+				for( var i=0; i<x.listener.length; i++ ){
+					var l = Konekti.client[x.listener[i]]
+					if( l != null && l.annotation != null ) l.annotation(id, annot)
+				}             
+			});	
 
-				x.gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
-					for( var i=0; i<x.listener.length; i++ ){
-						var l = Konekti.client[x.listener[i]]
-						if( l != null && l.onkeyup!=null ) l.onkeyup(id, event)
-					}
-				})
-					      
-				x.edit.session.on('change', function(){ 
-					for( var i=0; i<x.listener.length; i++ ){
-						var l = Konekti.client[x.listener[i]]
-						if( l != null && l.onchange!=null ) l.onchange(id)
-					}
-				})
-			}    
-			
-			if(thing.initial !== undefined){
-				x.edit.setValue(thing.initial,1)
-			}
+			x.gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
+				for( var i=0; i<x.listener.length; i++ ){
+					var l = Konekti.client[x.listener[i]]
+					if( l != null && l.onkeyup!=null ) l.onkeyup(id, event)
+				}
+			})
+						
+			x.edit.session.on('change', function(){ 
+				for( var i=0; i<x.listener.length; i++ ){
+					var l = Konekti.client[x.listener[i]]
+					if( l != null && l.onchange!=null ) l.onchange(id)
+				}
+			})
+		}    
+		
+		if(thing.initial !== undefined){
+			x.edit.setValue(thing.initial,1)
+		}
 
-			if( thing.theme !== undefined && thing.theme!==null) x.edit.setTheme("ace/theme/"+thing.theme)
+		if( thing.theme !== undefined && thing.theme!==null) x.edit.setTheme("ace/theme/"+thing.theme)
 
-			if( thing.code !== undefined && thing.code != null ){
-				thing.code.cid = id
-				thing.code.mode = thing.mode
-				Konekti.plugins.ace.register(thing.code, x.edit)
-			}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
-//		}else setTimeout(function(){ x.update(thing) },200)
+		if( thing.code !== undefined && thing.code != null ){
+			thing.code.cid = id
+			thing.code.mode = thing.mode
+			Konekti.plugins.ace.register(thing.code, x.edit)
+		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
 	}
 
 	/**
@@ -360,7 +359,7 @@ if( Konekti.ace === undefined ) new AcePlugIn()
  * @param code Lexical configuration for the ace editor  
  * @param parent Parent component
  */
-Konekti.aceConfig = function(id, width, height, initial, mode, theme, code, parent){
+Konekti.aceConfig = function(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
 	return {"plugin":"ace", "id":id, "initial":initial, "mode":mode, "theme":theme, "code":code, 'width':width, 'height':height, 'parent':parent}
 }
 
@@ -375,10 +374,9 @@ Konekti.aceConfig = function(id, width, height, initial, mode, theme, code, pare
  * @param mode Mode of the ace editor
  * @param theme Theme of the ace editor
  * @param code Lexical configuration for the ace editor  
- * @param parent Parent component
  */
-Konekti.ace = function(id, width, height, initial, mode, theme, code, parent){
-	return Konekti.build(Konekti.aceConfig(id, width, height, initial, mode, theme, code, parent))
+Konekti.ace = function(id, width, height, initial, mode, theme, code){
+	return Konekti.build(Konekti.aceConfig(id, width, height, initial, mode, theme, code))
 }
 
 ACE_PATH = "https://ace.c9.io/build/src/"

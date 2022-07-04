@@ -20,14 +20,23 @@ class NavBar extends Client{
 	 */
 	constructor(config){
 		super(config)
+		this.method = config.method
+		this.client = config.client
+		this.fitRect = true
 	}
 
-	init_child(child, config){ 
-		super.init_child(child)
-		var method = config.method
-		var client = config.client || ''
+	/**
+	 * Initializes the visual component associated to the client
+	 * @param child Child to be initilized
+	 * @param config Configuration of the client
+	 */
+	 init_child(child, config){ 
+		super.init_child(child, config)
+		this.method = this.method || config.method
+		this.client = this.client || config.client || ''
 		child.plugin = child.plugin || 'btn'
-		if(child.run === undefined || child.run===null || child.run=='') child.run = {'client':client, 'method':method}
+		child.style = (child.style!='')?child.style:(config.style||this.style)
+		if(child.run === undefined || child.run===null || child.run=='') child.run = {'client':this.client, 'method':this.method}
 		return child
 	}
 	
@@ -37,35 +46,46 @@ class NavBar extends Client{
 	 */
 	html( config ){ return "<div id='"+this.id+"' class='"+config.style+" w3-bar'></div>" }   
 
-	/** Adds components to the navbar
-	 * @param arguments Components to add
-	 */
-	add(){
-		for( var i=0; i<arguments.length; i++ ) this.init_child(arguments[i])
-		Konekti.build(arguments)
-	}
-
 	/**
-	 * Insert a component into the navbar before the given component
+	 * Inserts components into the navbar before the given component
 	 * @param sister Id of the component that will be the next sister of the new component
 	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	insertBefore(sister){
+	 add(){
+		for( var i=0; i<arguments.length; i++ ) this.init_child(arguments[i])
+		var children = Konekti.build(arguments)
+		for( var i=0; i<children.length; i++ ) this.children.push(children[i])
+	}
+
+	/**
+	 * Inserts components into the navbar before the given component
+	 * @param sister Id of the component that will be the next sister of the new component
+	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
+	 * HTML element in the document with the given <i>sister</i> id
+	 */
+	 insertBefore(sister){
 		var children = []
 		for( var i=1; i<arguments.length; i++ ){
 			this.init_child(arguments[i])
 			children.push(arguments[i])
 		}
-		Konekti.build(children)
-		for( var i=0; i<children.length; i++ ) Konekti.dom.insertBefore(children[i].id, sister)
+		children = Konekti.build(children)
+		var sister_idx = this.child_index(sister)
+		for( var i=0; i<children.length; i++ ){
+			Konekti.dom.insertBefore(children[i].id, sister)
+			this.children.splice(sister_idx+i,0,children[i])
+		}
 	}
 
 	/**
 	 * Removes a component of the navbar
 	 * @param id Id of the component to remove 
 	 */
-	remove(id){ return Konekti.dom.remove(id) }
+	remove(id){ 
+		this.children.splice(this.child_index(id),1)
+		return Konekti.dom.remove(id)
+	}
 
 	/** 
 	 * Keeps the given components in the navbar and removes any other component.
@@ -96,7 +116,7 @@ if(Konekti.navbar===undefined) new NavBarPlugIn()
  * @param parent Parent component
  * @return A NavBar manager
  */
-Konekti.navbarConfig = function(id, style, btns, client, method, parent){
+Konekti.navbarConfig = function(id, style, btns, client, method, parent='KonektiMain'){
 	return {'plugin':'navbar', 'id':id, 'style':style, 'client':client, 'method':method, 'children':btns, 'parent':parent}
 }
 /**
@@ -111,6 +131,6 @@ Konekti.navbarConfig = function(id, style, btns, client, method, parent){
  * @param parent Parent component
  * @return A NavBar manager
  */
-Konekti.navbar = function(id, style, btns, client, method, parent){
-	return Konekti.build(Konekti.navbarConfig(id, style, btns, client, method, parent))
+Konekti.navbar = function(id, style, btns, client, method){
+	return Konekti.build(Konekti.navbarConfig(id, style, btns, client, method))
 }

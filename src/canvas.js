@@ -689,7 +689,7 @@ if(Konekti.canvas === undefined ) new CanvasPlugIn()
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
  * @param parent Parent component
  */
-Konekti.canvasConfig = function(id, width, height, initial, custom_commands, parent){
+Konekti.canvasConfig = function(id, width, height, initial, custom_commands, parent='KonektiMain'){
 	if( typeof initial === 'string' ) initial = JSON.parse(initial)
 	if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
 	return {'plugin':'canvas', "id":id, "custom":custom_commands, "commands":initial, 'width':width, 'height':height, 'parent':parent}
@@ -704,10 +704,9 @@ Konekti.canvasConfig = function(id, width, height, initial, custom_commands, par
  * @param height Height of the div's component
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
- * @param parent Parent component
  */
-Konekti.canvas = function(id, width, height, initial, custom_commands, parent){
-	return Konekti.build(Konekti.canvasConfig(id, width, height, initial, custom_commands, parent))
+Konekti.canvas = function(id, width, height, initial, custom_commands){
+	return Konekti.build(Konekti.canvasConfig(id, width, height, initial, custom_commands))
 }
 
 window.addEventListener("resize", Konekti.plugins.canvas.resize)
