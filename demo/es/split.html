@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Split de Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<script>
+
+Konekti.uses('header','split','youtube','iframe','ace','latex')
+
+function KonektiMain(){
+	Konekti.header('title','', 'Splits de Konekti', 3, 'w3-green')
+	Konekti.header('vsplit1','', 'Split vertical', 4, 'w3-black' )
+
+	Konekti.split('vSplit', '100%', '50%', 'col', 70, 
+		Konekti.aceConfig('aceview', '100%','100%', '<div>Dentro de un editor ACE</div>', 'html'),
+		Konekti.latexConfig('latexview', '100%', '100%', 'Cuando \\(a \\ne 0\\), existen dos soluciones para \\(ax^2 + bx + c = 0\\) y estas son $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$')
+	)
+
+	Konekti.header('hsplit2','', 'Split horizontal', 4, 'w3-black' )
+
+	Konekti.split('hSplit', '100%', '100%', 'row', 50, 
+		Konekti.iframeConfig('aIframe', '100%', '100%', 'https://wikipedia.com'),
+		Konekti.youtubeConfig('youtube', '100%', '100%', 'rPjpA4sn7yI')
+	)
+}
+
+</script>
+
+</body>
+</html>

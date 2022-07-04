@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Audio</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<div id="log" style='width:100%;height:10%'>Progreso/Eventos del Audio aparecerán aquí...</div>
+<script>
+
+Konekti.uses('header','media')
+
+class TheClient extends Client{
+	constructor(){ super('client') }
+	// Listen to audio's play button 
+	play( id ){ Konekti.vc('log').innerHTML = 'Botón de tocar presionado: ' + id }
+	// Listen to audio's pause button 
+	pause( id ){ Konekti.vc('log').innerHTML = 'Botón de pausa presionado: ' + id }
+	// Listen to audio's current position  
+	seek( id, time ){ Konekti.vc('log').innerHTML = 'Tocando audio: ' + id + ' tiempo: ' + time }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+	Konekti.header('title','', 'Audio de Konekti', 3, 'w3-green' )
+	// Connects the audio with the HTML component
+	var vd = Konekti.mp3( 'audio', 'https://www.w3schools.com/html/horse.mp3' )
+	// Adds a listener to the audio player
+	vd.addListener(client.id)
+}
+
+</script>
+
+</body>
+</html>

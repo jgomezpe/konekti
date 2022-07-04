@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Botón de Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<div id="log" style='width:100%'>El botón seleccionado aparecerá aquí...</div>
+
+<script>
+
+Konekti.uses('btn','header')
+
+/* When the Run button is selected*/
+function run(){ Konekti.vc("log").innerHTML =  'Botón de ejecutar fue seleccionado' }
+
+/* Client is defined */
+class TheClient{
+	constructor(){ Konekti.client['client'] = this }
+	/* When a button is redirected to a client method (select) */
+	select(optId){ Konekti.vc("log").innerHTML =  'Botón seleccionado '+ optId + ':' + Konekti.vc(optId).innerHTML; }
+	/* When the Play button is selected (id=btn1) */
+	btn1(){ Konekti.vc("log").innerHTML =  'Botón de tocar seleccionado'; }
+	/* When the Try-me button is selected (id=btn2) */
+	btn2(){ Konekti.vc("log").innerHTML =  'Botón de Prueba-me seleccionado'; }
+	/* When the peace button is seletected (id=btn3) */
+	btn3(){ Konekti.vc("log").innerHTML =  'Botón de paz seleccionado'; }
+}
+
+/* Konekti's main function*/
+function KonektiMain(){
+	/* Client that will answer to buttons */
+	var client = new TheClient()
+	/* Connecting components */
+	Konekti.header('title','fa-gavel','Botones Konekti', 2, 'w3-green' )
+	Konekti.header('header1', 'fa-smile-o', 'Solamente ícono', 4, 'w3-black' )
+	Konekti.btn('btn1','fa-play', '', {'client':'client'}, 'w3-blue-gray w3-large', 'Botón de tocar' )
+	Konekti.header('header2', 'fa-font', 'Solamente texto', 4, 'w3-black' )
+	Konekti.btn('btn2','', 'Prueba-me', {'client':'client'}, 'w3-red w3-large')
+	Konekti.header('header3','fa-object-group', 'Ícono y texto', 4, 'w3-black' )
+	Konekti.btn('btn3','fa-hand-peace-o', 'Paz', {'client':'client'}, 'w3-blue-gray w3-large')
+	Konekti.header('header4', 'fa-rocket', 'Ejecutando una función específica (run)', 4, 'w3-black' )
+	Konekti.btn('btn4',"fa-bullseye", "Ejecutar","run()", 'w3-yellow w3-large')
+	Konekti.header('header5','fa-plug', 'Ejecutando un método específico del cliente (select)', 4, 'w3-black' )
+	Konekti.btn('btn5',"fa-car", 'Carro', {"client":"client","method":"select"}, 'w3-blue-gray w3-large')
+	Konekti.btn('btn6',"fa-plane", 'Avión', {"client":"client","method":"select"}, 'w3-blue-gray w3-large')
+}
+
+</script>
+
+</body>
+</html>

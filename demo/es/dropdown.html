@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti Drop down</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<div id="log" style='width:100%'>La opción seleccionada aparecerá aquí...</div>
+
+<script>
+
+Konekti.uses('header','dropdown')
+
+class TheClient extends Client{
+	constructor(){ super({'id':'client'}) }
+	language(optId){ Konekti.vc("log").innerHTML =  'Lenguaje: '+ optId; }
+	edit(optId){ Konekti.vc("log").innerHTML =  'Edición: '+ optId; }
+	media(optId){ Konekti.vc("log").innerHTML =  'Medio: '+ optId; }
+}
+
+function KonektiMain(){
+	var client = new TheClient()
+
+	Konekti.header('title','', 'Dropdown (despleglable hacia abajo) de Konekti', 3, 'w3-green' )
+	Konekti.dropdown( "dd1", "fa-edit", "Editar", 'w3-blue-grey w3-xlarge', 'Opciones de edición', [
+			Konekti.btnConfig("copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Copiando"), 
+			Konekti.btnConfig("cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Cortando"), 
+			Konekti.btnConfig("paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Pegando")
+		] 
+	)
+
+	Konekti.dropdown( "dd2", "fa-film", "Medio", 'w3-orange w3-large', 'Opciones de medios',[
+			Konekti.btnConfig("video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Video"), 
+			Konekti.btnConfig("audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Audio")
+		] 
+	)
+
+	Konekti.dropdownList( "dd3", "fa-language", "Idioma", 'w3-red w3-medium', 'Seleccionando idioma', ["English", "Español"], {"client":'client', "method":"language"})
+}
+
+</script>
+
+</body>
+</html>

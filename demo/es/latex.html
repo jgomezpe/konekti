@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Latex en Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+
+</head>
+
+<body>
+
+<script>
+
+Konekti.uses('header','latex','btn','ace')
+
+function run(){
+	Konekti.client['latex'].setText( Konekti.client['coder'].getText() )
+}
+
+function KonektiMain(){
+	
+	var initial = 'Cuando \\(a \\ne 0\\), existen dos soluciones para \\(ax^2 + bx + c = 0\\) que son $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$'
+
+	Konekti.header('title','', 'Componente Latex de Konekti usando MatJax', 3, 'w3-green')
+	Konekti.header('hlatex','fa-subscript', 'Latex', 4, 'w3-black' )
+	Konekti.latex( 'latex', '100%', '40%', initial )
+	Konekti.btn('btn',"fa-play", "Compilar","run()",'w3-blue-gray w3-bar-item w3-large',"Compila latex")
+	Konekti.ace('coder', '100%', '40%', initial, 'latex')
+
+}
+
+</script>
+
+</body>
+</html>
