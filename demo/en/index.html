@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Konekti</title>
-	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+	<script type='text/javascript' src='../../src/konekti.js'></script> 
 </head>
 
 <body>
@@ -24,6 +24,7 @@
 					Konekti.resource.load('https://jgomezpe.github.io/konekti/demo/en/'+page+'.html', function(txt){
 						Konekti.client['coder'].setText(txt) 
 						Konekti.client['viewer'].setText(txt)
+						Konekti.resize()
 					})
 				}
 			}
@@ -38,7 +39,7 @@
 		function KonektiMain(){
 			var client = new KMain()
 
-			var toc = Konekti.tocConfig({ "id": "index", "caption":"Home", "client":"client", "width":"100%", "children":[
+			var toc = Konekti.tocConfig({ "id": "home", "caption":"Home", "client":"client", "width":"100%", "children":[
 				{"id":"ace", "icon":"fa fa-file-text-o", "caption": "Ace Editor"},
 				{"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Button"},
 				{"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
@@ -61,7 +62,7 @@
 			]}, 4, '', {'client':'client', 'method':'select'},true)
 
 			var btn=[
-				Konekti.btnConfig("play", "fa-play", '', '', "w3-blue-grey", "Run"),
+				Konekti.btnConfig("run", "fa-play", '', {'client':'client','method':'run'}, "w3-blue-grey", "Run"),
 				Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-red ', 'Language', [
 						{'id':'en', 'caption':"English"}, 
 						{'id':'es','caption':"Español"}], 
