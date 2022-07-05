@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A button is connected to a html component using method:<br><i>Konekti.btn(id, icon='', caption='', onclick={'client':'client'}, style='w3-bar-item w3-xlarge', title='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the button</td></tr><tr><td>icon</td><td>Button icon (<a href='https://www.w3schools.com/icons/fontawesome_icons_intro.asp' target='_blank'>Font Awesome</a>)</td></tr><tr><td>caption</td><td>Button text</td></tr><tr><td>onclick</td><td>Method to run when button is selected</td></tr><tr><td>style</td><td>Button style (<a href='https://www.w3schools.com/w3css/w3css_buttons.asp' target='_blank'>w3css</a>)</td></tr><tr><td>title</td><td>Tooltip</td></tr></table>"
-}

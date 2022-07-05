@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A latex component (<a href='https://www.mathjax.org/' target='_blank'>MathJax</a>) is connected to a html component using method:<br><i>Konekti.latex(id, tex='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the latex code</td></tr><tr><td>tex</td><td>Initial latex code to be rendered.</td></tr></table>"
-}

@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Barra de navegación (de botones) se conecta a un component html usando el siguiente método:<br><i>Konekti.navbar(id, btns=[], client='client', method='select', style='w3-blue-grey w3-xlarge')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML a asociar con la barra de navegación</td></tr><tr><td>btns</td><td>Botones mantenidos por la barra de navegación</td></tr><tr><td>client</td><td>Objeto que responderá a la selección de botones (si no es definido por el botón)</td></tr><tr><td>method</td><td>Método del objeto que responderá a la selección de botones (si no es definido por el botón)</td></tr><tr><td>style</td><td>Estilo de la barra de navegación (<a href='https://www.w3schools.com/w3css/w3css_navigation.asp' target='_blank'>w3css</a>)</td></tr></table>"
-}

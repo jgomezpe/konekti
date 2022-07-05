@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un <a href='https://ace.c9.io/' target='_blank'>Editor ACE</a> se conecta a un componente HTML usando el método:<br><i>Konekti.ace(id, initial, mode, theme, code)</i><br><table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente html con el que se asocia el editor</td></tr><tr><td>initial</td><td>Texto inicial del componente.</td></tr><tr><td>mode</td><td><a href='https://ace.c9.io/#nav=higlighter' target='_blank'>Mode</a> del editor</td></tr><tr><td>mode</td><td><a href='https://ace.c9.io/build/kitchen-sink.html' target='_blank'>Tema</a> del editor</td></tr><td>code</td><td>Configuración léxica para el editor.</td></tr></table>"
-}

@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un botón se conecta a un componente html mediante la función:<br><i>Konekti.btn(id, icon='', caption='', onclick={'client':'client'}, style='w3-bar-item w3-xlarge', title='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el botón</td></tr><tr><td>icon</td><td>Icono del botón (<a href='https://www.w3schools.com/icons/fontawesome_icons_intro.asp' target='_blank'>Font Awesome</a>)</td></tr><tr><td>caption</td><td>Texto asociado al botón</td></tr><tr><td>onclick</td><td>Método a ejecutar cuando se selecciona el botón</td></tr><tr><td>style</td><td>Estilo del botón (<a href='https://www.w3schools.com/w3css/w3css_buttons.asp' target='_blank'>w3css</a>)</td></tr><tr><td>title</td><td>Ayuda rápida del botón</td></tr></table>"
-}

@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"An iframe component is connected to a html component using method:<br><i>Konekti.iframe(id, url='')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the iframe</td></tr><tr><td>url</td><td>Url/code for the iframe component</td></tr></table>"
-}

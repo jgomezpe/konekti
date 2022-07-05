@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un encabezado se conecta a un componente html usando el método:<br><i>Konekti.header(id, icon='', caption='', h=3, style='w3-center w3-blue')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML a asociar con el encabezado</td></tr><tr><td>icon</td><td>Icono del encabezado(<a href='https://www.w3schools.com/icons/fontawesome_icons_intro.asp' target='_blank'>Font Awesome</a>)</td></tr><tr><td>caption</td><td>Texto del encabezado</td></tr><tr><td>h</td><td>Tamaño del encabezado</td></tr><tr><td>style</td><td>Estilo del encabezado (<a href='https://www.w3schools.com/w3css/w3css_panels.asp' target='_blank'>w3css</a>)</td></tr></table>"
-}

@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A tree is connected to a html component using method:<br><i>Konekti.tree(id, t, client='client', expand='fa fa-angle-right', shrink='fa fa-angle-down', inneroptions=null, leaf='', leafoptions=null video )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the tree</td></tr><tr><td>t</td><td>Tree</td></tr><tr><td>client</td><td>Client listening to the tree selections</td></tr><tr><td>expand</td><td>Expand icon for inner nodes</td></tr><tr><td>shrink</td><td>Shrink icon for inner nodes</td></tr><tr><td>inneroptions</td><td>Extra operations for inner nodes</td></tr><tr><td>leaf</td><td>Leaf nodes icon</td></tr><tr><td>leafoptions</td><td>Extra operations for leaf nodes</td></tr></table>"
-}

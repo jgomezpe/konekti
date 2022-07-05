@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A split component is connected to a html component using method:<br><i>Konekti.split(id, type='col', percentage=50)</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the split component</td></tr><tr><td>type</td><td>Type of split, 'col':Vertical, 'hor':Horizontal.</td></tr><tr><td>percentage</td><td>Percentage of the first subcomponent relative to the component's size.</td></tr><tr><td>one</td><td>Left/Top component.</td></tr><tr><td>two</td><td>Right/Bottom component.</td></tr></table>"
-}

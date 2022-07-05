@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un canvas se conecta a un componente html usando el método:<br><i>Konekti.canvas(id, initial={}, custom={})</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente con el que se asocia el canvas</td></tr><tr><td>initial</td><td>Conjunto inicial de comandos a ejecutar (como un objeto JSON o version cadena de objeto)</td></tr><tr><td>custom_commands</td><td>Conjunto de comandos ajsutados para el canvas (como un objeto JSON o version cadena de objeto)</td></tr></table>"
-}

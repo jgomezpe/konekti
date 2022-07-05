@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A header is connected to a html component using function:<br><i>Konekti.header(id, icon='', caption='',  h=3, style='w3-center w3-blue')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the button</td></tr><tr><td>icon</td><td>Header icon (<a href='https://www.w3schools.com/icons/fontawesome_icons_intro.asp' target='_blank'>Font Awesome</a>)</td></tr><tr><td>caption</td><td>Header text</td></tr><tr><td>h</td><td>Header Size</td></tr><tr><td>style</td><td>Header style (<a href='https://www.w3schools.com/w3css/w3css_panels.asp' target='_blank'>w3css</a>)</td></tr></table>"
-}

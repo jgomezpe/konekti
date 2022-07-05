@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un componente división se conecta a un componente gráfico html usando el método:<br><i>Konekti.split(id, type='col', percentage=50)</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML a asociar con el componente divisor</td></tr><tr><td>type</td><td>Tipo de divisor, 'col':Vertical, 'hor':Horizontal.</td></tr><tr><td>percentage</td><td>Porcentaje del primer subcomponente relativo al tamaño del componente divisor.</td></tr><tr><td>one</td><td>Componente izquierdo/arriba.</td></tr><tr><td>two</td><td>Componente derecho/abajo.</td></tr></table>"
-}

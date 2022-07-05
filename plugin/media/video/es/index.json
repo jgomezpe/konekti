@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un video se conecta a un componente html usando uno de los siguientes métodos:<br><i>Konekti.media(id, media, type, src)</i><br><i>Konekti.video(id, type, src)</i><br><i>Konekti.mp4(id, src)</i><br><table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el video</td></tr><tr><td>media</td><td>Tipo de medio (se fija en 'video' para videos)</td></tr><tr><td>type</td><td>Tipo de video</td></tr><tr><td>src</td><td>URL del video</td></tr></table>"
-}

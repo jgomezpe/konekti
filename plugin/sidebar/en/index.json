@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"A side bar is connected to a html component using method:<br><i>Konekti.sidebar(id, width='200px', height='100%')</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Attribute</th><th>Description</th></tr><tr><td>id</td><td>HTML component to associate with the side bar</td></tr><tr><td>width</td><td>Width of the side bar</td></tr><tr><td>side</td><td>Side component configuration</td></tr><tr><td>main</td><td>Main component configuration</td></tr><tr><td>navbar</td><td>Navigation bar configuration</td></tr></table>"
-}

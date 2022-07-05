@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un video de youtube se conecta a un componente html usando el método:<br><i>Konekti.youtube(id, video )</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente gráfico con el que se asocia el video</td></tr><tr><td>video</td><td>Id del video de Youtube</td></tr></table>"
-}

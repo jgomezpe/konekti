@@ -1,4 +1,0 @@
-{
- "id":"info",
-	"initial":"Un componente hcf (Encabezado/Contenido/Pie) se conecta a un componente html usando el método:<br><i>Konekti.hcf(id, content, header={}, footer={})</i><br> <table class='w3-table w3-bordered w3-striped w3-border'><tr><th style='width:170px'>Atributo</th><th>Descripción</th></tr><tr><td>id</td><td>Componente HTML para el contenedor hcf</td></tr><tr><td>content</td><td>Componente de contenido</td></tr><tr><td>header</td><td>Componente de encabezado</td></tr><tr><td>footer</td><td>Componente de pie</td></tr></table>"
-}
