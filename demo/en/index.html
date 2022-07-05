@@ -64,13 +64,13 @@
 
 			var btn=[
 				Konekti.btnConfig("run", "fa-play", '', {'client':'client','method':'run'}, "w3-blue-grey", "Run"),
-				Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-red ', 'Language', [
+				Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-blue-grey', 'Language', [
 						{'id':'en', 'caption':"English"}, 
 						{'id':'es','caption':"Español"}], 
 					{"client":'client', "method":"language"}
 				)
 			]
-			var navbar = Konekti.navbarConfig('main-navbar', '', btn, 'client', 'select' ) 
+			var navbar = Konekti.navbarConfig('main-navbar', 'w3-blue-grey', btn, 'client', 'select' ) 
 
 			var control = Konekti.splitConfig('coderviewer', '100%', 'rest', 'col', 50, 
 				Konekti.aceConfig('coder', '100%','100%', '', 'html'),
