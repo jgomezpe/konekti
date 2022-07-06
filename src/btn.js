@@ -34,6 +34,15 @@ class Btn extends Client{
 		config.config = " title='"+title+"' class='w3-button "+config.style+"' onclick='"+run+"'"
 		return super.html(config)
 	}
+	
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param config Item configuration
+	 */
+	 update(config){
+		Konekti.client[this.id+'Item'].update(config)
+		if( config.title !== undefined ) this.vc().title = config.title
+	}
 }
 
 /** Creates and registers the button plugin */
