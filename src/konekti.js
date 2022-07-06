@@ -710,6 +710,16 @@ class Item extends Client{
 	 * @param config Client configuration
 	 */
 	html( config ){ return "<i id='"+this.id+"' class='fa "+config.icon+"'> "+config.caption+"</i>" }   
+	
+	/**
+	 * Sets a component's attribute to the given value 
+	 * @param config Item configuration
+	 */
+	update(config){
+		var c = this.vc()
+		if( config.caption !== undefined ) c.nextSibling.data = " "+config.caption
+		if( config.icon !== undefined ) c.className = config.icon
+	}
 }
 
 /**
