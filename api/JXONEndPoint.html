@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: MediaClient</title>
+    <title>JSDoc: Class: JXONEndPoint</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: MediaClient</h1>
+    <h1 class="page-title">Class: JXONEndPoint</h1>
 
     
 
@@ -28,9 +28,9 @@
 
 <header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>MediaClient<span class="signature">(config)</span><span class="type-signature"></span></h2>
+        <h2><span class="attribs"><span class="type-signature"></span></span>JXONEndPoint<span class="signature">(url, jxon, method)</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">A media manager.</div>
+            <div class="class-description">End point based on sending/receiving JXON objects.</div>
         
     
 </header>
@@ -45,7 +45,7 @@
     
 
     
-    <h4 class="name" id="MediaClient"><span class="type-signature"></span>new MediaClient<span class="signature">(config)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="JXONEndPoint"><span class="type-signature"></span>new JXONEndPoint<span class="signature">(url, jxon, method)</span><span class="type-signature"></span></h4>
     
 
     
@@ -53,7 +53,7 @@
 
 
 <div class="description">
-    Creates a media client with the given id/client information, and registers it into the Konekti framework
+    Creates a web server end-point
 </div>
 
 
@@ -79,6 +79,8 @@
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -89,7 +91,7 @@
 
         <tr>
             
-                <td class="name"><code>config</code></td>
+                <td class="name"><code>url</code></td>
             
 
             <td class="type">
@@ -99,8 +101,60 @@
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last">Media configuration</td>
+            <td class="description last">End-point's URL</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>jxon</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><i>true</i> If the server uses JXON objects, <i>false</i> if uses JSON objects.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                    POST
+                
+                </td>
+            
+
+            <td class="description last">Optional 'GET' or 'POST' method to use. If not provided, the end-point will use 'POST'.</td>
         </tr>
 
     
@@ -141,7 +195,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="konekti.js.html">konekti.js</a>, <a href="konekti.js.html#line568">line 568</a>
+        <a href="finapunkto.js.html">finapunkto.js</a>, <a href="finapunkto.js.html#line72">line 72</a>
     </li></ul></dd>
     
 
@@ -188,318 +242,6 @@
 
     
 
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Pauses the media component
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="konekti.js.html">konekti.js</a>, <a href="konekti.js.html#line578">line 578</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="play"><span class="type-signature"></span>play<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Plays the media component
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="konekti.js.html">konekti.js</a>, <a href="konekti.js.html#line583">line 583</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="seek"><span class="type-signature"></span>seek<span class="signature">(time)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Locates the media component at the given time
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>time</code></td>
-            
-
-            <td class="type">
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Time position for the media component</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="konekti.js.html">konekti.js</a>, <a href="konekti.js.html#line589">line 589</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     
 
     
