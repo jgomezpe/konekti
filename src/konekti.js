@@ -717,7 +717,7 @@ class Item extends Client{
 	 */
 	update(config){
 		var c = this.vc()
-		if( config.caption !== undefined ) c.nextSibling.data = " "+config.caption
+		if( config.caption !== undefined ) c.innerHTML = " "+config.caption
 		if( config.icon !== undefined ) c.className = config.icon
 	}
 }
