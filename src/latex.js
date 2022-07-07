@@ -39,7 +39,7 @@ class Latex extends Editor{
 	 * Gets current latex code in the component
 	 * @return Current latex code in the component
 	 */
-	getText(){ return this.gui.getAttribute('initial') }
+	getText(){ return this.initial }
 
 	/**
 	 * Sets latex code for the latex component
