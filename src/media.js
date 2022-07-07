@@ -76,8 +76,12 @@ class Media extends MediaClient{
 	 * @param config Client configuration
 	 */
 	html( config ){ 
-		return "<"+config.media+" id='"+this.id+"' controls><source src='"+config.src+"' type='"+config.media+"/"+config.type+"'>Your browser does not support the audio element.</"+config.media+">" 
-	}	
+		return "<"+config.media+" id='"+this.id+"' controls><source id='"+this.id+"Src' src='"+config.src+"' type='"+config.media+"/"+config.type+"'>Your browser does not support the audio element.</"+config.media+">" 
+	}
+	
+	update( src ){
+		this.vc('Src').src = src
+	}
 }
 
 /** Media class */
