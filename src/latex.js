@@ -33,7 +33,7 @@ class Latex extends Editor{
 	 * Associated html code
 	 * @param config Client configuration
 	 */
-	html( config ){ return "<div id='"+this.id+"' style='overflow:auto'><div id='"+this.id+"content' style='padding:8px;'></div></div>" }
+	html( config ){ return "<div id='"+this.id+"'><div id='"+this.id+"content' style='padding:8px;overflow:auto;'></div></div>" }
 
 	/**
 	 * Gets current latex code in the component
