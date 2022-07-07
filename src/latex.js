@@ -25,15 +25,15 @@ class Latex extends Editor{
 	constructor(config){
 		super(config) 
 		this.gui = this.vc()
-		this.innergui = this.vc('content')
-		this.setText(config.initial)
+		this.initial = config.initial || ''
+		this.setText(this.initial)
 	}
 
 	/**
 	 * Associated html code
 	 * @param config Client configuration
 	 */
-	html( config ){ return "<div id='"+this.id+"'><div id='"+this.id+"content' style='padding:8px;overflow:auto;'></div></div>" }
+	html( config ){ return "<div id='"+this.id+"' style='padding:8px;overflow:auto;'></div>" }
 
 	/**
 	 * Gets current latex code in the component
@@ -47,8 +47,8 @@ class Latex extends Editor{
 	 */
 	setText(tex){
 		if( tex === undefined || tex===null) text=''
-		this.gui.setAttribute('initial', tex)
-		var output = this.innergui
+		this.initial = tex
+		var output = this.vc()
 		var tout = null
 		function set(){
 			if(window.MathJax!==undefined){
