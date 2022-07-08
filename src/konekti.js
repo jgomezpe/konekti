@@ -148,6 +148,56 @@ class DOM{
 	constructor(){}
 
 	/**
+	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
+	 * For example, if <i>str='lorem ·X· dolor ·haha· amet'</i>, <i>c='·'</i> and <i>dictionary={'X':'ipsum', 'haha':'sit' }
+	 * then this method will return the string <i>lorem ipsum dolor sit amet'</i>
+	 * @param str Template used for generating the String
+	 * @param dictionary Set of pairs <i>(TAG,value)</i> used for replacing each <i>TAG</> by its corresponding <i>value</i>
+	 * @param c Enclosing tag character
+	 * @return A String from a template by replacing the set of tags with their associated values. 
+	 */
+	fromTemplate(str, dictionary, c){
+		if( c===undefined ) c = String.fromCharCode(183)
+		var x = str.split(c)
+		var state = 0
+		var res = ""
+	  	var tag = ''
+		for( var i = 0; i<x.length; i++ ){
+			switch( state ){
+				case  0:
+					res += x[i]
+					state = 1
+				break;
+				case 1:
+					if( x[i].length > 0 ){
+						tag = x[i]
+						state = 2
+					}else{
+						res += c
+						state = 0
+					}
+				break;
+			    	case 2:
+				    	if( x[i].length > 0 || i==x.length-1 ){
+						if( typeof dictionary[tag] === 'undefined' ) res += tag
+						else if( typeof dictionary[tag] === 'string' ) res += dictionary[tag]
+						else res += JSON.stringify(dictionary[tag])
+						res += x[i]
+						state = 1
+					}else{
+			    			tag += c
+						state = 3
+					}                
+				break;
+				case 3:
+					if( x[i].length > 0 ) tag += x[i]
+						state = 2
+			}
+		}
+		return res
+	}
+
+	/**
 	 * Creates a url from a http response
 	 * @param response Response provided by the http connection
 	 * @return A URL version of the provided response
