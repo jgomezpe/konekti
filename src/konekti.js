@@ -673,13 +673,13 @@ class DivClient extends Editor{
 	 * Gets current html code in the div component
 	 * @return Current html code in the div component
 	 */
-	getText(){ return this.gui.innerHTML }
+	getText(){ return this.vc().innerHTML }
 
 	/**
 	 * Sets html code for the div component
 	 * @param txt Html code to set in the div component
 	 */
-	setText(txt){ this.gui.innerHTML = txt }	  
+	setText(txt){ this.vc().innerHTML = txt }	  
 }
 
 /** Konekti Div PlugIn */
