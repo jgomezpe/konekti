@@ -438,10 +438,12 @@ class Client{
 			var h = 0
 			var w = 0
 			var p = Konekti.client[this.parent]
-			for(var i=0; i<p.children.length-1; i++){
-				var r = p.children[i].vc().getBoundingClientRect()
-				h += r.height
-				w += r.width
+			for(var i=0; i<p.children.length; i++){
+				if( p.children[i] != this ){
+					var r = p.children[i].vc().getBoundingClientRect()
+					h += r.height
+					w += r.width
+				}
 			}
 			if(setWidth) return size - w
 			else return size - h
