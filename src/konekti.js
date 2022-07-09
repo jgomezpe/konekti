@@ -70,7 +70,7 @@ class Resource{
 	 */
 	JSON(id, callback){
 		function back(json){ if(callback !== undefined) callback((json!=null)?JSON.parse(json):null) }
-		this.load(id+'.json', back) 
+		this.load(id, back) 
 	}
 
 	/**
