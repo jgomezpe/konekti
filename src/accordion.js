@@ -1,4 +1,4 @@
-Konekti.uses('header')
+Konekti.load('header')
 
 /** Konekti Plugin for Accordion components */
 class AccordionPlugIn extends PlugIn{
