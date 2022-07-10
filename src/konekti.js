@@ -249,6 +249,30 @@ class DOM{
 		var p = s.parentElement
 		if( p!==undefined && p!==null) p.insertBefore( e, s )
 	}
+		
+	/**
+	 * Sets an URL search parameter to a given value
+	 * @param param Parameter's id
+	 * @param value Value for the parameter 
+	 */
+	setURLSearchParam( param, value ){
+		var urlParams = new URLSearchParams(window.location.search)
+		urlParams.set(param, value)
+		history.replaceState(null, null, "?"+urlParams.toString())
+	}
+	
+	/**
+	 * Gets the user language (given by the navigator or as URL search parameter
+	 * @param general If removes language specific domain or not
+	 * @return Users language
+	 */
+	getUserLanguage( general=true ){
+		var urlParams = new URLSearchParams(window.location.search)
+		var lang = urlParams.get('lang')
+		if( lang === undefined || lang === null ) lang = window.navigator.language
+		if( general ) lang = lang.split('-')[0]
+		return lang
+	}
 }
 
 /**
