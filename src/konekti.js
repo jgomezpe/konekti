@@ -303,6 +303,7 @@ class KonektiAPI{
 		this.client = {}
 		this.resource = new Resource()
 		this.plugins = {}
+		this.plugins_callback = null
 		this.loading = 0
 		this.root = new MainClient()
 		this.path = "https://jgomezpe.github.io/konekti/src/"
@@ -357,17 +358,15 @@ class KonektiAPI{
 		var x = this
 		var n = arguments.length
 		var args = arguments
-		var callback = null
-		if(n>0 && typeof args[n-1] !== 'string'){
-			n--
-			callback = args[n]
-		}
 		
 		x.loading += n
 		
 		function plugin_back(){
 			x.loading--
-			if(x.loading==0 && callback!=null) callback()
+			if(x.loading==0 && x.plugins_callback!=null){
+				x.pligins_callback()
+				x.plugins_callback = null
+			}	
 		}
 		
 		for( var i=0; i<n; i++ ){
@@ -381,13 +380,14 @@ class KonektiAPI{
 	 * @param plugins An array of plugin ids
 	 */
 	uses(){ 
-		if(typeof arguments[arguments.length-1] === 'string' && KonektiMain !== undefined ) 
-			this.load(...arguments, function(){ 
-					KonektiMain()
-					Konekti.root.setParentSize(window.innerWidth, window.innerHeight)
-				}
-			) 
-		else this.load(...arguments)
+		var args = arguments
+		var n = arguments.length-1
+		if(typeof arguments[n] === 'function' ){
+			args = []
+			for (i = 0; i<n; i++) args[i] = arguments[i]
+			this.plugins_callback = arguments[n]
+		}
+		this.load(...args)
 	}
 	
 	/**
