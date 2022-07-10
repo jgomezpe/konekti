@@ -364,7 +364,7 @@ class KonektiAPI{
 		function plugin_back(){
 			x.loading--
 			if(x.loading==0 && x.plugins_callback!=null){
-				x.pligins_callback()
+				x.plugins_callback()
 				x.plugins_callback = null
 			}	
 		}
