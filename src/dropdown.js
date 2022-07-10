@@ -1,4 +1,4 @@
-Konekti.uses('btn')
+Konekti.load('btn')
 
 /** Konekti Plugin for DropDown components */
 class DropDownPlugIn extends PlugIn{
