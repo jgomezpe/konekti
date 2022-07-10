@@ -262,6 +262,19 @@ class DOM{
 	}
 	
 	/**
+	 * Gets an URL search parameter
+	 * @param param Parameter's id
+	 * @param default_value Default value for the parameter 
+	 * @return Value of the URL search parameter
+	 */
+	getURLSearchParam( param, default_value ){
+		var urlParams = new URLSearchParams(window.location.search)
+		var value = urlParams.get(param)
+		if( value === undefined || value === null ) value = default_value
+		return value			
+	}
+	
+	/**
 	 * Gets the user language (given by the navigator or as URL search parameter
 	 * @param general If removes language specific domain or not
 	 * @return Users language
