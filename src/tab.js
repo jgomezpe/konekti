@@ -1,4 +1,4 @@
-Konekti.uses('navbar')
+Konekti.load('navbar')
 /** Konekti Plugin for tab components */
 class TabPlugIn extends PlugIn{
 	/** Creates a Plugin for tab components */
