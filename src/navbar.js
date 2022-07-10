@@ -1,4 +1,4 @@
-Konekti.uses('btn')
+Konekti.load('btn')
 
 /** Konekti Plugin for navigation (buttons) bar components */
 class NavBarPlugIn extends PlugIn{
