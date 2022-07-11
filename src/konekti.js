@@ -385,8 +385,14 @@ class KonektiAPI{
 		if(typeof arguments[n] === 'function' ){
 			args = []
 			for (i = 0; i<n; i++) args[i] = arguments[i]
-			this.plugins_callback = arguments[n]
-		}else if( KonektiMain !== undefined ) this.plugins_callback = KonektiMain
+			this.plugins_callback = function(){
+				arguments[n]()
+				Konekti.resize()
+			}	
+		}else if( KonektiMain !== undefined ) this.plugins_callback = function(){
+			KonektiMain()
+			Konekti.resize()
+		}
 		this.load(...args)
 	}
 	
