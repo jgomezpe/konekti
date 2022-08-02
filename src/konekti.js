@@ -721,10 +721,23 @@ class DivClient extends Editor{
 	getText(){ return this.vc().innerHTML }
 
 	/**
-	 * Sets html code for the div component
-	 * @param txt Html code to set in the div component
+	 * Sets html code/on demand konekti components for the div component
+	 * @param txt Html code/konekti components to set in the div component
 	 */
-	setText(txt){ this.vc().innerHTML = txt }	  
+	setText(txt){ 
+		this.children = []
+		if( typeof txt == 'string' ) this.vc().innerHTML = txt 
+		else{		
+			this.vc().innerHTML = ''
+			var config = txt
+			function callback(){
+				for( var i=0; i<config.children.length; i++ ) config.children[i] = this.init_child(config.children[i], config)
+				this.children = Konekti.build(config.children)
+			}
+			if( config.load !== undefined && config.load !== null ) Konekti.uses(...config.load, callback)
+			else callback()
+		}
+	}	  
 }
 
 /** Konekti Div PlugIn */
