@@ -129,7 +129,8 @@ Konekti.tocConfig = function(tree, h, style, onclick, open, parent='KonektiMain'
 		}
 	}
 	var item = Konekti.accordionConfig(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
-	item.expand = onclick
+	tree.action = tree.action || true
+	item.expand = tree.action?onclick:function(id){}
 	return item
 }
 
