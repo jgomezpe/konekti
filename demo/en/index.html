@@ -19,6 +19,7 @@
 
 			select(page){
 				if(page=='api') window.open("https://numtseng.com/api/konekti/")
+				else if(page=='github') window.open("https://github.com/jgomezpe/konekti/")
 				else if( this.page != page ){			
 					this.page = page
 					var url = 'https://jgomezpe.github.io/konekti/demo/en/'+page+'.html'
@@ -59,6 +60,7 @@
 				{"id":"tab", "icon":"fa fa-clone", "caption": "Tab"},
 				{"id":"accordion", "icon":"fa fa-sitemap", "caption": "Accordion"},
 				{"id":"youtube", "icon":"fa fa-youtube", "caption": "Youtube"},
+				{"id":"github", "icon":"fa-github", "caption": "Source code"},
 				{"id":"api", "caption": "API"}
 			]}, 4, '', {'client':'client', 'method':'select'},true)
 
