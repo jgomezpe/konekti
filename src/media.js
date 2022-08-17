@@ -81,6 +81,7 @@ class Media extends MediaClient{
 	
 	update( src ){
 		this.vc('Src').src = src
+		this.vc().load()
 	}
 }
 
