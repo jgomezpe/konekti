@@ -54,8 +54,9 @@ class IFrameEditor extends Editor{
 			const blob = new Blob([code], {type})
 			return URL.createObjectURL(blob)
 		}*/
-    
-		this.vc().src = this.getBlobURL(txt, 'text/html')
+    		if( !config.src.startsWith('https://') ){
+			this.vc().src = this.getBlobURL(txt, 'text/html')
+		}else{ this.vc().src = txt }
 	}
 }
 
