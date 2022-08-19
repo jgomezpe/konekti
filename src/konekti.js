@@ -69,8 +69,9 @@ class Resource{
 	 * @param callback Function that will be called if the JSON was loaded
 	 */
 	JSON(id, callback){
-		function back(json){ if(callback !== undefined) callback((json!=null)?JSON.parse(json):null) }
-		this.load(id, back) 
+		//function back(json){ if(callback !== undefined) callback((json!=null)?JSON.parse(json):null) }
+		//this.load(id, back) 
+		fetch(id).then((response) => response.json()).then((json) => callback(json))
 	}
 
 	/**
