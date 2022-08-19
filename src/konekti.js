@@ -66,12 +66,21 @@ class Resource{
 	/**
 	 * Loads a JSON resource (if possible)
 	 * @param id JSON id
-	 * @param callback Function that will be called if the JSON was loaded
+	 * @param callback Function that will be called if the JSON is loaded
 	 */
 	JSON(id, callback){
 		//function back(json){ if(callback !== undefined) callback((json!=null)?JSON.parse(json):null) }
 		//this.load(id, back) 
 		fetch(id).then((response) => response.json()).then((json) => callback(json))
+	}
+
+	/**
+	 * Loads a text resource (if possible)
+	 * @param id text_URL id
+	 * @param callback Function that will be called if the text file is loaded
+	 */
+	TXT(id, callback){
+		fetch(id).then((response) => response.text()).then((txt) => callback(txt))
 	}
 
 	/**
