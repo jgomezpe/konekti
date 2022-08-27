@@ -740,9 +740,10 @@ class DivClient extends Editor{
 		else{		
 			this.vc().innerHTML = ''
 			var config = txt
+			var x = this
 			function callback(){
-				for( var i=0; i<config.children.length; i++ ) config.children[i] = this.init_child(config.children[i], config)
-				this.children = Konekti.build(config.children)
+				for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
+				x.children = Konekti.build(config.children)
 			}
 			if( config.load !== undefined && config.load !== null ) Konekti.uses(...config.load, callback)
 			else callback()
