@@ -316,7 +316,7 @@ class KonektiAPI{
 		this.plugins_callback = null
 		this.loading = 0
 		this.root = new MainClient()
-		this.path = "https://jgomezpe.github.io/konekti/src/"
+		this.konektipath = "https://jgomezpe.github.io/konekti/src/"
 		this.dom = new DOM(this)
 		
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
@@ -344,6 +344,34 @@ class KonektiAPI{
 			}	
 			return plugs
 		}else return this.plugins[components.plugin].client(components)
+	}
+	
+	/**
+	 *
+	 * @param components Konekti components to load and build (bootstrap)
+	 * @param callback function to be executed after loading and building the client components
+	 */
+	bootstrap( components, callback ){
+		function analyze(component,  plugs={} ){
+			if(Array.isArray(component))
+				for(var i=0; i<component.length; i++)
+                			plugs = analyze(component[i], plugs)
+			else if( typeof component == 'object' && component.plugin !== undefined){
+        			plugs[component.plugin] = component.plugin
+        			if(component.children != undefined && component.children!=null)
+            				plugs = analyze(component.children, plugs)	
+			}
+			return plugs
+		}
+		var plugs = analyze(components)
+		var aplugs = []
+		for( var c in plugs ) aplugs.push(plugs[c])
+		var x = this
+		x.load( aplugs, funtion(){ 
+			x.build(components)
+			x.resize()
+			if(callback !== undefined) calback()
+		})
 	}
 
 	/**
@@ -380,8 +408,12 @@ class KonektiAPI{
 		}
 		
 		for( var i=0; i<n; i++ ){
-			if( args[i].indexOf('https://') < 0 ) args[i] = this.path+args[i]
-			this.resource.JS(args[i],plugin_back)
+			if( args[i] == 'div' || args[i] == 'item' ) plugin_back()
+			else{
+				if( args[i].startsWith('local/' ) args[i] = args[i].substring(6,args[i].length)
+				else if( !args[i].startsWith('https://') ) args[i] = this.konektipath+args[i]
+				this.resource.JS(args[i],plugin_back)
+			}	
 		}	
 	}	
 
@@ -740,13 +772,7 @@ class DivClient extends Editor{
 		else{		
 			this.vc().innerHTML = ''
 			var config = txt
-			var x = this
-			function callback(){
-				for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
-				x.children = Konekti.build(config.children)
-			}
-			if( config.load !== undefined && config.load !== null ) Konekti.uses(...config.load, callback)
-			else callback()
+			Konekti.bootstrap(config)
 		}
 	}	  
 }
