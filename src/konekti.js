@@ -367,7 +367,7 @@ class KonektiAPI{
 		var aplugs = []
 		for( var c in plugs ) aplugs.push(plugs[c])
 		var x = this
-		x.load( aplugs, funtion(){ 
+		x.load( aplugs, function(){ 
 			x.build(components)
 			x.resize()
 			if(callback !== undefined) calback()
