@@ -367,7 +367,7 @@ class KonektiAPI{
 		var aplugs = []
 		for( var c in plugs ) aplugs.push(plugs[c])
 		var x = this
-		x.uses( ...aplugs, function(){ 
+		x.load( ...aplugs, function(){ 
 			components = x.build(components)
 			x.resize()
 			if(callback !== undefined) callback(components)
@@ -394,17 +394,16 @@ class KonektiAPI{
 	 */
 	load(){ 
 		var x = this
-		var n = arguments.length
-		var args = arguments
-		
-		x.loading += n
+		var n = arguments.length - 1
+		var callback = argument[n]
+		if(typeof callback == 'string' ){
+			callback = function(){}
+			n++
+		}
 		
 		function plugin_back(){
-			x.loading--
-			if(x.loading==0 && x.plugins_callback!=null){
-				x.plugins_callback()
-				x.plugins_callback = null
-			}	
+			n--
+			if(n==0) callback()
 		}
 		
 		for( var i=0; i<n; i++ ){
@@ -421,20 +420,12 @@ class KonektiAPI{
 	 * @param plugins An array of plugin ids
 	 */
 	uses(){ 
-		var args = arguments
-		var n = arguments.length-1
-		if(typeof arguments[n] === 'function' ){
-			args = []
-			for (var i=0; i<n; i++) args[i] = arguments[i]
-			this.plugins_callback = function(){
-				arguments[n]()
+		this.load(...args, function(){
+			if( KonektiMain !== undefined ){
+				KonektiMain()
 				Konekti.resize()
-			}	
-		}else if( KonektiMain !== undefined ) this.plugins_callback = function(){
-			KonektiMain()
-			Konekti.resize()
-		}
-		this.load(...args)
+			}
+		})
 	}
 	
 	/**
