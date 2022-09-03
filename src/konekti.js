@@ -454,6 +454,7 @@ class Client{
 	constructor( config ){ 
 		if(typeof config == 'string') config = {'id':config}
 		var x = this
+		x.children = []
 		x.id = config.id
 		x.fitRect = false
 		x.parent = (x.id!='KonektiMain')?config.parent || 'KonektiMain':null
