@@ -15,7 +15,10 @@
 
 /** Class for managable resources */
 class Resource{
-	constructor(){ this.loaded = {} }
+	constructor(){
+		this.loaded = {'':true, 'div':true, 'item':true} 
+		this.path = "https://jgomezpe.github.io/konekti/src/"
+	}
 	
 	/**
 	 * Creates a HTML element from a string, if possible
@@ -68,12 +71,29 @@ class Resource{
 	 * @param id JSON id
 	 * @param callback Function that will be called if the JSON is loaded
 	 */
-	JSON(id, callback){
+	 JSON(id, callback){
 		//function back(json){ if(callback !== undefined) callback((json!=null)?JSON.parse(json):null) }
 		//this.load(id, back) 
 		fetch(id).then((response) => response.json()).then((json) => callback(json))
 	}
 
+	/**
+	 * Loads a plugin
+	 * @param id plugin id
+	 * @param callback Function that will be called if the plugin is loaded
+	 */
+	plugin(id, callback){
+		if( id!==null && this.loaded[id] === undefined ){
+			this.loaded[id] = true
+			if( id.indexOf('/') < 0 ) id = this.path+id
+			function load(code){
+				eval(code)
+				callback()
+			}
+			fetch(id+'.js').then((response) => response.text()).then((code) => load(code)).catch(error => console.error('Error:', error))
+		}else callback()
+	}
+	
 	/**
 	 * Loads a text resource (if possible)
 	 * @param id text_URL id
@@ -313,10 +333,8 @@ class KonektiAPI{
 		this.client = {}
 		this.resource = new Resource()
 		this.plugins = {}
-		this.plugins_callback = []
 		this.loading = 0
 		this.root = new MainClient()
-		this.path = "https://jgomezpe.github.io/konekti/src/"
 		this.dom = new DOM(this)
 		
 		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
@@ -366,11 +384,9 @@ class KonektiAPI{
 		var plugs = analyze(components)
 		var aplugs = []
 		for( var c in plugs ) aplugs.push(plugs[c])
-		var x = this
-		x.load( ...aplugs, function(){ 
-			components = x.build(components)
-			x.resize()
-			if(callback !== undefined) callback(components)
+		Konekti.load( ...aplugs, function(){ 
+			if(callback !== undefined) callback(Konekti.build(components))
+			Konekti.resize()
 		})
 	}
 
@@ -401,25 +417,12 @@ class KonektiAPI{
 			n++
 		}
 
-		x.plugins_callback.push(callback)
-		x.loading += n
-		
 		function plugin_back(){
-			x.loading--
-			if(x.loading==0 && KonektiMain !== undefined && KonektiMain != null){
-				KonektiMain()
-				Konekti.resize()
-			} 
+			n--
+			if(n==0) callback() 
 		}
 		
-		for( var i=0; i<n; i++ ){
-			var c=arguments[i]
-			if( c === undefined || c===null || c.length==0 || c == 'div' || c == 'item' ) plugin_back()
-			else{
-				if( c.indexOf('/') < 0 ) c = this.path+c
-				this.resource.JS(c,plugin_back)
-			}	
-		}	
+		for( var i=0; i<n; i++ ) this.resource.plugin(arguments[i],plugin_back)
 	}	
 
 	/**
