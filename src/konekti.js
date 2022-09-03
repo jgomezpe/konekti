@@ -356,7 +356,7 @@ class KonektiAPI{
 			if(Array.isArray(component))
 				for(var i=0; i<component.length; i++)
                 			plugs = analyze(component[i], plugs)
-			else if( typeof component == 'object' && component.plugin !== undefined){
+			else if( typeof component == 'object' && component.plugin !== undefined && component.plugin!==null && component.plugin.length>0){
         			plugs[component.plugin] = component.plugin
         			if(component.children != undefined && component.children!=null)
             				plugs = analyze(component.children, plugs)	
@@ -408,7 +408,7 @@ class KonektiAPI{
 		}
 		
 		for( var i=0; i<n; i++ ){
-			if( args[i] == 'div' || args[i] == 'item' ) plugin_back()
+			if( args[i] === udefined || args[i]===null || args[i].length==0 || args[i] == 'div' || args[i] == 'item' ) plugin_back()
 			else{
 				console.log(args[i] + ':' + args[i].indexOf('/'))
 				if( args[i].indexOf('/') < 0 ) args[i] = this.path+args[i]
