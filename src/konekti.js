@@ -405,6 +405,7 @@ class KonektiAPI{
 		
 		function plugin_back(){
 			x.loading--
+			console.log(x.loading)
 			if(x.loading==0) callback()
 		}
 		
