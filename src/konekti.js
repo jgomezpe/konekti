@@ -601,7 +601,7 @@ class MainClient extends Client{
 	 * Creates the main client
 	 * @param {*} ide Components defining the ide
 	 */
-	constructor(ide){ super({'id':'KonektiMain', 'children':ide, 'width':'100%', 'height':'100%'}) }
+	constructor(ide=[]){ super({'id':'KonektiMain', 'children':ide, 'width':'100%', 'height':'100%'}) }
 
 	/**
 	 * Gets the visual component associated to the client/subclient
