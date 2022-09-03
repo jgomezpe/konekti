@@ -426,7 +426,7 @@ class KonektiAPI{
 		var n = arguments.length-1
 		if(typeof arguments[n] === 'function' ){
 			args = []
-			for (i = 0; i<n; i++) args[i] = arguments[i]
+			for (var i=0; i<n; i++) args[i] = arguments[i]
 			this.plugins_callback = function(){
 				arguments[n]()
 				Konekti.resize()
