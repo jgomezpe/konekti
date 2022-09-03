@@ -400,10 +400,12 @@ class KonektiAPI{
 			callback = function(){}
 			n++
 		}
+
+		x.loading += n
 		
 		function plugin_back(){
-			n--
-			if(n==0) callback()
+			x.loading--
+			if(x.loading==0) callback()
 		}
 		
 		for( var i=0; i<n; i++ ){
