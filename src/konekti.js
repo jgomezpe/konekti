@@ -460,7 +460,7 @@ class Client{
 		x.init_view(config)
 		config.children = config.children || []
 		for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
-		Konekti.bootstrap( config.children, function(components){ x.children = components } ) 
+		x.children = Konekti.build( config.children ) 
 	}
 
 	/**
