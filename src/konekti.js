@@ -463,7 +463,10 @@ class Client{
 		x.defHeight = config.height
 		x.defWidth = config.width
 		x.listener = []
-		((x.parent == 'KonektiMain')?document.body:Konekti.vc(x.parent)).appendChild(Konekti.resource.html(x.html(config)))
+		var element = (x.parent == 'KonektiMain')?document.body:Konekti.vc(x.parent)
+		var html = x.html(config)
+		console.log(html)
+		element.appendChild(Konekti.resource.html(html))
 		config.children = config.children || []
 		for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
 		Konekti.bootstrap( config.children, function(components){ x.children = components } ) 
