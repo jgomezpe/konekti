@@ -380,7 +380,7 @@ Konekti.ace = function(id, width, height, initial, mode, theme, code){
 	return Konekti.build(Konekti.aceConfig(id, width, height, initial, mode, theme, code))
 }
 
-ACE_PATH = "https://ace.c9.io/build/src/"
+let ACE_PATH = "https://ace.c9.io/build/src/"
 Konekti.resource.JS(ACE_PATH+"ace.js", 
 	function (){
 		function check(){
