@@ -313,7 +313,7 @@ class KonektiAPI{
 		this.client = {}
 		this.resource = new Resource()
 		this.plugins = {}
-		this.plugins_callback = null
+		this.plugins_callback = []
 		this.loading = 0
 		this.root = new MainClient()
 		this.path = "https://jgomezpe.github.io/konekti/src/"
@@ -401,12 +401,15 @@ class KonektiAPI{
 			n++
 		}
 
+		x.plugins_callback.push(callback)
 		x.loading += n
 		
 		function plugin_back(){
 			x.loading--
-			console.log(x.loading)
-			if(x.loading==0) callback()
+			if(x.loading==0 && KonektiMain !== undefined && KonektiMain != null){
+				KonektiMain()
+				Konekti.resize()
+			} 
 		}
 		
 		for( var i=0; i<n; i++ ){
