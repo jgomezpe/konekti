@@ -395,7 +395,7 @@ class KonektiAPI{
 	load(){ 
 		var x = this
 		var n = arguments.length - 1
-		var callback = argument[n]
+		var callback = arguments[n]
 		if(typeof callback == 'string' ){
 			callback = function(){}
 			n++
@@ -407,10 +407,11 @@ class KonektiAPI{
 		}
 		
 		for( var i=0; i<n; i++ ){
-			if( args[i] === undefined || args[i]===null || args[i].length==0 || args[i] == 'div' || args[i] == 'item' ) plugin_back()
+			var c=arguments[i]
+			if( c === undefined || c===null || c.length==0 || c == 'div' || c == 'item' ) plugin_back()
 			else{
-				if( args[i].indexOf('/') < 0 ) args[i] = this.path+args[i]
-				this.resource.JS(args[i],plugin_back)
+				if( c.indexOf('/') < 0 ) c = this.path+c
+				this.resource.JS(c,plugin_back)
 			}	
 		}	
 	}	
@@ -420,7 +421,7 @@ class KonektiAPI{
 	 * @param plugins An array of plugin ids
 	 */
 	uses(){ 
-		this.load(...args, function(){
+		this.load(...arguments, function(){
 			if( KonektiMain !== undefined ){
 				KonektiMain()
 				Konekti.resize()
