@@ -474,8 +474,8 @@ class Client{
 	 * @param config Configuration of the client
 	 */
 	 init_view(config){
-		var element = (x.parent == 'KonektiMain')?document.body:Konekti.vc(x.parent)
-		var html = x.html(config)
+		var element = (this.parent == 'KonektiMain')?document.body:Konekti.vc(this.parent)
+		var html = this.html(config)
 		element.appendChild(Konekti.resource.html(html))	 
 	 }
 
