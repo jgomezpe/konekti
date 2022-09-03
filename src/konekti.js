@@ -410,8 +410,7 @@ class KonektiAPI{
 		for( var i=0; i<n; i++ ){
 			if( args[i] == 'div' || args[i] == 'item' ) plugin_back()
 			else{
-				if( args[i].startsWith('local/' ) args[i] = args[i].substring(6,args[i].length)
-				else if( !args[i].startsWith('https://') ) args[i] = this.konektipath+args[i]
+				if( args[i].indexof('/' < 0) ) args[i] = this.konektipath+args[i]
 				this.resource.JS(args[i],plugin_back)
 			}	
 		}	
