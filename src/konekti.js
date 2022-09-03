@@ -86,13 +86,53 @@ class Resource{
 		if( id!==null && this.loaded[id] === undefined ){
 			this.loaded[id] = true
 			if( id.indexOf('/') < 0 ) id = this.path+id
+			function isspace(c){ return ' \t\n\r\f\v\u00A0\u2028\u2029'.indexOf(c)>=0 }
 			function load(code){
+				var i=0
+				var flag = true
+				while(flag){
+					while(i<code.length && isspace(code.charAt(i))) i++
+					flag = (i+1<code.length && code.charAt(i)=='/')
+					if(flag){
+						i++
+						switch(code.charAt(i)){
+							case '/':
+								i++
+								while(i<code.length && code.charAt(i)!='\n' && code.charAt(i)!='\r') i++
+							break;
+							case '*':
+								i++
+								while(i+1<code.length && (code.charAt(i)!='*' || code.charAt(i+1)!='/')) i++
+								if(i+1==code.length){
+									flag = false
+									i=0
+								}else i+=2
+							break;
+							default:
+								flag = false
+								i=0
+						}
+					}
+				}
+				var j=i+1
+				while(j<code.length && code.charAt(j)!='\n' && code.charAt(j)!='\r') j++
+				var line = code.substring(i,j)
+				console.log('--->'+line)
+				if(line.startsWith('Konekti.load')){
+					line = 'Konekti.resource.get' + line.substring(12,line.length)
+					console.log(line)
+					var a = eval(line)
+					for(var k=0; k<a.length; k++)
+						console.log(a[k])
+				}
 				eval(code)
 				callback()
 			}
 			fetch(id+'.js').then((response) => response.text()).then((code) => load(code)).catch(error => console.error('Error:', error))
 		}else callback()
 	}
+
+	get(){ return arguments }
 	
 	/**
 	 * Loads a text resource (if possible)
@@ -318,6 +358,134 @@ class DOM{
 	}
 }
 
+class PlugInManager{
+	constructor(){
+		this.plugins = {}
+		this.caller = {}
+		this.called = {}
+		this.path = "https://jgomezpe.github.io/konekti/src/"
+	}
+
+
+	start( code ){
+		var i=0
+		var flag = true
+		var space = ' \t\n\r\f\v\u00A0\u2028\u2029'
+		while(flag){
+			while(i<code.length && space.indexOf(code.charAt(i))>=0) i++
+			flag = (i+1<code.length && code.charAt(i)=='/')
+			if(flag){
+				i++
+				switch(code.charAt(i)){
+					case '/':
+						i++
+						while(i<code.length && code.charAt(i)!='\n' && code.charAt(i)!='\r') i++
+					break;
+					case '*':
+						i++
+						while(i+1<code.length && (code.charAt(i)!='*' || code.charAt(i+1)!='/')) i++
+						if(i+1==code.length){
+							flag = false
+							i=0
+						}else i+=2
+					break;
+					default:
+						flag = false
+						i=0
+				}
+			}
+		}
+		return i
+	}
+
+	firstline(code, i){
+		var j=i+1
+		while(j<code.length && code.charAt(j)!='\n' && code.charAt(j)!='\r') j++
+		return code.substring(i,j)
+	}
+
+	/**
+	 * Loads the given script (if possible)
+	 * @param type Type of the script to be loaded
+	 * @param url Script's url
+	 * @param callback Function that will be called if the script is loaded
+	 */
+	 script(code){
+		var element = document.createElement( 'script' )
+		element.type = 'text/javascript'
+		element.innerHTML = code
+		var b = document.getElementsByTagName('script')[0]
+		b.parentNode.insertBefore(element, b)
+	}
+
+	get(){ return arguments }
+
+	requires(line){ 
+		if(line.startsWith('Konekti.load')) return eval('Konekti.manager.get' + line.substring(12,line.length))
+		else return []			
+	}
+
+	add_dependency(caller, id){
+		var x = this
+		x.caller[caller] = x.caller[caller] || []
+		var i=0
+		while(i<x.caller[caller].length && x.caller[caller][i] != id) i++
+		if(i==x.caller[caller].length) x.caller[caller].push(id)
+	}
+
+	del_dependency(caller, id){
+		var x = this
+		var i=0
+		while(i<x.caller[caller].length && x.caller[caller][i] != id) i++
+		if(i<x.caller[caller].length) x.caller[caller].splice(i,1)
+		return x.caller[caller].length == 0
+	}
+
+	/**
+	 * Loads a plugin
+	 * @param id plugin id
+	 * @param caller Plugin/Module requesting the plugin
+	 * @param callback Function that will be called if the plugin is loaded
+	 */
+	load(id, caller, callback){
+		if(id===null) return
+		var x = this
+		x.add_dependency(caller,id)
+		if( caller=='konekti' || x.caller[id] === undefined ){
+			x.caller[id] = x.caller[id] || []
+
+			function init(code){
+				var i=x.start(code)
+				var line = x.firstline(code,i)
+				var plugins = x.requires(line)
+				var n = plugins.length
+				if(n > 0){
+					code = code.substring(i+line.length, code.length)
+					for(var k=0; k<n;k++){
+						x.load(plugins[k], id, function(plug){
+							if(x.del_dependency(id,plug)){
+								x.script(code)
+								callback(id)
+							}
+						})
+					}
+				}else{
+					x.script(code)
+					callback(id)
+				}
+			}
+			fetch(((id.indexOf('/') < 0)?x.path:'')+id+'.js').then((response) => response.text()).then((code) => init(code)).catch(error => console.error('Error:', error))
+		}else{
+			function check(){
+				if(Konekti.plugins[id]===undefined) setTimeout(check, 100)
+				else callback(id)	
+			}
+			check()
+		}
+	}
+
+}
+
 /**
  * Konekti Application program interface. Main object of the Konekti framework
  */
@@ -331,6 +499,7 @@ class KonektiAPI{
 	constructor(){
 		Konekti = this
 		this.client = {}
+		this.manager = new PlugInManager()
 		this.resource = new Resource()
 		this.plugins = {}
 		this.loading = 0
@@ -409,21 +578,21 @@ class KonektiAPI{
 	 * @param callback function to be executed after loading plugins
 	 */
 	load(){ 
-		var x = this
 		var n = arguments.length - 1
 		var callback = arguments[n]
 		if(typeof callback == 'string' ){
 			callback = function(){}
 			n++
 		}
-		
-		x.loading += n
-		function plugin_back(){
-			x.loading--
-			if(x.loading==0) callback() 
-		}
-		
-		for( var i=0; i<n; i++ ) this.resource.plugin(arguments[i],plugin_back)
+
+		var x = this.manager
+		var id = 'konekti'
+		for( var i=0; i<n; i++ ) x.load(arguments[i], id, function(plug){
+			var i=0; 
+			while(i<x.caller[id].length && x.caller[id][i] != plug) i++
+			if(i<x.caller[id].length) x.caller[id].splice(i,1)
+			if(x.caller[id].length==0) callback()
+		})
 	}	
 
 	/**
@@ -468,7 +637,8 @@ class Client{
 		x.init_view(config)
 		config.children = config.children || []
 		for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
-		x.children = Konekti.build( config.children ) 
+		//Konekti.bootstrap( config.children, function(components){ x.children = components} ) 
+		this.children = Konekti.build(config.children)
 	}
 
 	/**
