@@ -368,9 +368,9 @@ class KonektiAPI{
 		for( var c in plugs ) aplugs.push(plugs[c])
 		var x = this
 		x.load( aplugs, function(){ 
-			x.build(components)
+			components = x.build(components)
 			x.resize()
-			if(callback !== undefined) calback()
+			if(callback !== undefined) callback(components)
 		})
 	}
 
@@ -453,28 +453,19 @@ class Client{
 	 */
 	constructor( config ){ 
 		if(typeof config == 'string') config = {'id':config}
-		this.id = config.id
-		this.fitRect = false
-		this.parent = (this.id!='KonektiMain')?config.parent || 'KonektiMain':null
-		if(this.parent=='KonektiMain') Konekti.client['KonektiMain'].children.push(this)
-		Konekti.client[this.id] = this
-		this.defHeight = config.height
-		this.defWidth = config.width
-		this.listener = []
-		this.init_view(config)
+		var x = this
+		x.id = config.id
+		x.fitRect = false
+		x.parent = (x.id!='KonektiMain')?config.parent || 'KonektiMain':null
+		if(x.parent=='KonektiMain') Konekti.client['KonektiMain'].children.push(x)
+		Konekti.client[x.id] = x
+		x.defHeight = config.height
+		x.defWidth = config.width
+		x.listener = []
+		((x.parent == 'KonektiMain')?document.body:Konekti.vc(x.parent)).appendChild(Konekti.resource.html(x.html(config)))
 		config.children = config.children || []
-		for( var i=0; i<config.children.length; i++ ) config.children[i] = this.init_child(config.children[i], config)
-		this.children = Konekti.build(config.children) 
-	}
-
-	/**
-	 * Initializes the visual component associated to the client
-	 * @param child Child to be initilized
-	 * @param config Configuration of the client
-	 */
-	init_view(config){
-		var element = ( this.parent == 'KonektiMain' )?document.body:Konekti.vc(this.parent);
-		element.appendChild( Konekti.resource.html(this.html(config)))
+		for( var i=0; i<config.children.length; i++ ) config.children[i] = x.init_child(config.children[i], config)
+		Konekti.bootstrap( config.children, function(components){ x.children = components } ) 
 	}
 
 	/**
