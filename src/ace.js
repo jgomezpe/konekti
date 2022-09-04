@@ -263,6 +263,7 @@ class Ace extends Editor{
 			Konekti.plugins.ace.register(thing.code, x.edit)
 		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
 		x.edit.$blockScrolling = Infinity
+		Konekti.resize()
 	}
 
 	/**
