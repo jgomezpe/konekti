@@ -277,7 +277,7 @@ class Ace extends Editor{
 	 * @param {*} parentHeight Parent's height
 	 */
 	updateSize( parentWidth, parentHeight ){
-		super.update(parentWidth, parentHeight)
+		super.updateSize(parentWidth, parentHeight)
 		this.edit.resize()
 	}
 	
