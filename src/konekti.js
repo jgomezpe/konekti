@@ -16,7 +16,9 @@
 
 /** Class for managable resources */
 class Resource{
-	constructor(){}
+	constructor(){
+		this.loaded = {}
+	}
 	
 	/**
 	 * Creates a HTML element from a string, if possible
