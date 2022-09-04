@@ -272,6 +272,16 @@ class Ace extends Editor{
 	getText(){ return this.edit.getValue() }
 
 	/**
+	 * Computes the size of the visual component associated to the client
+	 * @param {*} parentWidth Parent's width
+	 * @param {*} parentHeight Parent's height
+	 */
+	updateSize( parentWidth, parentHeight ){
+		super.update(parentWidth, parentHeight)
+		this.edit.resize()
+	}
+	
+	/**
 	 * Sets text in the editor
 	 * @param txt Text to set in the editor
 	 */
