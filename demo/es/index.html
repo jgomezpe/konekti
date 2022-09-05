@@ -23,7 +23,7 @@
 				else if( this.page != page ){			
 					this.page = page
 					var url = 'https://jgomezpe.github.io/konekti/demo/es/'+page+'.html'
-					Konekti.resource.load(url, function(txt){
+					Konekti.resource.TXT(url, function(txt){
 						Konekti.client['coder'].setText(txt) 
 						Konekti.client['viewer'].setText(txt)
 						Konekti.resize()
