@@ -7,9 +7,9 @@ Konekti is a Java Script connection library that allows to connect JS/HTML/CSS r
 
 &nbsp;Konekti url: <A HREF="https://jgomezpe.github.io/konekti/">https://jgomezpe.github.io/konekti/</A>
 
-&nbsp;Konekti demo (English): <A HREF="https://jgomezpe.github.io/konekti/demo/en/">https://jgomezpe.github.io/konekti/demo/en/</A>
+&nbsp;Konekti demo: <A HREF="https://jgomezpe.github.io/konekti/demo/">https://jgomezpe.github.io/konekti/demo/</A>
 
-&nbsp;Konekti demo (Español): <A HREF="https://jgomezpe.github.io/konekti/demo/es/">https://jgomezpe.github.io/konekti/demo/es/</A>
+&nbsp;Konekti in Numtseng (The school of professor Jonatan Gomez): <A HREF="https://numtseng.com/konekti/">https://numtseng/konekti/</A>
 
 &nbsp;Ready to use: <A HREF="https://jgomezpe.github.io/konekti/src/konekti.js">https://jgomezpe.github.io/konekti/src/konekti.js</A>
 
