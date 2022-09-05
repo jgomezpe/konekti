@@ -32,7 +32,7 @@
 			}
 
 			language(lang){
-				if( lang != this.lang ) window.open("https://jgomezpe.github.io/konekti/demo/index.html?lang="+lang+"&page="+this.page,"_self")
+				if( lang != this.lang ) window.open("https://numtseng.com/konekti/index.html?lang="+lang+"&page="+this.page,"_self")
 			}
 
 			run(){ Konekti.client['viewer'].setText( Konekti.client['coder'].getText() ) }
@@ -69,7 +69,7 @@
 					Konekti.sidebar('root', '100%', '100%', toc, main)	
 					Konekti.resize()
 
-					var page = Konekti.dom.getURLSearchParam('page', 'youtube')
+					var page = Konekti.dom.getURLSearchParam('page', 'home')
 					client.select(page)
 				}
 			}
