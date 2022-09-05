@@ -411,7 +411,7 @@ class KonektiAPI{
 		var args = arguments
 		function check(){
 			if(Konekti.manager === undefined) setTimeout(check,100)
-			else Konekti.manager.uses('konekti', args, function(){
+			else Konekti.manager.set('konekti', args, function(){
 				if( KonektiMain !== undefined ){
 					KonektiMain()
 					Konekti.resize()
