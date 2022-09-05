@@ -278,7 +278,12 @@ class Ace extends Editor{
 	 */
 	updateSize( parentWidth, parentHeight ){
 		super.updateSize(parentWidth, parentHeight)
-		this.edit.resize()
+		var x = this
+		function check(){
+			if(x.edit===undefined) setTimeout(check,100)
+			else x.edit.resize()
+		}
+		check()
 	}
 	
 	/**
