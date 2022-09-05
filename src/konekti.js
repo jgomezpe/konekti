@@ -351,27 +351,26 @@ class KonektiAPI{
 	/**
 	 *
 	 * @param components Konekti components to load and build (bootstrap)
+	 * @param parent Client component bootstraping its children components
 	 * @param callback function to be executed after loading and building the client components
 	 */
-	bootstrap( components, callback ){
-		function analyze(component,  plugs={} ){
+	bootstrap( components, parent='KonektiMain', callback=function(components){} ){
+		function analyze(component, parent, plugs={} ){
 			if(Array.isArray(component))
 				for(var i=0; i<component.length; i++)
-                			plugs = analyze(component[i], plugs)
+                			plugs = analyze(component[i], parent, plugs)
 			else if( typeof component == 'object' && component.plugin !== undefined && component.plugin!==null && component.plugin.length>0){
+					component.parent = parent
         			plugs[component.plugin] = component.plugin
         			if(component.children != undefined && component.children!=null)
-            				plugs = analyze(component.children, plugs)	
+            			plugs = analyze(component.children, component.id, plugs)	
 			}
 			return plugs
 		}
-		var plugs = analyze(components)
+		var plugs = analyze(components,parent)
 		var aplugs = []
 		for( var c in plugs ) aplugs.push(plugs[c])
-		Konekti.load( ...aplugs, function(){ 
-			if(callback !== undefined) callback(Konekti.build(components))
-			Konekti.resize()
-		})
+		Konekti.load( aplugs, function(){ callback(Konekti.build(components)); })
 	}
 
 	/**
@@ -389,18 +388,18 @@ class KonektiAPI{
 		
 	/**
 	 * Loads a set of plugins and executes the callback function
-	 * @param plugins An array of plugin ids
+	 * @param args An array of plugin ids
 	 * @param callback function to be executed after loading plugins
 	 */
-	load(){ 
-		var n = arguments.length - 1
-		var callback = arguments[n]
-		if(typeof callback == 'string' ){
-			callback = function(){}
-			n++
-		}else arguments.splice(n-1,1)
-
-		this.manager.uses('konekti', arguments, callback)
+	load(args, callback=function(){}){ 
+		function check(){
+			if(Konekti.manager === undefined) setTimeout(check,100)
+			else Konekti.manager.set('konekti', args, function(){
+				callback()
+				Konekti.resize()
+			})
+		}
+		check()
 	}	
 
 	/**
@@ -408,17 +407,8 @@ class KonektiAPI{
 	 * @param plugins An array of plugin ids
 	 */
 	uses(){
-		var args = arguments
-		function check(){
-			if(Konekti.manager === undefined) setTimeout(check,100)
-			else Konekti.manager.set('konekti', args, function(){
-				if( KonektiMain !== undefined ){
-					KonektiMain()
-					Konekti.resize()
-				}
-			})
-		}
-		check()
+		if( KonektiMain !== undefined ) Konekti.load(arguments, KonektiMain)
+		else Konekti.load(arguments)
 	}
 	
 	/**
@@ -753,12 +743,12 @@ class DivClient extends Editor{
 	 * @param txt Html code/konekti components to set in the div component
 	 */
 	setText(txt){ 
-		this.children = []
-		if( typeof txt == 'string' ) this.vc().innerHTML = txt 
+		var x = this
+		x.children = []
+		if( typeof txt == 'string' ) x.vc().innerHTML = txt 
 		else{		
-			this.vc().innerHTML = ''
-			var config = txt
-			Konekti.bootstrap(config)
+			x.vc().innerHTML = ''
+			Konekti.bootstrap(txt, x.id, function(components){ x.children = components; } )
 		}
 	}	  
 }
