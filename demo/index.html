@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+</head>
+
+<body>
+
+	<script>
+		Konekti.uses('accordion','sidebar','navbar','dropdown','ace','iframe','split')
+
+		class KMain extends Client{
+			constructor(lang){
+				super('client')
+				this.page = ''
+				this.lang = lang
+			}
+
+			select(page){
+				if(page=='github') window.open("https://github.com/jgomezpe/konekti/")
+				else if( this.page != page ){			
+					this.page = page
+					var url = 'https://jgomezpe.github.io/konekti/demo/'+this.lang+'/'+page+'.html'
+					Konekti.resource.TXT(url, function(txt){
+						Konekti.client['coder'].setText(txt) 
+						Konekti.client['viewer'].setText(txt)
+						Konekti.resize()
+					})
+				}
+			}
+
+			language(lang){
+				if( lang != this.lang ) window.open("https://jgomezpe.github.io/konekti/demo/index.html?lang="+lang+"&page="+this.page,"_self")
+			}
+
+			run(){ Konekti.client['viewer'].setText( Konekti.client['coder'].getText() ) }
+		}
+
+		function KonektiMain(){
+			var lang = Konekti.dom.getUserLanguage()
+
+			var callback = function(json){ 
+				if(json===undefined || json===null){
+					lang = 'en'
+					Konekti.resource.JSON('https://jgomezpe.github.io/konekti/demo/i18n/'+lang+'.json', callback)
+				}else{
+					var client = new KMain(lang)
+					var toc = Konekti.tocConfig(json.toc, 4, '', {'client':'client', 'method':'select'},true)
+
+					var btn=[
+					Konekti.btnConfig("run", "fa-play", '', {'client':'client'}, "w3-blue-grey", "Run"),
+						Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-blue-grey', json.language, [
+								{'id':'en', 'caption':"English"}, 
+								{'id':'es','caption':"Español"}], 
+							{"client":'client', "method":"language"}
+						)
+					]
+					var navbar = Konekti.navbarConfig('main-navbar', 'w3-blue-grey', btn, 'client', 'select' ) 
+
+					var control = Konekti.splitConfig('coderviewer', '100%', 'rest', 'col', 50, 
+						Konekti.aceConfig('coder', '100%','100%', '', 'html'),
+						Konekti.iframeConfig('viewer', '100%', '100%', '')
+					)
+
+					var main = Konekti.divConfig('main-content','100%','100%', '', [navbar,control])
+
+					Konekti.sidebar('root', '100%', '100%', toc, main)	
+					Konekti.resize()
+
+					var page = Konekti.dom.getURLSearchParam('page', 'youtube')
+					client.select(page)
+				}
+			}
+
+			Konekti.resource.JSON('https://jgomezpe.github.io/konekti/demo/i18n/'+lang+'.json', callback)
+		}
+	</script>
+</body>
+</html>
