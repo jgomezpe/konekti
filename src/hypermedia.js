@@ -12,6 +12,18 @@
 * @version 1.0
 */
 
+/** Konekti Plugin for hypermedia components */
+class HyperMediaPlugIn extends PlugIn{
+	/** Creates a Plugin for Hypermedia components */
+	constructor(){ super('hypermedia') }
+    
+	/**
+	 * Creates a client for the plugin's instance
+	 * @param thing Instance configuration
+	 */
+	client( config ){ return new HyperMedia(config) }
+}
+
 /**
  * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
  * When the media is played, the set of editors are updated accroding to thier associated scripts.
@@ -34,9 +46,14 @@
 	 * 
          */
 	update(config){
-		this.scripts = config.scripts || []
-		this.media = config.media
-		Konekti.client[this.media].addListener(this.id)
+		var x = this
+		x.scripts = config.scripts || []
+		x.media = config.media
+		Konekti.bootstrap(config.children, x.id, function(components){
+			x.vc().innerHTML = ''
+			x.chidren = components
+			Konekti.client[x.media].addListener(x.id)
+		})
 	}
          
 	/**
@@ -92,4 +109,37 @@
 		if(typeof id === 'string') this.locate(time)
 		else Konekti.client[this.media].seek(time)
 	}
+}
+
+if(Konekti.hypermedia === undefined) new HyperMediaPlugIn()
+
+/**
+ * Creates an hypermedia configuration object
+ * @method
+ * hypermediaConfig
+ * @param id Id of the hypermedia component
+ * @param width Width of the hypermedia component
+ * @param height Height of the hypermedia component
+ * @param layout Hypermedia layout
+ * @param media Id of the media controller (must be a component of the layout)
+ * @param scripts Scripts followed by the hypermedia
+ * @param parent parent component
+ */
+Konekti.hypermediaConfig = function(id, width, height, layout, media, scripts, parent='KonektiMain'){
+	return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'with':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
+}
+
+/**
+ * Creates an hypermedia client
+ * @method
+ * hypermediaConfig
+ * @param id Id of the hypermedia component
+ * @param width Width of the hypermedia component
+ * @param height Height of the hypermedia component
+ * @param layout Hypermedia layout
+ * @param media Id of the media controller (must be a component of the layout)
+ * @param scripts Scripts followed by the hypermedia
+ */
+Konekti.hypermedia = function(id, width, height, layout, media, scripts){
+	return Konekti.build(Konekti.hypermediaConfig(id, width, height, layout, media, scripts))
 }
