@@ -17,7 +17,7 @@ class HeaderPlugIn extends PlugIn{
 	setup(id, icon, caption, h, style, parent='KonektiMain'){
 		var config = id
 		if(typeof id == 'string') 
-			config = {'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[Konekti.plugins['item'].setup(id+'Item', icon, caption, id)]}
+			config = {'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[Konekti.plugin['item'].setup(id+'Item', icon, caption, id)]}
 		config.plugin = 'item'
 		return config
 	}
