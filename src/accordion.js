@@ -131,10 +131,10 @@ class TocPlugIn extends PlugIn{
 		h = Math.min(h,6)
 		var content =null
 		if(tree.children !== undefined){
-			content = Konekti.divConfig(tree.id+'Content', '', '', '', '', tree.id)		
+			content = Konekti.plugin['div'].setup(tree.id+'Content', '', '', '', '', tree.id)		
 			content.children = []
 			for( var i=0; i<tree.children.length; i++ ){
-				content.children.push(Konekti.tocConfig(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
+				content.children.push(Konekti.plugin['toc'].setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
 			}
 		}
 		var item = super.setup(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
