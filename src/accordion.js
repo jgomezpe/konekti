@@ -108,7 +108,7 @@ if(Konekti.accordion === undefined) new AccordionPlugIn()
  * @param open If content component should be displayed or not
  */
 Konekti.accordion = function(id, icon, caption, h, style, content, open){
-	return Konekti.build(Konekti.accordionConfig(id, icon, caption, h, style, content, open))
+	return Konekti.build(Konekti.plugin['accordion'].setup(id, icon, caption, h, style, content, open))
 }
 
 /** Konekti Plugin for TOC (Table of content) components */
