@@ -128,15 +128,15 @@ class TocPlugIn extends AccordionPlugIn{
 	 * @param parent Parent component
 	 */
 	setup(tree, h, style, onclick, open, parent='KonektiMain'){
-		var config = id
-		if(typeof id == 'string'){
+		var config = tree
+		if(h !== undefined){
 			h = Math.min(h,6)
 			var content =null
 			if(tree.children !== undefined){
 				content = Konekti.plugin['div'].setup(tree.id+'Content', '', '', '', '', tree.id)		
 				content.children = []
 				for( var i=0; i<tree.children.length; i++ ){
-					content.children.push(Konekti.plugin['toc'].setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
+					content.children.push(this.setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
 				}
 			}
 			var config = super.setup(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
