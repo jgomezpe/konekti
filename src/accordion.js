@@ -53,8 +53,8 @@ class Accordion extends Client{
 		this.expand = config.expand
 	}
 
-	setChildrenBack(children){
-		super.setChildrenBack(children)
+	setChildrenBack(children,config){
+		super.setChildrenBack(children,config)
 		var x = this
 		this.children[0].vc().onclick = function(){ x.show() }
 		this.children[0].vc().style.cursor = 'pointer'
