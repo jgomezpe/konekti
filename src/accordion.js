@@ -3,7 +3,7 @@ uses('header')
 /** Konekti Plugin for Accordion components */
 class AccordionPlugIn extends PlugIn{
 	/** Creates a Plugin for Accordion components */
-	constructor(){ super('accordion') }
+	constructor(id){ super(id!==undefined?id:'accordion') }
 
 	/**
 	 * Creates an accordion configuration object
