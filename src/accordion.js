@@ -55,6 +55,7 @@ class Accordion extends Client{
 
 	setChildrenBack(children){
 		super.setChildrenBack(children)
+		var x = this
 		this.children[0].vc().onclick = function(){ x.show() }
 		this.children[0].vc().style.cursor = 'pointer'
 		if( this.children.length == 2 ) this.children[1].vc().className += "w3-container w3-hide" + (config.open?" w3-show":"")
