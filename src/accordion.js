@@ -112,7 +112,7 @@ Konekti.accordion = function(id, icon, caption, h, style, content, open){
 }
 
 /** Konekti Plugin for TOC (Table of content) components */
-class TocPlugIn extends PlugIn{
+class TocPlugIn extends AccordionPlugIn{
 	/** Creates a Plugin for TOC components */
 	constructor(){ super('toc') }
 
@@ -128,19 +128,23 @@ class TocPlugIn extends PlugIn{
 	 * @param parent Parent component
 	 */
 	setup(tree, h, style, onclick, open, parent='KonektiMain'){
-		h = Math.min(h,6)
-		var content =null
-		if(tree.children !== undefined){
-			content = Konekti.plugin['div'].setup(tree.id+'Content', '', '', '', '', tree.id)		
-			content.children = []
-			for( var i=0; i<tree.children.length; i++ ){
-				content.children.push(Konekti.plugin['toc'].setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
+		var config = id
+		if(typeof id == 'string'){
+			h = Math.min(h,6)
+			var content =null
+			if(tree.children !== undefined){
+				content = Konekti.plugin['div'].setup(tree.id+'Content', '', '', '', '', tree.id)		
+				content.children = []
+				for( var i=0; i<tree.children.length; i++ ){
+					content.children.push(Konekti.plugin['toc'].setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
+				}
 			}
+			var config = super.setup(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
+			if(tree.action === undefined) tree.action = true
+			config.expand = tree.action?onclick:function(id){}
 		}
-		var item = super.setup(tree.id, tree.icon, tree.caption, h, style, content, open, parent)
-		if(tree.action === undefined) tree.action = true
-		item.expand = tree.action?onclick:function(id){}
-		return item
+		config.plugin = 'toc'
+		return config
 	}
 }
 
