@@ -1,5 +1,5 @@
 /** A Button manager */
-class Btn extends Client{
+class Btn extends Container{
 	/**
 	 * Creates a button configuration object
 	 * @param id Id of the header/Configuration of the header
