@@ -11,11 +11,7 @@ class Btn extends Client{
 	 * @param parent Parent component
 	 */
 	 setup(id, icon, caption, onclick, style, title, parent='KonektiMain'){
-		var config = id
-		if(typeof id == 'string')
-			config = {'id':id, 'style':style, 'run':onclick, 'title':title, 'parent':parent, 'children':[Konekti.plugin['item'].setup(id+'Item', icon, caption, id)]}
-		config.plugin = 'btn'
-		return config
+		return {'plugin':'btn', 'id':id, 'style':style, 'run':onclick, 'title':title, 'parent':parent, 'children':[Konekti.plugin['item'].setup(id+'Item', icon, caption, id)]}
 	}
 
 	/**
