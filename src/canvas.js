@@ -1,23 +1,55 @@
+/** Konekti Plugin for canvas */
+class CanvasPlugIn{
+	/** Creates a Plugin for canvas */
+	constructor(){ this.render = {} }
+
+	/**
+	 * Resizes all the canvas that have beien registered
+	 */
+	resize(){ for( var cc in this.render ) this.render[cc].redraw() }
+}
+let canvasplugin = new CanvasPlugIn()
+window.addEventListener("resize", function(){ canvasplugin.resize() } )
+
 /** Canvas Editor */
 class Canvas extends Editor{
 	/**
-	 * Creates a CanvasEditor
-	 * @param config Canvas configuration
+	 * Creates a canvas config object
+	 * @param id Id of the canvas
+	 * @param width Width of the div's component
+	 * @param height Height of the div's component
+	 * @param initial Initial set of commands to run (as JSON object or stringify object)
+	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+	 * @param parent Parent component
 	 */
-	constructor(config){
-		super(config)
+	setup(id, width, height, initial, custom_commands, parent='KonektiMain'){
+		if( typeof initial === 'string' ) initial = JSON.parse(initial)
+		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
+		return {'plugin':'canvas', "id":id, "custom":custom_commands, "commands":initial, 'width':width, 'height':height, 'parent':parent}
+	}
+
+	/**
+	 * Creates a canvas config object
+	 * @param id Id of the canvas
+	 * @param width Width of the div's component
+	 * @param height Height of the div's component
+	 * @param initial Initial set of commands to run (as JSON object or stringify object)
+	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+	 * @param parent Parent component
+	 */
+	constructor(id, width, height, initial, custom_commands, parent='KonektiMain'){
+		super(...arguments)
 		this.gui = this.vc()
-		this.custom_commands(config.custom)
-		this.commands = config.commands || {}
-		Konekti.plugins.canvas.render[this.id] = this
+		this.custom_commands(this.config.custom)
+		this.commands = this.config.commands || {}
+		canvasplugin.render[this.id] = this
 		this.redraw()
 	}
 	
 	/**
 	 * Associated html code
-	 * @param config Client configuration
 	 */
-	html( config ){ return "<canvas id='"+this.id+"' style='border:1px solid #d3d3d3'></canvas>" }   	
+	html(){ return "<canvas id='"+this.id+"' style='border:1px solid #d3d3d3'></canvas>" }   	
 	
 	/**
 	 * Sets the custom commands of the canvas
@@ -651,50 +683,6 @@ class Canvas extends Editor{
 	}	
 }
 
-/** Konekti Plugin for canvas */
-class CanvasPlugIn extends PlugIn{
-	/** Creates a Plugin for canvas */
-	constructor(){ 
-		super('canvas') 
-		this.render = {}
-	}
-
-	/**
-	 * Resizes all the canvas that have beien registered
-	 */
-	resize(){
-		var canvas = Konekti.plugins.canvas;
-		for( var cc in canvas.render ) canvas.render[cc].redraw()
-	}
-
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client( config ){ return new Canvas(config) } 
-
-}
-
-/** Canvas class */
-if(Konekti.canvas === undefined ) new CanvasPlugIn()
-
-/**
- * Creates a canvas config object
- * @method
- * canvasConfig
- * @param id Id of the canvas
- * @param width Width of the div's component
- * @param height Height of the div's component
- * @param initial Initial set of commands to run (as JSON object or stringify object)
- * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
- * @param parent Parent component
- */
-Konekti.canvasConfig = function(id, width, height, initial, custom_commands, parent='KonektiMain'){
-	if( typeof initial === 'string' ) initial = JSON.parse(initial)
-	if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
-	return {'plugin':'canvas', "id":id, "custom":custom_commands, "commands":initial, 'width':width, 'height':height, 'parent':parent}
-}
-
 /**
  * Associates/Adds a canvas
  * @method
@@ -706,7 +694,6 @@ Konekti.canvasConfig = function(id, width, height, initial, custom_commands, par
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
  */
 Konekti.canvas = function(id, width, height, initial, custom_commands){
-	return Konekti.build(Konekti.canvasConfig(id, width, height, initial, custom_commands))
+	return new Canvas(id, width, height, initial, custom_commands)
 }
 
-window.addEventListener("resize", Konekti.plugins.canvas.resize)

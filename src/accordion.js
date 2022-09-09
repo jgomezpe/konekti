@@ -1,10 +1,5 @@
-uses('header')
-
-/** Konekti Plugin for Accordion components */
-class AccordionPlugIn extends PlugIn{
-	/** Creates a Plugin for Accordion components */
-	constructor(id){ super(id!==undefined?id:'accordion') }
-
+/** An Accordion component */
+class Accordion extends Container{
 	/**
 	 * Creates an accordion configuration object
 	 * @method
@@ -21,36 +16,33 @@ class AccordionPlugIn extends PlugIn{
 	 * @param parent Parent component
 	 */
 	setup(id, icon, caption, h, style, content, open, parent='KonektiMain'){
-		var config = id
-		if(typeof id == 'string'){
-			var children = [Konekti.plugin['header'].setup(id+'Item', icon, caption, h, style, id)]
-			if(content!=null){
-				content.parent = content.parent || id
-				content.id = content.id || id+'Content'
-				children.push(content)
-			}
-			config ={'id':id, 'parent':parent, 'open':open, 'children':children}
+		var children = [{'plugin':'header', 'setup':[id+'Item', icon, caption, h, style, id]}]
+		if(content!=null){
+			content.parent = content.parent || id
+			content.id = content.id || id+'Content'
+			children.push(content)
 		}
-		config.plugin = 'accordion'
-		return config
+		return {'plugin':'accordion', 'id':id, 'parent':parent, 'open':open, 'children':children}
 	}	
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
-	 */
-	client( config ){ return new Accordion(config) }
-}
 
-/** An Accordion component */
-class Accordion extends Client{
 	/**
-	 * Creates an accordion component
-	 * @param config Accordion configuration
+	 * Creates an accordion configuration object
+	 * @method
+	 * accordionConfig
+	 * @param id Id of the header
+	 * @param width Width of the sidebar
+	 * @param height Height of the div's component
+	 * @param icon Icon for the header
+	 * @param caption Caption of the header
+	 * @param h Size of the header (1,2,3..)
+	 * @param style Style of the header
+	 * @param content Content component
+	 * @param open If content component should be displayed or not
+	 * @param parent Parent component
 	 */
-	constructor( config ){ 
-		super(config)
-		var x = this
-		this.expand = config.expand
+	constructor(id, icon, caption, h, style, content, open, parent='KonektiMain'){ 
+		super(...arguments)
+		this.expand = this.config.expand
 	}
 
 	setChildrenBack(children,config){
@@ -113,5 +105,5 @@ if(Konekti.accordion === undefined) new AccordionPlugIn()
  * @param open If content component should be displayed or not
  */
 Konekti.accordion = function(id, icon, caption, h, style, content, open){
-	return Konekti.build(Konekti.plugin['accordion'].setup(id, icon, caption, h, style, content, open))
+	return new Accordion(id, icon, caption, h, style, content, open)
 }
