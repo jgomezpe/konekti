@@ -1,17 +1,3 @@
-/** Konekti Plugin for buttons */
-class BtnPlugIn extends PlugIn{
-	/** Creates a Plugin for buttons */
-	constructor(){ super('btn') }
-
-    /**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client( config ){ return new Btn(config) }
-
-
-}
-
 /** A Button manager */
 class Btn extends Client{
 	/**
