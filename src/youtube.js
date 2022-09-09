@@ -1,5 +1,5 @@
-uses('https://www.youtube.com/iframe_api')
-
+//  Using the youtube api
+Konekti.resource.script(null,'https://www.youtube.com/iframe_api', null)
 let youtube_ready = false
 window.onYouTubeIframeAPIReady = function(){ youtube_ready=true }
 
