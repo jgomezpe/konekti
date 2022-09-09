@@ -1,8 +1,5 @@
-/** Konekti Plugin for Header components */
-class HeaderPlugIn extends PlugIn{
-	/** Creates a Plugin for Header components */
-	constructor(){ super('header') }
-    
+/** A Header manager */
+class Header extends Container{
 	/**
 	 * Creates a Header configuration object
 	 * @method
@@ -15,37 +12,25 @@ class HeaderPlugIn extends PlugIn{
 	 * @param parent Parent component
 	 */
 	setup(id, icon, caption, h, style, parent='KonektiMain'){
-		var config = id
-		if(typeof id == 'string') 
-			config = {'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[Konekti.plugin['item'].setup(id+'Item', icon, caption, id)]}
-		config.plugin = 'header'
-		return config
+		return {'plugin':'header', 'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[{'plugin':'item', 'setup': [id+'Item', icon, caption, id]}]}
 	}
 
 	/**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
+	 * Creates a Header configuration object
+	 * @param id Id of the header/Configuration of the header
+	 * @param icon Icon for the header
+	 * @param caption Caption of the header
+	 * @param h Size of the header (1,2,3..)
+	 * @param style Style of the header
+	 * @param parent Parent component
 	 */
-	client( config ){ return new Header(config) }
-}
-
-/** A Header manager */
-class Header extends Client{
-	/** 
-	 * Creates a Header Manager
-	 * @param config Configuration of the header
-	 */
-	constructor(config){ super(config) }
+	constructor(id, icon, caption, h, style, parent='KonektiMain'){ super(...arguments) }
 
 	/**
 	 * Associated html code
-	 * @param config Client configuration
 	 */
-	html( config ){ return "<h"+config.h+" id='"+this.id+"' class='"+config.style+"' style='margin-top:0;margin-bottom:0;padding:2px'></h"+config.h+">" }   
+	html(){ return "<h"+this.config.h+" id='"+this.id+"' class='"+this.config.style+"' style='margin-top:0;margin-bottom:0;padding:2px'></h"+this.config.h+">" }   
 }
-
-/** Header class */
-if(Konekti.header===undefined) new HeaderPlugIn()
 
 /**
  * Associates/adds a header
@@ -58,5 +43,5 @@ if(Konekti.header===undefined) new HeaderPlugIn()
  * @param style Style of the header
  */
 Konekti.header = function(id, icon, caption, h, style){
-	return Konekti.build(Konekti.plugin['header'].setup(id, icon, caption, h, style))
+	return new Header(id, icon, caption, h, style)
 }
