@@ -22,9 +22,8 @@ class Item extends Client{
 
 	/**
 	 * Associated html code
-	 * @param config Client configuration
 	 */
-	html( config ){ return "<i id='"+this.id+"' class='fa "+config.icon+"'> "+config.caption+"</i>" }   
+	html(){ return "<i id='"+this.id+"' class='fa "+this.config.icon+"'> "+this.config.caption+"</i>" }   
 	
 	/**
 	 * Sets a component's attribute to the given value 
