@@ -1,12 +1,16 @@
+uses("https://ace.c9.io/build/src/ace.js")
+
+let ACE_PATH = "https://ace.c9.io/build/src/"
+
+ace.config.set('basePath', ACE_PATH)
+ace.config.set('modePath', ACE_PATH)
+ace.config.set('themePath', ACE_PATH)
+ace.config.set('workerPath', ACE_PATH)
+
 /** Konekti Plugin for ACE editors */
-class AcePlugIn extends PlugIn{
+class AcePlugIn{
 	/** Creates a Plugin for ACE editors */
-	constructor(){
-		super('ace')
-			this.ready = false
-			this.view = []
-			this.mode = {}
-		}
+	constructor(){ this.mode = {} }
     
 	/**
 		* Defines a dynamic language mode taking as basis the OOP mode
@@ -166,52 +170,47 @@ class AcePlugIn extends PlugIn{
 		edit.session.setMode("ace/mode/"+id)
 	}
     
-	/**
-	 * Connects components as soon as the ACE library is ready
-	 */
-	done(){
-		while( this.view.length > 0 ){
-			var config = this.view[0]
-			this.view.shift()
-			Konekti.client[config.id].update(config)    
-		}
-		this.ready = true
-	}
-    
-	/**
-	 * Load an ACE editor 
-	 * @param config Configuration of the ACE editor
-	 */
-	load( config ){ 
-		this.view.push( config )
-		if( this.ready ) this.done()
-	}
-
-	/**
-	 * Creates a client for the plugin
-	 * @param config Instance configuration
-	 */
-	client(config){ 
-		var editor = new Ace(config) 
-		if( this.ready ) editor.update(config)
-		else this.load( config )
-		return editor
-	}
 }
+
+let aceplugin = new AcePlugIn()
 
 /** An Ace Editor */
 class Ace extends Editor{
 	/**
-	 * Creates an Ace Editor
-	 * @param config Ace editor configuration
+	 * Creates an Ace configuration object
+	 * @param id Id of the component that will contain the ace editor
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param initial Initial text inside the ace editor
+	 * @param mode Mode of the ace editor
+	 * @param theme Theme of the ace editor
+	 * @param code Lexical configuration for the ace editor  
+	 * @param parent Parent component
 	 */
-	constructor(config){ super(config) }
+	setup(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
+		return {"plugin":"ace", "id":id, "initial":initial, "mode":mode, "theme":theme, "code":code, 'width':width, 'height':height, 'parent':parent}
+	}
+
+	/**
+	 * Creates an Ace configuration object
+	 * @param id Id of the component that will contain the ace editor
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param initial Initial text inside the ace editor
+	 * @param mode Mode of the ace editor
+	 * @param theme Theme of the ace editor
+	 * @param code Lexical configuration for the ace editor  
+	 * @param parent Parent component
+	 */
+	constructor(id, width, height, initial, mode, theme, code, parent='KonektiMain'){ 
+		super(...arguments)
+		this.update(this.config)
+	}
 
 	/**
 	 * Associated html code
-	 * @param config Client configuration
 	 */
-	html( config ){ return "<div id='"+this.id+"'><div id='"+this.id+"Ace' style='width:100%;height:100%;'></div></div>" }
+	html(){ return "<div id='"+this.id+"'><div id='"+this.id+"Ace' style='width:100%;height:100%;'></div></div>" }
 	
 	/**
 	 * Updates an Ace Editor
@@ -260,7 +259,7 @@ class Ace extends Editor{
 		if( thing.code !== undefined && thing.code != null ){
 			thing.code.cid = id
 			thing.code.mode = thing.mode
-			Konekti.plugins.ace.register(thing.code, x.edit)
+			aceplugin.register(thing.code, x.edit)
 		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
 		x.edit.$blockScrolling = Infinity
 	}
@@ -359,26 +358,6 @@ class Ace extends Editor{
 	}
 }
 
-/** Ace class */
-if( Konekti.ace === undefined ) new AcePlugIn()
-
-/**
- * Creates an Ace configuration object
- * @method
- * aceConfig
- * @param id Id of the component that will contain the ace editor
- * @param width Width of the split component
- * @param height Height of the split component
- * @param initial Initial text inside the ace editor
- * @param mode Mode of the ace editor
- * @param theme Theme of the ace editor
- * @param code Lexical configuration for the ace editor  
- * @param parent Parent component
- */
-Konekti.aceConfig = function(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
-	return {"plugin":"ace", "id":id, "initial":initial, "mode":mode, "theme":theme, "code":code, 'width':width, 'height':height, 'parent':parent}
-}
-
 /**
  * Associates/adds an Ace editor component
  * @method
@@ -392,22 +371,5 @@ Konekti.aceConfig = function(id, width, height, initial, mode, theme, code, pare
  * @param code Lexical configuration for the ace editor  
  */
 Konekti.ace = function(id, width, height, initial, mode, theme, code){
-	return Konekti.build(Konekti.aceConfig(id, width, height, initial, mode, theme, code))
+	return new Ace(id, width, height, initial, mode, theme, code)
 }
-
-let ACE_PATH = "https://ace.c9.io/build/src/"
-Konekti.resource.JS(ACE_PATH+"ace.js", 
-	function (){
-		function check(){
-			if(ace === undefined) setTimeout( check, 100 )
-			else{
-				ace.config.set('basePath', ACE_PATH)
-				ace.config.set('modePath', ACE_PATH)
-				ace.config.set('themePath', ACE_PATH)
-				ace.config.set('workerPath', ACE_PATH)
-				Konekti.plugins.ace.done()
-			}
-		}
-		check()	
-	} 
-)
