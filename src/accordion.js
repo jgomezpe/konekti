@@ -89,9 +89,6 @@ class Accordion extends Container{
 	}	
 }
 
-/** Accordion class */
-if(Konekti.accordion === undefined) new AccordionPlugIn()
-
 /**
  * Associates/adds an accordion
  * @method
