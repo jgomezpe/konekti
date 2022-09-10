@@ -59,13 +59,14 @@ class Accordion extends Container{
 	 * @param parentHeight Parent's height
 	 */
 	setParentSize( parentWidth, parentHeight ){
+		var x = this
 		function check(){
-			if(this.children !== undefined){
-				for( var i=0; i<this.children.length; i++ ) this.children[i].setParentSize(parentWidth,parentHeight)
+			if(x.children !== undefined){
+				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(parentWidth,parentHeight)
 				var h = 0
-				for( var i=0; i<this.children.length; i++ ) h += this.children[i].height
-				this.height = h
-				this.vc().style.height = this.height
+				for( var i=0; i<x.children.length; i++ ) h += x.children[i].height
+				x.height = h
+				x.vc().style.height = x.height
 			}else setTimeout(check, 100)
 		}
 		check()		
