@@ -23,7 +23,6 @@ class Toc extends Accordion{
 		if(tree.action === undefined) tree.action = true
 		config.expand = tree.action?onclick:function(id){}
 		config.plugin = 'toc'
-		console.log(config)
 		return config
 	}
 
@@ -42,10 +41,10 @@ class Toc extends Accordion{
  * Associates/adds a table of contents
  * @method
  * toc
- * @param tree Table of Content component 
  * @param h Size of the main content (1,2,3..)
  * @param style Style of the toc
  * @param onclick Method called when an item is selected
+ * @param tree Table of Content component 
  * @param parent Parent component
  */
-Konekti.toc = function(tree, h, style, onclick, parent='KonektiMain'){ return new Toc(h, style, onclick, tree, parent) }
+Konekti.toc = function(h, style, onclick, tree, parent='KonektiMain'){ return new Toc(h, style, onclick, tree, parent) }
