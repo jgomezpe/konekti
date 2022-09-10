@@ -17,7 +17,7 @@ class Toc extends Accordion{
 			h = Math.min(h,6)
 			var content =null
 			if(tree.children !== undefined){
-				content = {'plugin':'div', 'setup':[tree.id+'Content', '', '', '', '', tree.id]}		
+				content = {'plugin':'container', 'setup':[tree.id+'Content', '', '', '', '', tree.id]}		
 				content.children = []
 				for( var i=0; i<tree.children.length; i++ ){
 					content.children.push(this.setup(tree.children[i], h+1, style, onclick, false, tree.id+'Content'))
@@ -46,7 +46,7 @@ class Toc extends Accordion{
 /**
  * Associates/adds a table of contents
  * @method
- * btn
+ * toc
  * @param tree Table of Content component 
  * @param h Size of the main content (1,2,3..)
  * @param style Style of the toc
