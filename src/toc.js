@@ -1,4 +1,4 @@
-uses('accordion')
+uses('https://jgomezpe.github.io/konekti/src/accordion')
 
 /** Konekti Plugin for TOC (Table of content) components */
 class TocPlugIn extends AccordionPlugIn{
