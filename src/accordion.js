@@ -106,7 +106,8 @@ class Accordion extends Container{
  * @param style Style of the header
  * @param content Content component
  * @param open If content component should be displayed or not
+ * @param parent Parent component
  */
-Konekti.accordion = function(id, icon, caption, h, style, content, open){
-	return new Accordion(id, icon, caption, h, style, content, open)
+Konekti.accordion = function(id, icon, caption, h, style, content, open, parent='KonektiMain'){
+	return new Accordion(id, icon, caption, h, style, content, open, parent)
 }

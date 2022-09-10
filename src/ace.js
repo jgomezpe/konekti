@@ -369,7 +369,8 @@ class Ace extends Editor{
  * @param mode Mode of the ace editor
  * @param theme Theme of the ace editor
  * @param code Lexical configuration for the ace editor  
+ * @param parent Parent component
  */
-Konekti.ace = function(id, width, height, initial, mode, theme, code){
-	return new Ace(id, width, height, initial, mode, theme, code)
+Konekti.ace = function(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
+	return new Ace(id, width, height, initial, mode, theme, code, parent)
 }

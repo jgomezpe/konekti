@@ -41,5 +41,6 @@ class Item extends Client{
  * @param id Id of the item
  * @param icon Icon of the item
  * @param caption Caption of the item
+ * @param parent Parent component
  */
-Konekti.item = function(id, icon, caption){ return new Item(id, icon, caption) }
+Konekti.item = function(id, icon, caption, parent='KonektiMain'){ return new Item(id, icon, caption, parent) }

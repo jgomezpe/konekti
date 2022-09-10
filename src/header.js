@@ -41,7 +41,8 @@ class Header extends Container{
  * @param caption Caption of the header
  * @param h Size of the header (1,2,3..)
  * @param style Style of the header
+ * @param parent Parent component
  */
-Konekti.header = function(id, icon, caption, h, style){
-	return new Header(id, icon, caption, h, style)
+Konekti.header = function(id, icon, caption, h, style, parent='KonektiMain'){
+	return new Header(id, icon, caption, h, style, parent)
 }

@@ -120,4 +120,4 @@ class Youtube extends MediaClient{
  * @param video youtube id of the video
  * @param parent Parent component
  */
-Konekti.youtube = function(id, width, height, video){ return new Youtube(id, width, height, video) }
+Konekti.youtube = function(id, width, height, video, parent='KonektiMain'){ return new Youtube(id, width, height, video, parent) }

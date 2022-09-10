@@ -51,5 +51,6 @@ class DivClient extends Editor{
  * @param height Height of the div's component
  * @param config Extra configuration of the div's component (html code: that uses character ' as delimiter)
  * @param inner Inner html code of the div's component (html code: that uses character ' as delimiter)
+ * @param parent Parent component
  */
-Konekti.div = function( id, width, height, config='', inner='' ){ return new DivClient(id, width, height, config, inner) }
+Konekti.div = function( id, width, height, config='', inner='', parent='KonektiMain' ){ return new DivClient(id, width, height, config, inner, parent) }

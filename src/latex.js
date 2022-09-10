@@ -78,4 +78,4 @@ class Latex extends Editor{
  * @param tex Latex code
  * @param parent Parent component
  */
-Konekti.latex = function(id, width, height, tex){ return new Latex(id, width, height, tex) }
+Konekti.latex = function(id, width, height, tex, parent='KonektiMain'){ return new Latex(id, width, height, tex, parent) }

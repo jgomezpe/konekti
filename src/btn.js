@@ -63,7 +63,8 @@ class Btn extends Container{
  * @param onclick Information of the method that will be executed when the button is pressed
  * @param style Style of the header
  * @param title Message that will be shown when mouse is over the button
+ * @param parent Parent component
  */
-Konekti.btn = function(id, icon, caption, onclick, style, title){
-	return new Btn(id, icon, caption, onclick, style, title)
+Konekti.btn = function(id, icon, caption, onclick, style, title, parent='KonektiMain'){
+	return new Btn(id, icon, caption, onclick, style, title, parent)
 }

@@ -12,7 +12,7 @@ class Toc extends Accordion{
 	 */
 	setup(h, style, onclick, tree, parent='KonektiMain'){
 		h = Math.min(h,6)
-		var content = []
+		var content = null
 		if(tree.children !== undefined){
 			var children = []
 			for( var i=0; i<tree.children.length; i++ )
@@ -45,5 +45,6 @@ class Toc extends Accordion{
  * @param h Size of the main content (1,2,3..)
  * @param style Style of the toc
  * @param onclick Method called when an item is selected
+ * @param parent Parent component
  */
-Konekti.toc = function(tree, h, style, onclick, open){ return new Toc(h, style, onclick, tree) }
+Konekti.toc = function(tree, h, style, onclick, parent='KonektiMain'){ return new Toc(h, style, onclick, tree, parent) }

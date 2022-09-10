@@ -58,5 +58,6 @@ class IFrameEditor extends Editor{
  * @param width Width of the div's component
  * @param height Height of the div's component
  * @param src Url/code for the iframe component
+ * @param parent Parent component
  */
-Konekti.iframe = function(id, width, height, src){ return new IFrameEditor(id, width, height, src) }
+Konekti.iframe = function(id, width, height, src, parent='KonektiMain'){ return new IFrameEditor(id, width, height, src, parent) }

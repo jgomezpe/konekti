@@ -692,8 +692,8 @@ class Canvas extends Editor{
  * @param height Height of the div's component
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+ * @param parent Parent component
  */
-Konekti.canvas = function(id, width, height, initial, custom_commands){
-	return new Canvas(id, width, height, initial, custom_commands)
+Konekti.canvas = function(id, width, height, initial, custom_commands, parent='KonektiMain'){
+	return new Canvas(id, width, height, initial, custom_commands, parent)
 }
-
