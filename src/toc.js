@@ -23,6 +23,7 @@ class Toc extends Accordion{
 		if(tree.action === undefined) tree.action = true
 		config.expand = tree.action?onclick:function(id){}
 		config.plugin = 'toc'
+		console.log(config)
 		return config
 	}
 
