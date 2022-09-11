@@ -15,9 +15,9 @@
 
 Konekti.uses('header','dropdown')
 
-class TheClient extends Client{
-	constructor(){ super({'id':'client'}) }
-	language(optId){ Konekti.vc("log").innerHTML =  'Lenguaje: '+ optId; }
+class TheClient{
+	constructor(){ Konekti.client['client'] = this }
+	language(optId){ Konekti.vc("log").innerHTML =  'Idioma: '+ optId; }
 	edit(optId){ Konekti.vc("log").innerHTML =  'Edición: '+ optId; }
 	media(optId){ Konekti.vc("log").innerHTML =  'Medio: '+ optId; }
 }
@@ -25,21 +25,21 @@ class TheClient extends Client{
 function KonektiMain(){
 	var client = new TheClient()
 
-	Konekti.header('title','', 'Dropdown (despleglable hacia abajo) de Konekti', 3, 'w3-green' )
-	Konekti.dropdown( "dd1", "fa-edit", "Editar", 'w3-blue-grey w3-xlarge', 'Opciones de edición', [
-			Konekti.btnConfig("copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Copiando"), 
-			Konekti.btnConfig("cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Cortando"), 
-			Konekti.btnConfig("paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Pegando")
+	Konekti.header('title','', 'Konekti Dropdown', 3, 'w3-green' )
+	Konekti.dropdown( "dd1", "fa-edit", "Editar", 'w3-blue-grey w3-xlarge', 'Opciones de edición', 'free', [
+			{'plugin':'btn', 'setup':["copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de copiar", 'dd1Drop']}, 
+			{'plugin':'btn', 'setup':["cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de cortar", 'dd1Drop']}, 
+			{'plugin':'btn', 'setup':["paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de pegar", 'dd1Drop']}
 		] 
 	)
 
-	Konekti.dropdown( "dd2", "fa-film", "Medio", 'w3-orange w3-large', 'Opciones de medios',[
-			Konekti.btnConfig("video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Video"), 
-			Konekti.btnConfig("audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Audio")
+	Konekti.dropdown( "dd2", "fa-film", "Media", 'w3-orange w3-large', 'Opciones de medios', 'free', [
+			{'plugin':'btn', 'setup':["video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de video", 'dd2Drop']}, 
+			{'plugin':'btn', 'setup':["audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de audio", 'dd2Drop']}
 		] 
 	)
 
-	Konekti.dropdownList( "dd3", "fa-language", "Idioma", 'w3-red w3-medium', 'Seleccionando idioma', ["English", "Español"], {"client":'client', "method":"language"})
+	Konekti.dropdown( "dd3", "fa-language", "Language", 'w3-red w3-medium', 'Selección de idionma','list', {'options':["English", "Español"], 'onclick':{"client":'client', "method":"language"}})
 }
 
 </script>
