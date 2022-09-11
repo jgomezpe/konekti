@@ -1,15 +1,3 @@
-/** Konekti Plugin for media components (audio/video) */
-class MediaPlugIn extends PlugIn{
-	/** Creates a Plugin for media components */
-	constructor(){ super('media') }
-	
-        /**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client( config ){ return new Media(config) }
-}
-
 /**
  * A media manager.
  */
