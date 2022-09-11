@@ -1,27 +1,33 @@
-uses('btn')
-
-/** Konekti Plugin for navigation (buttons) bar components */
-class NavBarPlugIn extends PlugIn{
-	/** Creates a Plugin for navbar components */
-	constructor(){ super('navbar') }
-
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client(config){ return new NavBar(config) }
-}
+uses('https://jgomezpe.github.io/konekti/src/btn.js')
 
 /** A Navigation Bar manager */
-class NavBar extends Client{
+class NavBar extends Container{
+	/**
+	 * Creates a Navigation bar configuration object
+	 * @param id Id/configuration of the navbar component
+	 * @param style Style of the navbar
+	 * @param btns Array of buttons to maintain by the navbar
+	 * @param client Client of the navbar component
+	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
+	 * @param parent Parent component
+	 * @return A NavBar manager
+	 */
+	setup(id, style, btns, client, method, parent='KonektiMain'){
+		return {'plugin':'navbar', 'id':id, 'style':style, 'client':client, 'method':method, 'children':btns, 'parent':parent}
+	}
 	/** 
 	 * Creates a NavBar Manager
-	 * @param config Configuration of the navbar
+	 * @param id Id/configuration of the navbar component
+	 * @param style Style of the navbar
+	 * @param btns Array of buttons to maintain by the navbar
+	 * @param client Client of the navbar component
+	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
+	 * @param parent Parent component
 	 */
-	constructor(config){
-		super(config)
-		this.method = config.method
-		this.client = config.client
+	constructor(id, style, btns, client, method, parent='KonektiMain'){
+		super(...arguments)
+		this.method = this.config.method
+		this.client = this.config.client || ''
 		this.fitRect = true
 	}
 
@@ -30,10 +36,8 @@ class NavBar extends Client{
 	 * @param child Child to be initilized
 	 * @param config Configuration of the client
 	 */
-	 init_child(child, config){ 
-		super.init_child(child, config)
-		this.method = this.method || config.method
-		this.client = this.client || config.client || ''
+	 init_child(child){ 
+		super.init_child(child)
 		child.plugin = child.plugin || 'btn'
 		child.style = (child.style!='')?child.style:(config.style||this.style)
 		if(child.run === undefined || child.run===null || child.run=='') child.run = {'client':this.client, 'method':this.method}
@@ -42,9 +46,8 @@ class NavBar extends Client{
 	
 	/**
 	 * Associated html code
-	 * @param config Client configuration
 	 */
-	html( config ){ return "<div id='"+this.id+"' class='"+config.style+" w3-bar'></div>" }   
+	html(){ return "<div id='"+this.id+"' class='"+this.config.style+" w3-bar'></div>" }   
 
 	/**
 	 * Inserts components into the navbar before the given component
@@ -101,24 +104,6 @@ class NavBar extends Client{
 	}
 }
 
-/** Navigation Bar class */
-if(Konekti.navbar===undefined) new NavBarPlugIn()
-
-/**
- * Creates a Navigation bar configuration object
- * @method
- * navbarConfig
- * @param id Id/configuration of the navbar component
- * @param style Style of the navbar
- * @param btns Array of buttons to maintain by the navbar
- * @param client Client of the navbar component
- * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
- * @param parent Parent component
- * @return A NavBar manager
- */
-Konekti.navbarConfig = function(id, style, btns, client, method, parent='KonektiMain'){
-	return {'plugin':'navbar', 'id':id, 'style':style, 'client':client, 'method':method, 'children':btns, 'parent':parent}
-}
 /**
  * Associates/adds a navigation bar component
  * @method
@@ -131,6 +116,4 @@ Konekti.navbarConfig = function(id, style, btns, client, method, parent='Konekti
  * @param parent Parent component
  * @return A NavBar manager
  */
-Konekti.navbar = function(id, style, btns, client, method){
-	return Konekti.build(Konekti.navbarConfig(id, style, btns, client, method))
-}
+Konekti.navbar = function(id, style, btns, client, method, parent='KonektiMain'){ return new NavBar(id, style, btns, client, method, parent) }
