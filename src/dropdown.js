@@ -18,8 +18,8 @@ class DropDown extends Btn{
 			var options = content.options
 			var onclick = content.onclick
 			for( var i=0; i<options.length; i++ )
-			if( typeof options[i] == 'string' ) options[i] = {'plugin':'btn', 'setup':[options[i], "", options[i], onclick, 'w3-bar-item', options[i]]}
-			else options[i] = {'plugin':'btn', 'setup':[options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title]}
+			if( typeof options[i] == 'string' ) options[i] = {'plugin':'btn', 'setup':[options[i], "", options[i], onclick, 'w3-bar-item', options[i], id+'Drop']}
+			else options[i] = {'plugin':'btn', 'setup':[options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title, id+'Drop']}
 			content = options
 		}	
 
