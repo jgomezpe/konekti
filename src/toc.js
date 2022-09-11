@@ -17,7 +17,7 @@ class Toc extends Accordion{
 			var children = []
 			for( var i=0; i<tree.children.length; i++ )
 				children.push({'plugin':'toc', 'setup':[h+1, style, onclick, tree.children[i], tree.id+'Content']})
-			content = {'plugin':'container', 'setup':[tree.id+'Content', '', '', children, tree.id]}		
+			content = {'plugin':'container', 'setup':[tree.id+'Content', '', '', '', children, tree.id]}		
 		}
 		var config = super.setup(tree.id, tree.icon, tree.caption, h, style, content, tree.open || false, parent)
 		if(tree.action === undefined) tree.action = true
