@@ -18,14 +18,16 @@ class DropDown extends Btn{
 			var options = content.options
 			var onclick = content.onclick
 			for( var i=0; i<options.length; i++ )
-			if( typeof options[i] == 'string' ) options[i] = {'plugin':'btn', 'setup':[options[i], "", options[i], onclick, 'w3-bar-item', options[i], id+'Drop']}
-			else options[i] = {'plugin':'btn', 'setup':[options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title, id+'Drop']}
+				if( typeof options[i] == 'string' ) options[i] = {'plugin':'btn', 'setup':[options[i], "", options[i], onclick, 'w3-bar-item', options[i], id+'Drop']}
+				else options[i] = {'plugin':'btn', 'setup':[options[i].id, options[i].icon, options[i].caption, onclick, 'w3-bar-item', options[i].title, id+'Drop']}
 			content = options
-		}	
+		}else{
+			if(!Array.isArray(content) ) content = [content]
+			for( var i=0; i<content.length; i++ ) content[i].parent = id +'Drop'
+		}
 
 		var config= super.setup(id, icon, caption, {"method":"drop", "client":id}, style, title, parent)
 		
-		if(!Array.isArray(content) ) content = [content]
 		var drop = {'plugin':'container', 'setup':[id+'Drop', '', '', "class='w3-dropdown-content w3-bar-block' style='margin-left:-16px;margin-top:6px'", content, id]}
 		config.children.push(drop)
 		config.plugin = 'dropdown'	
