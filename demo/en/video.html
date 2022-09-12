@@ -15,8 +15,8 @@
 
 Konekti.uses('header','media')
 
-class TheClient extends Client{
-	constructor(){ super('client') }
+class TheClient extends MainClient{
+	constructor(){ super() }
 	// Listen to video's play button 
 	play( id ){ Konekti.vc('log').innerHTML = 'Play button pressed: ' + id }
 	// Listen to video's pause button 
@@ -26,7 +26,7 @@ class TheClient extends Client{
 }
 
 function KonektiMain(){
-	var client = new TheClient('client')
+	var client = new TheClient()
 	Konekti.header('title','', 'Konekti Video', 3, 'w3-green' )
 	// Connects the video with the HTML component
 	var vd = Konekti.mp4( 'video', '60%','40%', 'https://www.w3schools.com/html/mov_bbb.mp4' )
