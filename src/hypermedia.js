@@ -12,50 +12,43 @@
 * @version 1.0
 */
 
-/** Konekti Plugin for hypermedia components */
-class HyperMediaPlugIn extends PlugIn{
-	/** Creates a Plugin for Hypermedia components */
-	constructor(){ super('hypermedia') }
-    
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param thing Instance configuration
-	 */
-	client( config ){ return new HyperMedia(config) }
-}
-
 /**
  * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
  * When the media is played, the set of editors are updated accroding to thier associated scripts.
  */
- class HyperMedia extends MediaClient{
+ class HyperMedia extends Container{
+	/**
+	 * Creates an hypermedia configuration object
+	 * @param id Id of the hypermedia component
+	 * @param width Width of the hypermedia component
+	 * @param height Height of the hypermedia component
+	 * @param layout Hypermedia layout
+	 * @param media Id of the media controller (must be a component of the layout)
+	 * @param scripts Scripts followed by the hypermedia
+	 * @param parent parent component
+	 */
+	setup(id, width, height, layout, media, scripts, parent='KonektiMain'){
+		if(!Array.isArray(layout)) layout = [layout] 
+		return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'with':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
+	}
+
 	/**
 	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
-	 * @param thing Hyper media client information
+	 * @param id Id of the hypermedia component
+	 * @param width Width of the hypermedia component
+	 * @param height Height of the hypermedia component
+	 * @param layout Hypermedia layout
+	 * @param media Id of the media controller (must be a component of the layout)
+	 * @param scripts Scripts followed by the hypermedia
+	 * @param parent parent component
 	 */	
-	constructor(thing){
-		super(thing)
-		this.scripts = thing.scripts || []
-		this.media = thing.media
+	constructor(id, width, height, layout, media, scripts, parent='KonektiMain'){
+		super(...arguments)
+		this.scripts = this.config.scripts || []
+		this.media = this.config.media
 		Konekti.client[this.media].addListener(this.id)
 	}
 	
-	/**
-	 * Updates the hypermedia client
-	 * @param config Hyper media client information
-	 * 
-         */
-	update(config){
-		var x = this
-		x.scripts = config.scripts || []
-		x.media = config.media
-		Konekti.bootstrap(config.children, x.id, function(components){
-			x.vc().innerHTML = ''
-			x.chidren = components
-			Konekti.client[x.media].addListener(x.id)
-		})
-	}
-         
 	/**
 	 * Plays the media component
 	 * @param id The media id 
@@ -111,24 +104,6 @@ class HyperMediaPlugIn extends PlugIn{
 	}
 }
 
-if(Konekti.hypermedia === undefined) new HyperMediaPlugIn()
-
-/**
- * Creates an hypermedia configuration object
- * @method
- * hypermediaConfig
- * @param id Id of the hypermedia component
- * @param width Width of the hypermedia component
- * @param height Height of the hypermedia component
- * @param layout Hypermedia layout
- * @param media Id of the media controller (must be a component of the layout)
- * @param scripts Scripts followed by the hypermedia
- * @param parent parent component
- */
-Konekti.hypermediaConfig = function(id, width, height, layout, media, scripts, parent='KonektiMain'){
-	return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'with':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
-}
-
 /**
  * Creates an hypermedia client
  * @method
@@ -139,7 +114,8 @@ Konekti.hypermediaConfig = function(id, width, height, layout, media, scripts, p
  * @param layout Hypermedia layout
  * @param media Id of the media controller (must be a component of the layout)
  * @param scripts Scripts followed by the hypermedia
+ * @param parent parent component
  */
-Konekti.hypermedia = function(id, width, height, layout, media, scripts){
-	return Konekti.build(Konekti.hypermediaConfig(id, width, height, layout, media, scripts))
+Konekti.hypermedia = function(id, width, height, layout, media, scripts, parent='KonektiMain'){
+	return new HyperMedia(id, width, height, layout, media, scripts,parent)
 }
