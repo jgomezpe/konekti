@@ -1,29 +1,72 @@
 
 /** Konekti Split Client */
-class SplitClient extends Client{
+class SplitClient extends Container{
+	/**
+	 * Creates a Split configuration object
+	 * @param id Id of the split component
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param type Type of split 'col' Vertical or 'row' Horizontal
+	 * @param percentage Percentage of the left/top subcomponent relative to the component's size
+	 * @param one Left/Top component
+	 * @param two Right/Bottom component
+	 * @param parent Parent component
+	 */
+	setup(id, width, height, type, percentage, one, two, parent='KonektiMain'){
+		percentage = percentage || 50
+		type = type || 'col'
+		var xfloat = type=='col'?'float:left;':''
+		var xheight = type=='col'?'100%':'8px'
+		var xwidth = type=='col'?'8px':'100%'
+
+		one.parent = id + 'One'
+		one.width = '100%'
+		one.height = '100%'
+		var done = {'plugin':'container', 'setup':[id+'One', xwidth, xheight, "style='"+xfloat+"'", [one], id]}
+
+		var bar = {'plugin':'div', 'setup':[id+'Bar', xwidth, xheight, "style='cursor:"+type+'-resize;'+xfloat+"' class='w3-sand'", '', id]}
+
+		two.width = '100%'
+		two.height = '100%'
+		two.parent = id + 'Two'
+		var dtwo = {'plugin':'container', 'setup':[id+'Two', xwidth, xheight, "style='"+xfloat+"'", [two], id]}
+		
+		var children = [done, bar, dtwo] 
+		return {'plugin':'split','id':id, 'width':width, 'height':height, 'type':type, 'start':percentage, 'children':children, 'parent':parent}
+	}
+
 	/** 
 	 * Creates a Split client
-	 * @param config Split configuration
+	 * @param id Id of the split component
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param type Type of split 'col' Vertical or 'row' Horizontal
+	 * @param percentage Percentage of the left/top subcomponent relative to the component's size
+	 * @param one Left/Top component
+	 * @param two Right/Bottom component
+	 * @param parent Parent component
 	 */
-	constructor( config ){
-		super(config)
-		// this.fitRect = true
-		this.type = config.type
-		this.start = config.start
+	constructor(id, width, height, type, percentage, one, two, parent='KonektiMain'){
+		super(...arguments)
+		this.type = this.config.type
+		this.start = this.config.start
+	}
+
+	setChildrenBack(){
 		var x = this
-		var c = this.children[1].vc()
+		var c = x.children[1].vc()
 		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
 		c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
-		this.vc('Over').addEventListener("mouseleave", function(e){ x.dragend(e);} )
+		x.vc('Over').addEventListener("mouseleave", function(e){ x.dragend(e);} )
 		window.addEventListener("mousemove", function(e){ x.dragmove(e); } )
 		window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
 		window.addEventListener("mouseup", function(){ x.dragend(); } )
 		window.addEventListener("touchend", function(){ x.dragend(); } )
 	}
 
-	html(config){
-		config.config = config.config || ''
-		return "<div id='"+this.id+"' "+config.config+"><div id='"+this.id+"Over' style='left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'></div></div>" 
+	html(){
+		return "<div id='"+this.id+"' "+this.config.config+"><div id='"+this.id +
+		"Over' style='left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'></div></div>" 
 	}
 
 	/**
@@ -112,61 +155,6 @@ class SplitClient extends Client{
 	} 
 }
 
-/** Konekti Split PlugIn */
-class SplitPlugIn extends PlugIn{
-	/** Creates a Plugin for split components */
-	constructor(){ super('split') }
-	
-	/**
-	 * Gets a client for a Split component
-	 * @param config Split configuration
-	 */  
-	client( config ){ return new SplitClient(config) }    
-}
-
-/** SplitPanel class */
-if(Konekti.split===undefined) new SplitPlugIn()
-
-/**
- * Creates a Split configuration object
- * @method
- * splitConfig
- * @param id Id of the split component
- * @param width Width of the split component
- * @param height Height of the split component
- * @param type Type of split 'col' Vertical or 'row' Horizontal
- * @param percentage Percentage of the left/top subcomponent relative to the component's size
- * @param one Left/Top component
- * @param two Right/Bottom component
- * @param parent Parent component
- */
-Konekti.splitConfig = function(id, width, height, type, percentage, one, two, parent='KonektiMain'){
-	percentage = percentage || 50
-	type = type || 'col'
-	var xfloat = type=='col'?'float:left;':''
-	var xheight = type=='col'?'100%':'8px'
-	var xwidth = type=='col'?'8px':'100%'
-	var done = Konekti.divConfig( id + 'One', xwidth, xheight, "style='"+xfloat+"'", '', id)
-	var bar = Konekti.divConfig( id + 'Bar', xwidth, xheight, "style='cursor:"+type+'-resize;'+xfloat+"' class='w3-sand'", '', id)
-	var dtwo = Konekti.divConfig( id + 'Two', xwidth, xheight, "style='"+xfloat+"'", '', id)
-	
-	if( one !== undefined ){
-		one.parent = id + 'One'
-		one.width = '100%'
-		one.height = '100%'
-		done.children = [one]
-	}
-	if( two !== undefined ){
-		two.width = '100%'
-		two.height = '100%'
-		two.parent = id + 'Two'
-		dtwo.children = [two]
-	}
-
-	var children = [done, bar, dtwo] 
-	return {'plugin':'split','id':id, 'width':width, 'height':height, 'type':type, 'start':percentage, 'children':children, 'parent':parent}
-}
-
 /**
  * Associates/adds Split panel
  * @method
@@ -178,7 +166,8 @@ Konekti.splitConfig = function(id, width, height, type, percentage, one, two, pa
  * @param percentage Percentage of the left/top subcomponent relative to the component's size
  * @param one Left/Top component
  * @param two Right/Bottom component
+ * @param parent Parent component
  */
-Konekti.split = function(id, width, height, type, percentage, one, two){
-	return Konekti.build(Konekti.splitConfig(id, width, height, type, percentage, one, two))
+Konekti.split = function(id, width, height, type, percentage, one, two, parent='KonektiMain'){
+	return new Split(id, width, height, type, percentage, one, two, parent)
 }

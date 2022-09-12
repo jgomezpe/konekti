@@ -1,26 +1,37 @@
-Konekti.load('navbar')
-/** Konekti Plugin for tab components */
-class TabPlugIn extends PlugIn{
-	/** Creates a Plugin for tab components */
-	constructor(){ super('tab') }
-
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client(config){ return new Tab(config) }
-}
+uses('https://jgomezpe.github.io/konekti/src/navbar.js')
 
 /** Tab manager */
-class Tab extends Client{
+class Tab extends Container{
+	/**
+	 * Creates a Tab panel configuration object 
+	 * @param id Id of the tab component
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
+	 * @param tabs Tab configurations 
+	 * @param parent Parent component
+	 */
+	setup(id, width, height, initial, tabs, parent='KonektiMain'){
+		var btns = []
+		var contents = []
+		for( var i=0; i<tabs.length; i++){
+			btns.push({'plugin':'btn', 'setup':[tabs[i].content.id+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title, id+'Bar']})
+			tabs[i].content.parent = id+'Content'
+			contents.push(tabs[i].content)
+		}
+		var bar = {'plugin':'navbar', 'setup':[id+'Bar', 'w3-light-grey w3-medium', btns, id, 'open', id]}
+		var content = {'plugin':'container', 'setup':[id+'Content', 'rest', 'rest', '', contents, id]}
+		return {'plugin':'tab', 'id':id, 'initial':initial, 'children':[bar,content], 'width':width, 'height':height, 'parent':parent}
+	}
+
 	/** 
 	 * Creates a tab component manager 
 	 * @param id Tab id
 	 * @param tabs Collection of tabs managed by the component
 	 */
-	constructor( config ){ 
-		super(config) 
-		this.open(config.initial+'Btn')
+	constructor(id, width, height, initial, tabs, parent='KonektiMain'){ 
+		super(...arguments) 
+		this.open(this.config.initial+'Btn')
 	}
 	
 	/**
@@ -59,32 +70,6 @@ class Tab extends Client{
 	}
 }
 
-/** Tab class */
-if(Konekti.tab===undefined) new TabPlugIn()
-
-/**
- * Creates a Tab panel configuration object 
- * @method
- * tabConfig
- * @param id Id of the tab component
- * @param width Width of the split component
- * @param height Height of the split component
- * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
- * @param tabs Tab configurations 
- * @param parent Parent component
- */
-Konekti.tabConfig = function(id, width, height, initial, tabs, parent='KonektiMain'){
-	var btns = []
-	var contents = []
-	for( var i=0; i<tabs.length; i++){
-		btns.push(Konekti.btnConfig(tabs[i].content.id+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title))
-		contents.push(tabs[i].content)
-	}
-	var bar = Konekti.navbarConfig(id+'Bar', 'w3-light-grey w3-medium', btns, id, 'open', id )
-	var content = Konekti.divConfig(id+'Content', 'rest', 'rest', '', '', id)
-	content.children = contents
-	return {'plugin':'tab', 'id':id, 'initial':initial, 'children':[bar,content], 'width':width, 'height':height, 'parent':parent}
-}
 /**
  * Associates/Adds a Tab panel
  * @method
@@ -94,7 +79,8 @@ Konekti.tabConfig = function(id, width, height, initial, tabs, parent='KonektiMa
  * @param height Height of the split component
  * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
  * @param tabs Tab configurations 
+ * @param parent Parent component
  */
-Konekti.tab = function(id, width, height, initial, tabs){
-	return Konekti.build(Konekti.tabConfig(id, width, height, initial, tabs))
+Konekti.tab = function(id, width, height, initial, tabs, parent='KonektiMain'){
+	return new Tab(id, width, height, initial, tabs, parent)
 }

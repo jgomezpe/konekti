@@ -1,25 +1,36 @@
 Konekti.resource.css('.konekti-main{transition:margin-left .4s}\n.konekti-sidebar{height:100%;width:200px;background-color:#fff;position:fixed!important;z-index:40;overflow:auto}\n.konekti-buttonsidebar{height:100%;width:20px;background-color:#fff;position:fixed!important;z-index:39;overflow:auto}\n@media (min-width:993px){\n.konekti-sidebar{\ndisplay:block!important\n}\n.konekti-buttonsidebar{\ndisplay:none\n}\n}\n@media (max-width:992px){\n.konekti-main{margin-left:20px!important;margin-right:0!important}\n.konekti-sidebar{\ndisplay:none\n}\n.konekti-buttonsidebar{\ndisplay:block!important\n}\n}')
 
-/** Konekti Plugin for applications with a sidebar */
-class SideBarPlugIn extends PlugIn{
-	/** Creates a Plugin for sidebar applications */
-	constructor(){ super('sidebar') }
-
-	/**
-	 * Creates a client for the plugin's instance
-	 * @param config Instance configuration
-	 */
-	client(config){ return new SideBar(config) }
-}
-
 /** Tab manager */
-class SideBar extends Client{
+class SideBar extends Container{
+	/**
+	 * Creates a sidebar configuration object
+	 * @param id Id of the iframe container
+	 * @param width Width of the div's component
+	 * @param height Height of the div's component
+	 * @param side Sidebar component
+	 * @param main Main component
+	 * @param parent Parent component
+	 */
+	setup(id, width, height, side, main, parent='KonektiMain'){
+		var client = 'Konekti.client["'+id+'"].'
+		side.parent = id+'Bar'
+		var one = {'plugin':'container', 'setup':[id+'Bar', '', '', "onmouseleave='"+client+"close()' class='konekti-sidebar w3-card w3-animate-left'",[side], id]}
+		var two = {'plugin':'div', 'setup':[id+'Resize', '', '', "onmouseenter='"+client+"open()' style='float:left' class='w3-xlarge konekti-buttonsidebar'", '&#9776;', id]}
+		main.parent = id+'Main'
+		var three = {'plugin':'container', 'setup':[id+'Main', '100%', '100%', "", [main], id]}
+		return {'plugin':'sidebar', 'id':id, 'width':width, 'height':height, 'children':[one,two,three], 'parent':parent}
+	}
+
 	/** 
 	 * Creates a tab component manager 
-	 * @param id Tab id
-	 * @param tabs Collection of tabs managed by the component
+	 * @param id Id of the iframe container
+	 * @param width Width of the div's component
+	 * @param height Height of the div's component
+	 * @param side Sidebar component
+	 * @param main Main component
+	 * @param parent Parent component
 	 */
-	constructor( config ){ super(config) }
+	constructor( id, width, height, side, main, parent='KonektiMain' ){ super(...arguments) }
 			
 	/**
 	 * Sets the parent's size (adjust each of its children components)
@@ -53,31 +64,6 @@ class SideBar extends Client{
 	close(){ this.vc('Bar').style.display = 'none' }
 }
 
-
-/** Side Bar class */
-if(Konekti.sidebar===undefined) new SideBarPlugIn()
-
-/**
- * Creates a sidebar configuration object
- * @method
- * sideConfig
- * @param id Id of the iframe container
- * @param width Width of the div's component
- * @param height Height of the div's component
- * @param side Sidebar component
- * @param main Main component
- * @param parent Parent component
- */
-Konekti.sidebarConfig = function(id, width, height, side, main, parent='KonektiMain'){
-	var client = 'Konekti.client["'+id+'"].'
-	var one = Konekti.divConfig(id+'Bar', '', '', "onmouseleave='"+client+"close()' class='konekti-sidebar w3-card w3-animate-left'",'', id)
-	var two = Konekti.divConfig(id+'Resize', '', '', "onmouseenter='"+client+"open()' style='float:left' class='w3-xlarge konekti-buttonsidebar'", '&#9776;', id)
-	var three = Konekti.divConfig(id+'Main', '100%', '100%', "", '', id)
-	one.children = [side]
-	three.children = [main]
-	return {'plugin':'sidebar', 'id':id, 'width':width, 'height':height, 'children':[one,two,three], 'parent':parent}
-}
-
 /**
  * Associates/Adds a side bar component (includes navigation bar, and main component)
  * @method
@@ -87,8 +73,8 @@ Konekti.sidebarConfig = function(id, width, height, side, main, parent='KonektiM
  * @param height Height of the div's component
  * @param side Sidebar component
  * @param main Main component
+ * @param parent Parent component
  */
-Konekti.sidebar = function(id, width, height, side, main){
-	return Konekti.build(Konekti.sidebarConfig(id, width, height, side, main))
+Konekti.sidebar = function(id, width, height, side, main, parent='KonektiMain'){ 
+	return new SideBar(id, width, height, side, main, parent) 
 }
-
