@@ -36,7 +36,7 @@ class NavBar extends Container{
 	 * @param child Child to be initilized
 	 * @param config Configuration of the client
 	 */
-	 init_child(child){ 
+	init_child(child){ 
 		function check(c){ return c===undefined || c===null || c=='' }
 		super.init_child(child)
 		child.plugin = child.plugin || 'btn'
