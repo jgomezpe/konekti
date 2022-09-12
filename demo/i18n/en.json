@@ -1,5 +1,5 @@
 {
-    "toc":{ "id": "index", "caption":"Home", "client":"client", "width":"100%", "children":[
+    "toc":{ "id": "home", "caption":"Home", "client":"client", "width":"100%", "open":true, "children":[
         {"id":"ace", "icon":"fa fa-file-text-o", "caption": "Ace Editor"},
         {"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Button"},
         {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
