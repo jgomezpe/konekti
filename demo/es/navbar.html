@@ -13,59 +13,58 @@
 Konekti.uses('navbar','header', 'dropdown')
 
 function add(){
-    Konekti.append("navbar3", Konekti.btnConfig('soccer','fa-soccer-ball-o','','','w3-blue-grey'))
+    Konekti.append("navbar3", {'plugin':'btn', 'setup':['soccer','fa-soccer-ball-o','','','w3-blue-grey']})
 }
 
 function del(){
     Konekti.client["navbar3"].remove("soccer")
 }
 
-class TheClient extends Client{
-	constructor(){ super({'id':'client'}) }
+class TheClient extends MainClient{
+	constructor(){ super() }
 	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 	language(optId){ Konekti.vc("log").innerHTML =  'Language: '+ optId; }
 	
-	addleaf(){ Konekti.append("navbar4", Konekti.btnConfig('leaf', 'fa-leaf','','','w3-blue-grey', 'Hoja')) }
-	addmobile(){ Konekti.append("navbar4", Konekti.btnConfig('mobile','fa-mobile','', '', 'w3-blue-grey', 'Móvil')) }
-	addmoon(){ Konekti.client["navbar4"].insertBefore('keep', Konekti.btnConfig('moon','fa-moon-o','', '', 'w3-blue-grey', 'Luna')) }
-	keep(){ Konekti.client["navbar4"].keep(['addleaf','addmobile', 'addmoon', 'Mantener']) }
+	addleaf(){ Konekti.append("navbar4", {'plugin':'btn', 'setup':['leaf', 'fa-leaf','','','w3-blue-grey', 'Leaf']}) }
+	addmobile(){ Konekti.append("navbar4", {'plugin':'btn', 'setup':['mobile','fa-mobile','', '', 'w3-blue-grey', 'Mobile']}) }
+	addmoon(){ Konekti.client["navbar4"].insertBefore('keep', {'plugin':'btn', 'setup':['moon','fa-moon-o','', '', 'w3-blue-grey', 'Moon']}) }
+	keep(){ Konekti.client["navbar4"].keep(['addleaf','addmobile', 'addmoon', 'keep']) }
 }
 
 function KonektiMain(){
 	var client = new TheClient()
 
-	Konekti.header('title','', 'Barras de navegación de Konekti', 3, 'w3-green' )
-	Konekti.header('header1','', 'Barra de navegación sin estilo', 4, 'w3-black' )	
+	Konekti.header('title','', 'Barra de navegación de Konekti', 3, 'w3-green' )
+	Konekti.header('header1','', 'Barra de navegación con estilo azul-gris y botón de despliegue (dropdown)', 4, 'w3-black' )	
 	var btn=[
-		Konekti.btnConfig("config", "fa-cogs", '', '', "w3-blue-grey", "Configurar"),
-		Konekti.btnConfig("coffee", "fa-coffee", '', '', "w3-blue-grey", "Café"),
-		Konekti.btnConfig("html", "fa-file-code-o", '', '', "w3-blue-grey", "HTML"),
-		Konekti.btnConfig("file", "fa-file-text-o", '', '', "w3-blue-grey", "Archivo"),
-		Konekti.dropdownListConfig( "dd3", "fa-language", "", 'w3-red ', 'Seleccionar idioma', ["English", "Español"], {"client":'client', "method":"language"})
+		{'plugin':'btn', 'setup':["config", "fa-cogs", '', '', "w3-blue-grey", "Configurar"]},
+		{'plugin':'btn', 'setup':["coffee", "fa-coffee", '', '', "w3-blue-grey", "Café"]},
+		{'plugin':'btn', 'setup':["html", "fa-file-code-o", '', '', "w3-blue-grey", "HTML"]},
+		{'plugin':'btn', 'setup':["file", "fa-file-text-o", '', '', "w3-blue-grey", "Archivo"]},
+		{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", 'w3-red ', 'Seleccionar idioma', 'list', {"options":["English", "Español"], "onclick":{"client":'client', "method":"language"}}]}
 	]		
 	var navbar = Konekti.navbar('navbar1', '', btn, 'client', 'select' ) 
 
-	Konekti.header('header2','', 'Barra de navegación color naranja e íconos largos', 4, 'w3-black' )	
+	Konekti.header('header2','', 'Barra con estilo naranja e íconos largos', 4, 'w3-black' )	
 	var btn2=[
-		Konekti.btnConfig("hand", "fa-hand-paper-o", '', '', '', 'Mano'),
-		Konekti.btnConfig("arrow","fa-arrow-left", '', '', '', 'Flecha'),
-		Konekti.btnConfig("face","fa-smile-o", '', '', '', 'Cara')
+		{'plugin':'btn', 'setup':["hand", "fa-hand-paper-o", '', '', '', 'Mano']},
+		{'plugin':'btn', 'setup':["arrow","fa-arrow-left", '', '', '', 'Flecha']},
+		{'plugin':'btn', 'setup':["face","fa-smile-o", '', '', '', 'Cara']}
 	]		
 	var navbar2 = Konekti.navbar('navbar2', 'w3-orange w3-large', btn2, 'client', 'select') 
-
-	Konekti.header('header3','', 'Adición y eliminación de botones', 4, 'w3-black' )	
+	Konekti.header('header3','', 'Adiciona y borra botones', 4, 'w3-black' )	
 	var btn3=[
-		Konekti.btnConfig("add", "fa-plus", "", "add()", "", "Adiciona botón"),
-		Konekti.btnConfig("remove", "fa-minus", "", "del()", "", "Elimina botón")
+		{'plugin':'btn', 'setup':["add", "fa-plus", "", "add()", "", "Adicionar botón"]},
+		{'plugin':'btn', 'setup':["remove", "fa-minus", "", "del()", "", "Borra botón"]}
 	]		
 	var navbar3 = Konekti.navbar('navbar3', 'w3-teal w3-xlarge', btn3, 'client', 'select' )
 
-	Konekti.header('header4','', 'Barra de navegación dinámica', 4, 'w3-black' )	
+	Konekti.header('header4','', 'Barra dinámica', 4, 'w3-black' )	
 	var btn4=[
-		Konekti.btnConfig("addleaf","fa-key", "", {"client":'client', "method":"addleaf"}, "", "Adiciona botón hoja"),
-		Konekti.btnConfig("addmobile","fa-pencil", "", {"client":'client', "method":"addmobile"}, "", "Adiciona botón dispositivo móvil"),
-		Konekti.btnConfig("addmoon", "fa-lemon-o", "", {"client":'client', "method":"addmoon"}, "", "Inserta botón de luna antes de botón de mantener"),
-		Konekti.btnConfig("keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Mantiene solo los botones originales")
+		{'plugin':'btn', 'setup':["addleaf","fa-key", "", {"client":'client', "method":"addleaf"}, "", "Adiciona botón hoja"]},
+		{'plugin':'btn', 'setup':["addmobile","fa-pencil", "", {"client":'client', "method":"addmobile"}, "", "Adiciona botón móvil"]},
+		{'plugin':'btn', 'setup':["addmoon", "fa-lemon-o", "", {"client":'client', "method":"addmoon"}, "", "Inserta botón luna"]},
+		{'plugin':'btn', 'setup':["keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Vuelve la barra al estado inicial"]}
 	]		
 	var navbar4 = Konekti.navbar('navbar4', 'w3-blue w3-xlarge', btn4, 'client', 'select' )
 }

@@ -16,7 +16,7 @@ function select(id){ Konekti.vc('log').innerHTML = 'Entrada de la TOC selecciona
 
 function KonektiMain(){
 	Konekti.header('aHeader2', 'fa-home', 'Probando una tabla de contenidos', 3, 'w3-yellow')	
-	Konekti.toc(4, '', select, {'id':'aTOC', 'caption':'Inicio', 'icon':'fa-folder', 'children':[
+	Konekti.toc(4, '', select, {'id':'aTOC', 'caption':'Inicio', 'icon':'fa-folder', 'open':true, 'children':[
 		{'id':'child1', 'caption':'Tema A', 'icon':'fa-arrow-left'}, 
 		{'id':'child2', 'caption':'Tema B', 'icon':'fa-smile-o', 'children':[
 			{'id':'child21', 'caption':'Tema D', 'icon':'fa-edit'}, 

@@ -18,8 +18,13 @@ function select(optId){ Konekti.vc("log").innerHTML =  'Seleccionado: '+ optId; 
 function KonektiMain(){
 	Konekti.header('title','', 'Barra lateral de Konekti', 4, 'w3-green' )
 
-	var toc = Konekti.tocConfig({'id':'aTOC', 'caption':'Inicio', 'icon':'fa-folder', 'children':[{'id':'child1', 'caption':'Tema A', 'icon':'fa-arrow-left'}, {'id':'child2', 'caption':'Tema B', 'icon':'fa-smile-o', 'children':[{'id':'child21', 'caption':'Tema D', 'icon':'fa-edit'}, {'id':'child22', 'caption':'Tema E', 'icon':'fa-copy'}]}, {'id':'child3', 'caption':'Tema C', 'icon':'fa-edit'}]}, 4, '', select, true)
-	var main = Konekti.youtubeConfig('main','100%','100%',"fv2Ms3C7Xrw")
+	var toc = {'plugin':'toc', 'setup':[ 4, '', select, {'id':'aTOC', 'caption':'Inicio', 'icon':'fa-folder', 'open':true, 'children':[
+		{'id':'child1', 'caption':'Tema A', 'icon':'fa-arrow-left'}, 
+		{'id':'child2', 'caption':'Tema B', 'icon':'fa-smile-o', 'children':[
+			{'id':'child21', 'caption':'Tema D', 'icon':'fa-edit'}, 
+			{'id':'child22', 'caption':'Tema E', 'icon':'fa-copy'}]}, 
+		{'id':'child3', 'caption':'Tema C', 'icon':'fa-edit'}]}]}
+	var main = {'plugin':'youtube', 'setup':['main','100%','100%',"fv2Ms3C7Xrw"]}
 	Konekti.sidebar('root', '100%', '100%', toc, main)
 }
 

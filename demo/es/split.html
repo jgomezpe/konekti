@@ -18,15 +18,15 @@ function KonektiMain(){
 	Konekti.header('vsplit1','', 'Split vertical', 4, 'w3-black' )
 
 	Konekti.split('vSplit', '100%', '50%', 'col', 70, 
-		Konekti.aceConfig('aceview', '100%','100%', '<div>Dentro de un editor ACE</div>', 'html'),
-		Konekti.latexConfig('latexview', '100%', '100%', 'Cuando \\(a \\ne 0\\), existen dos soluciones para \\(ax^2 + bx + c = 0\\) y estas son $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$')
+		{'plugin':'ace','setup':['aceview', '100%','100%', '<div>Dentro de un editor ACE</div>', 'html']},
+		{'plugin':'latex','setup':['latexview', '100%', '100%', 'Cuando \\(a \\ne 0\\), existen dos soluciones para \\(ax^2 + bx + c = 0\\) y estas son $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$']}
 	)
 
 	Konekti.header('hsplit2','', 'Split horizontal', 4, 'w3-black' )
 
 	Konekti.split('hSplit', '100%', '100%', 'row', 50, 
-		Konekti.iframeConfig('aIframe', '100%', '100%', 'https://wikipedia.com'),
-		Konekti.youtubeConfig('youtube', '100%', '100%', 'rPjpA4sn7yI')
+		{'plugin':'iframe','setup':['aIframe', '100%', '100%', 'https://wikipedia.com']},
+		{'plugin':'youtube','setup':['youtube', '100%', '100%', 'rPjpA4sn7yI']}
 	)
 }
 

@@ -15,8 +15,8 @@
 
 Konekti.uses('header','dropdown')
 
-class TheClient{
-	constructor(){ Konekti.client['client'] = this }
+class TheClient extends MainClient{
+	constructor(){ super() }
 	language(optId){ Konekti.vc("log").innerHTML =  'Idioma: '+ optId; }
 	edit(optId){ Konekti.vc("log").innerHTML =  'Edición: '+ optId; }
 	media(optId){ Konekti.vc("log").innerHTML =  'Medio: '+ optId; }
@@ -27,15 +27,15 @@ function KonektiMain(){
 
 	Konekti.header('title','', 'Konekti Dropdown', 3, 'w3-green' )
 	Konekti.dropdown( "dd1", "fa-edit", "Editar", 'w3-blue-grey w3-xlarge', 'Opciones de edición', 'free', [
-			{'plugin':'btn', 'setup':["copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de copiar", 'dd1Drop']}, 
-			{'plugin':'btn', 'setup':["cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de cortar", 'dd1Drop']}, 
-			{'plugin':'btn', 'setup':["paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de pegar", 'dd1Drop']}
+			{'plugin':'btn', 'setup':["copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de copiar"]}, 
+			{'plugin':'btn', 'setup':["cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de cortar"]}, 
+			{'plugin':'btn', 'setup':["paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de pegar"]}
 		] 
 	)
 
 	Konekti.dropdown( "dd2", "fa-film", "Media", 'w3-orange w3-large', 'Opciones de medios', 'free', [
-			{'plugin':'btn', 'setup':["video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de video", 'dd2Drop']}, 
-			{'plugin':'btn', 'setup':["audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de audio", 'dd2Drop']}
+			{'plugin':'btn', 'setup':["video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de video"]}, 
+			{'plugin':'btn', 'setup':["audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de audio"]}
 		] 
 	)
 

@@ -19,8 +19,8 @@ Konekti.uses('btn','header')
 function run(){ Konekti.vc("log").innerHTML =  'Botón de ejecutar fue seleccionado' }
 
 /* Client is defined */
-class TheClient{
-	constructor(){ Konekti.client['client'] = this }
+class TheClient extends MainClient{
+	constructor(){ super() }
 	/* When a button is redirected to a client method (select) */
 	select(optId){ Konekti.vc("log").innerHTML =  'Botón seleccionado '+ optId + ':' + Konekti.vc(optId).innerHTML; }
 	/* When the Play button is selected (id=btn1) */

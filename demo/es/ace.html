@@ -15,11 +15,8 @@
 
 Konekti.uses('btn','header','ace')
 
-class TheClient{
-	constructor(){
-		Konekti.client['client'] = this 
-		this.id = 'client'
-	}
+class TheClient extends MainClient{
+	constructor(){ super() }
 	annotation( id, annot ){ Konekti.vc("log").innerHTML = 'Anotaciones de '+id+' cambiaron, ahora se tienen '+annot.length+' anotaciones' }
 	onchange(id){  Konekti.vc("log").innerHTML = 'Contenido del editor '+id+' cambió'}
 }
