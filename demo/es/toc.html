@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Numtseng</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+</head>
+
+<body>
+    <div id="log" style='width:100%'>Entrada seleccionada de la tabla de contenidos aparecerá aquí...</div>
+<script>
+
+Konekti.uses('toc','header')
+
+function select(id){ Konekti.vc('log').innerHTML = 'Entrada de la TOC seleccionada..'+id }
+
+function KonektiMain(){
+	Konekti.header('aHeader2', 'fa-home', 'Probando una tabla de contenidos', 3, 'w3-yellow')	
+	Konekti.toc(4, '', select, {'id':'aTOC', 'caption':'Inicio', 'icon':'fa-folder', 'children':[
+		{'id':'child1', 'caption':'Tema A', 'icon':'fa-arrow-left'}, 
+		{'id':'child2', 'caption':'Tema B', 'icon':'fa-smile-o', 'children':[
+			{'id':'child21', 'caption':'Tema D', 'icon':'fa-edit'}, 
+			{'id':'child22', 'caption':'Tema E', 'icon':'fa-copy'}]
+		}, 
+		{'id':'child3', 'caption':'Tema C', 'icon':'fa-edit'}]}
+	)
+}
+
+</script>
+
+</body>
+</html>
