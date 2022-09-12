@@ -41,10 +41,16 @@ class Tab extends Container{
 	 */
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize( parentWidth, parentHeight )
-		var bar = this.children[0]
-		var tabs = this.children[1]
-		bar.setParentSize(this.width,this.height)
-		tabs.setParentSize(this.width,this.height-bar.height)
+		var x = this
+		function check(){
+			if( x.children !== undefined && x.children !== null && x.children.length>0 ){
+				var bar = x.children[0]
+				var tabs = x.children[1]
+				bar.setParentSize(x.width,x.height)
+				tabs.setParentSize(x.width,x.height-bar.height)
+			}else setTimeout(check, 100)
+		}
+		check()
 	}	
 
 	/**

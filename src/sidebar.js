@@ -39,15 +39,16 @@ class SideBar extends Container{
 	 */
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize( parentWidth, parentHeight )
+		var x = this
 		function check(){
 			if( x.children !== undefined && x.children !== null && x.children.length>0 ){
 				if(parentWidth > 992){
-					this.children[0].setParentSize(200,this.height)
-					this.children[2].setParentSize(this.width-200, this.height)
-					this.children[2].vc().style.marginLeft = 200 + 'px'
+					x.children[0].setParentSize(200,x.height)
+					x.children[2].setParentSize(x.width-200, x.height)
+					x.children[2].vc().style.marginLeft = 200 + 'px'
 				}else{
-					this.children[2].setParentSize(this.width-20, this.height)
-					this.children[2].vc().style.marginLeft = 20 + 'px'
+					x.children[2].setParentSize(x.width-20, x.height)
+					x.children[2].vc().style.marginLeft = 20 + 'px'
 				}	
 			}else setTimeout(check, 100)
 		}

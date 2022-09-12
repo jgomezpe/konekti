@@ -128,30 +128,36 @@ class Split extends Container{
 	 */
 	setParentSize( parentWidth, parentHeight ){
 		this.updateSize(parentWidth, parentHeight)
-		parentWidth = this.width
-		parentHeight = this.height
-		var s = this.start
-		if(s!=0){
-			if(this.type=='col'){
-				this.children[0].defWidth = Math.round(s*(parentWidth-8)/100)	+ 'px'
-				this.children[2].defWidth = Math.round((100-s)*(parentWidth-8)/100)	+ 'px'  
-				this.children[0].defHeight = '100%'	
-				this.children[2].defHeight = '100%'	  
-			}else{
-				this.children[0].defHeight = Math.round(s*(parentHeight-8)/100)	+ 'px'
-				this.children[2].defHeight = Math.round((100-s)*(parentHeight-8)/100)	+ 'px'  
-				this.children[0].defWidth = '100%'	
-				this.children[2].defWidth = '100%'	  
-			}
-			this.start = 0
-		}else{
-			if(this.type=='col'){
-				this.children[2].defWidth = (parentWidth - this.children[0].width - 8) + 'px'
-			}else{
-				this.children[2].defHeight = (parentHeight - this.children[0].height - 8) + 'px'
-			}		
+		var x = this
+		function check(){
+			if( x.children !== undefined && x.children !== null && x.children.length>0 ){
+				parentWidth = x.width
+				parentHeight = x.height
+				var s = x.start
+				if(s!=0){
+					if(x.type=='col'){
+						x.children[0].defWidth = Math.round(s*(parentWidth-8)/100)	+ 'px'
+						x.children[2].defWidth = Math.round((100-s)*(parentWidth-8)/100)	+ 'px'  
+						x.children[0].defHeight = '100%'	
+						x.children[2].defHeight = '100%'	  
+					}else{
+						x.children[0].defHeight = Math.round(s*(parentHeight-8)/100)	+ 'px'
+						x.children[2].defHeight = Math.round((100-s)*(parentHeight-8)/100)	+ 'px'  
+						x.children[0].defWidth = '100%'	
+						x.children[2].defWidth = '100%'	  
+					}
+					x.start = 0
+				}else{
+					if(x.type=='col'){
+						x.children[2].defWidth = (parentWidth - x.children[0].width - 8) + 'px'
+					}else{
+						x.children[2].defHeight = (parentHeight - x.children[0].height - 8) + 'px'
+					}		
+				}
+				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)				
+			}else setTimeout(check, 100)
 		}
-		for( var i=0; i<this.children.length; i++ ) this.children[i].setParentSize(this.width,this.height)
+		check()		
 	} 
 }
 
