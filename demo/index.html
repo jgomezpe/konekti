@@ -9,11 +9,11 @@
 <body>
 
 	<script>
-		Konekti.uses('accordion','sidebar','navbar','dropdown','ace','iframe','split')
+		Konekti.uses('toc','sidebar','navbar','dropdown','ace','iframe','split')
 
-		class KMain extends Client{
+		class KMain extends MainClient{
 			constructor(lang){
-				super('client')
+				super()
 				this.page = ''
 				this.lang = lang
 			}
@@ -46,25 +46,27 @@
 					lang = 'en'
 					Konekti.resource.JSON('https://jgomezpe.github.io/konekti/demo/i18n/'+lang+'.json', callback)
 				}else{
+					console.log(json.toc)
 					var client = new KMain(lang)
-					var toc = Konekti.tocConfig(json.toc, 4, '', {'client':'client', 'method':'select'},true)
+					var toc = {'plugin':'toc', 'setup':[4, '', {'client':'client', 'method':'select'}, json.toc]}
 
 					var btn=[
-					Konekti.btnConfig("run", "fa-play", '', {'client':'client'}, "w3-blue-grey", "Run"),
-						Konekti.dropdownListConfig( "language", "fa-language", "", 'w3-blue-grey', json.language, [
+						{'plugin':'btn', 'setup':["run", "fa-play", '', {'client':'client'}, "w3-blue-grey", "Run"]},
+						{'plugin':'dropdown', 'setup':["language", "fa-language", "", 'w3-blue-grey', json.language, 'list', {'options':[
 								{'id':'en', 'caption':"English"}, 
 								{'id':'es','caption':"Español"}], 
-							{"client":'client', "method":"language"}
-						)
+								'onclick':{"client":'client', "method":"language"}}
+							]
+						}	
 					]
-					var navbar = Konekti.navbarConfig('main-navbar', 'w3-blue-grey', btn, 'client', 'select' ) 
+					var navbar = {'plugin':'navbar', 'setup':['main-navbar', 'w3-blue-grey', btn, 'client', 'select']}
 
-					var control = Konekti.splitConfig('coderviewer', '100%', 'rest', 'col', 50, 
-						Konekti.aceConfig('coder', '100%','100%', '', 'html'),
-						Konekti.iframeConfig('viewer', '100%', '100%', '')
-					)
+					var control = {'plugin':'split', 'setup':['coderviewer', '100%', 'rest', 'col', 50, 
+						{'plugin':'ace', 'setup':['coder', '100%','100%', '', 'html']},
+						{'plugin':'iframe', 'setup':['viewer', '100%', '100%', '']}
+					]}
 
-					var main = Konekti.divConfig('main-content','100%','100%', '', [navbar,control])
+					var main = {'plugin':'container', 'setup':['main-content','100%','100%', '', [navbar,control]]}
 
 					Konekti.sidebar('root', '100%', '100%', toc, main)	
 					Konekti.resize()
