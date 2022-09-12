@@ -8,7 +8,7 @@
         {"id":"div", "icon":"fa fa-code", "caption": "HTML"},
         {"id":"iframe", "icon":"fa fa-link", "caption": "IFrame"},
         {"id":"latex", "icon":"fa fa-superscript", "caption": "Latex"},
-        {"id":"media", "icon":"fa fa-film",  "caption": "Medio", "children":[
+        {"id":"media", "icon":"fa fa-film",  "caption": "Medio", "action":false, "children":[
             {"id":"audio", "icon":"fa fa-volume-up", "caption":"Audio"},
             {"id":"video", "icon":"fa fa-video-camera", "caption":"Video"}
         ]},
