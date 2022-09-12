@@ -26,8 +26,6 @@ class NavBar extends Container{
 	 */
 	constructor(id, style, btns, client, method, parent='KonektiMain'){
 		super(...arguments)
-		this.method = this.config.method
-		this.client = this.config.client || ''
 		this.fitRect = true
 	}
 
@@ -43,7 +41,7 @@ class NavBar extends Container{
 		child.style = (child.style!='')?child.style:(config.style||this.style)
 		switch(child.plugin){
 			case 'btn':
-				if(child.setup!==undefined && check(child.setup[3])) child.setup[3] = {'client':this.client, 'method':this.method}
+				if(child.setup!==undefined && check(child.setup[3])) child.setup[3] = {'client':this.config.client, 'method':this.config.method}
 			break;
 			case 'dropdown':
 			break;
