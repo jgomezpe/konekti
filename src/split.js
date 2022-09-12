@@ -53,6 +53,7 @@ class Split extends Container{
 	}
 
 	setChildrenBack(){
+		super.setChildrenBack()
 		var x = this
 		var c = x.children[1].vc()
 		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
