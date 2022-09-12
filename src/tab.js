@@ -75,6 +75,7 @@ class Tab extends Container{
 				btn.className = btn.className.replace("w3-light-grey", "w3-grey")
 				for( var c in tabs ) tabs[c].vc().style.display = "none"  
 				Konekti.vc(page).style.display = "initial"
+				Konekti.resize()
 				var ta = Konekti.vc(page).getElementsByTagName('textarea')
 				for( var k=0; k<ta.length; k++ ) ta[k].focus()
 			}else setTimeout(check, 100)
