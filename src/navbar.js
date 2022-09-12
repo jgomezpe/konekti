@@ -37,10 +37,18 @@ class NavBar extends Container{
 	 * @param config Configuration of the client
 	 */
 	 init_child(child){ 
+		function check(c){ return c===undefined || c===null || c=='' }
 		super.init_child(child)
 		child.plugin = child.plugin || 'btn'
 		child.style = (child.style!='')?child.style:(config.style||this.style)
-		if(child.run === undefined || child.run===null || child.run=='') child.run = {'client':this.client, 'method':this.method}
+		switch(child.plugin){
+			case 'btn':
+				if(child.setup!==undefined && check(child.setup[3])) child.setup[3] = {'client':this.client, 'method':this.method}
+			break;
+			case 'dropdown':
+			break;
+			default:
+		}
 		return child
 	}
 	
