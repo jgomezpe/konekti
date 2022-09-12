@@ -10,7 +10,7 @@
 <div id="log" style='width:100%'>Selected option will appear here...</div>
 <script>
 
-Konekti.uses('navbar','header')
+Konekti.uses('navbar','header', 'dropdown')
 
 function add(){
     Konekti.append("navbar3", {'plugin':'btn', 'setup':['soccer','fa-soccer-ball-o','','','w3-blue-grey']})
@@ -35,7 +35,7 @@ function KonektiMain(){
 	var client = new TheClient()
 
 	Konekti.header('title','', 'Konekti Navigation Bars', 3, 'w3-green' )
-	Konekti.header('header1','', 'Navbar with default style', 4, 'w3-black' )	
+	Konekti.header('header1','', 'Navbar with blue-grey style and dropdown button', 4, 'w3-black' )	
 	var btn=[
 		{'plugin':'btn', 'setup':["config", "fa-cogs", '', '', "w3-blue-grey", "Configure"]},
 		{'plugin':'btn', 'setup':["coffee", "fa-coffee", '', '', "w3-blue-grey", "Coffe"]},
@@ -44,11 +44,7 @@ function KonektiMain(){
 		{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", 'w3-red ', 'Selecting language', 'list', {"options":["English", "Español"], "onclick":{"client":'client', "method":"language"}}]}
 	]		
 	var navbar = Konekti.navbar('navbar1', '', btn, 'client', 'select' ) 
-/*
-	// Adds language dropdown
-	navbar.add( {'plugin':'dropdown', "id":"lang", "icon":"fa fa-language", "method":"select", 
-				"options":[{"id":"es","caption":"Español"}, {"id":"en","caption":"English"}]} )
-*/
+
 	Konekti.header('header2','', 'Navbar with orange style and large icons', 4, 'w3-black' )	
 	var btn2=[
 		{'plugin':'btn', 'setup':["hand", "fa-hand-paper-o", '', '', '', 'Hand']},
@@ -68,7 +64,7 @@ function KonektiMain(){
 		{'plugin':'btn', 'setup':["addleaf","fa-key", "", {"client":'client', "method":"addleaf"}, "", "Add leaf button"]},
 		{'plugin':'btn', 'setup':["addmobile","fa-pencil", "", {"client":'client', "method":"addmobile"}, "", "Add mobile button"]},
 		{'plugin':'btn', 'setup':["addmoon", "fa-lemon-o", "", {"client":'client', "method":"addmoon"}, "", "Insert moon button"]},
-		{'plugin':'btn', 'setup':["keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Keeps original buttons"]}
+		{'plugin':'btn', 'setup':["keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Goes to the original navbar state"]}
 	]		
 	var navbar4 = Konekti.navbar('navbar4', 'w3-blue w3-xlarge', btn4, 'client', 'select' )
 }

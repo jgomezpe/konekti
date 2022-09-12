@@ -15,8 +15,8 @@ function KonektiMain(){
 	Konekti.header('title','', 'Konekti Tabs', 3, 'w3-green' )
 	
 	Konekti.tab('aTab', '50%', '40%', "YouTubeTab", [
-		{'caption':"YouTube", 'icon':"fa fa-youtube", 'title':'Youtube Tab','content':Konekti.youtubeConfig("YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw')}, 
-		{'caption':"Editor", 'icon':'fa fa-edit', 'title':'Ace Tab', 'content':Konekti.aceConfig( 'EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )}
+		{'caption':"YouTube", 'icon':"fa fa-youtube", 'title':'Youtube Tab','content':{'plugin':'youtube','setup':["YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw']}}, 
+		{'caption':"Editor", 'icon':'fa fa-edit', 'title':'Ace Tab', 'content':{'plugin':'ace','setup':['EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' ]}}
 	])
 }
 

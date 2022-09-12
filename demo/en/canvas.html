@@ -13,17 +13,8 @@
 
 Konekti.uses('header','canvas','btn','ace')
 
-function run(){
-	// Sending the command from the editor to the canvas
-   Konekti.client['canvas'].setText( Konekti.client['coder'].getText() )
-}
-
-function KonektiMain(){
-	// Commands to be run (left as string to show them into the editor)
-	var initial = '{"command":"compound","commands":[\n	{"r":true,"x":1,"y":1,"command":"fit", "commands":[\n		{"x":1,"y":0,"command":"translate","commands":[\n			{"r":1.5707963267948966,"x":0.5,"y":0.5,"command":"rotate","commands":[{"command":"/"}, {"command":"_"}]}\n		]},\n		{"command":"compound","commands":[{"command":"_"},{"command":"-"}]}\n	]}\n]}'
-
-	// Customized commands (based on primitive commands)
-	var commands = [
+function custom_commands(){
+    return [
         { "command":":" },
         { 
             "command":"_", 
@@ -109,7 +100,20 @@ function KonektiMain(){
                 }
             ]
         }       
-      ]      
+    ] 
+}
+
+function run(){
+	// Sending the command from the editor to the canvas
+   Konekti.client['canvas'].setText( Konekti.client['coder'].getText() )
+}
+
+function KonektiMain(){
+	// Commands to be run (left as string to show them into the editor)
+	var initial = '{"command":"compound","commands":[\n	{"r":true,"x":1,"y":1,"command":"fit", "commands":[\n		{"x":1,"y":0,"command":"translate","commands":[\n			{"r":1.5707963267948966,"x":0.5,"y":0.5,"command":"rotate","commands":[{"command":"/"}, {"command":"_"}]}\n		]},\n		{"command":"compound","commands":[{"command":"_"},{"command":"-"}]}\n	]}\n]}'
+
+	// Customized commands (based on primitive commands)
+	var commands = custom_commands()  
     
 	Konekti.header('title','', 'Konekti Canvas', 3, 'w3-green' )
 	Konekti.header('hcanvas','fa-edit', 'Canvas', 4, 'w3-black' )
