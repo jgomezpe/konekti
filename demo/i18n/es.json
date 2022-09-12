@@ -1,6 +1,7 @@
 {
-    "toc":{ "id": "home", "caption":"Inicio", "client":"client", "width":"100%", "open":true, "children":[
+    "toc":{ "id": "home", "caption":"Inicio", "icon":"fa-home", "client":"client", "width":"100%", "open":true, "children":[
         {"id":"ace", "icon":"fa fa-file-text-o", "caption": "Editor Ace"},
+        {"id":"accordion", "icon":"fa fa-sitemap", "caption": "Acordeón"},
         {"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Botón"},
         {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
         {"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
@@ -16,10 +17,9 @@
         {"id":"sidebar", "icon":"fa fa-bookmark-o", "caption": "Barra lateral"},
         {"id":"split", "icon":"fa fa-columns", "caption": "Split"},
         {"id":"tab", "icon":"fa fa-clone", "caption": "Tab"},
-        {"id":"accordion", "icon":"fa fa-sitemap", "caption": "Acordeón"},
+        {"id":"toc", "icon":"fa fa-sitemap", "caption": "TOC"},
         {"id":"youtube", "icon":"fa fa-youtube", "caption": "Youtube"},
-        {"id":"github", "icon":"fa-github", "caption": "Código fuente"},
-        {"id":"api", "caption": "API"}
+        {"id":"github", "icon":"fa-github", "caption": "Código fuente"}
     ]},
     "language":"Idioma",
     "run":"Ejecutar"
