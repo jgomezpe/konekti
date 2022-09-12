@@ -321,6 +321,7 @@ class KonektiAPI{
 	 * @param plugs Colection of dependecies
 	 */
 	dependecies(component, plugs={}){
+		if(component===undefined || component===null) return plugs
 		function check(c){ return c !== undefined && c !== null && c.length > 0 }
 		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependecies(component[i], plugs)
 		else if( typeof component == 'object' && check(component.plugin)){
