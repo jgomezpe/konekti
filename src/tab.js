@@ -15,7 +15,8 @@ class Tab extends Container{
 		var btns = []
 		var contents = []
 		for( var i=0; i<tabs.length; i++){
-			btns.push({'plugin':'btn', 'setup':[tabs[i].content.id+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title, id+'Bar']})
+			var cid = tabs[i].content.id || tabs[i].content.setup[0]
+			btns.push({'plugin':'btn', 'setup':[cid+'Btn', tabs[i].icon, tabs[i].caption, null, 'w3-light-grey', tabs[i].title, id+'Bar']})
 			tabs[i].content.parent = id+'Content'
 			contents.push(tabs[i].content)
 		}
