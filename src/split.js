@@ -1,6 +1,6 @@
 
 /** Konekti Split Client */
-class SplitClient extends Container{
+class Split extends Container{
 	/**
 	 * Creates a Split configuration object
 	 * @param id Id of the split component
