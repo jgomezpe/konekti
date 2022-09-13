@@ -29,7 +29,7 @@
 	 */
 	setup(id, width, height, layout, media, scripts, parent='KonektiMain'){
 		if(!Array.isArray(layout)) layout = [layout] 
-		return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'with':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
+		return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'width':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
 	}
 
 	/**
@@ -46,7 +46,17 @@
 		super(...arguments)
 		this.scripts = this.config.scripts || []
 		this.media = this.config.media
-		Konekti.client[this.media].addListener(this.id)
+	}
+
+	setChildrenBack(){
+		super.setChildrenBack()
+		var x = this
+		function check(){
+			if(Konekti.client[x.media] !== undefined && Konekti.client[x.media] !== null)
+				Konekti.client[x.media].addListener(x.id)
+			else setTimeout(check,100)
+		}
+		check()		
 	}
 	
 	/**
