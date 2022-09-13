@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Konekti: Hypermedia</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+    <style>
+        .hidden {
+            visibility: hidden;
+            overflow: hidden;
+            width: 0px;
+            height: 0px;
+        }
+        </style>
+</head>
+    
+<body>        
+    <div id='infotext' class="hidden">
+        Python Numtseng es un curso en línea para aprender los fundamentos del lenguaje de programación Python.
+        </br></br>
+        Python es un lenguaje de programación interpretado, diseñado por Guido van Rossum con el fin de facilitar 
+        la lectura de código fuente. 
+        </br></br>
+        Es un lenguaje multi-paradigma pues soporta parcialmente la programación orientada a objetos, la programación imperativa y la programación funcional.
+        </br></br>El programa de la derecha imprime en consola el texto Hola Mundo (línea 1), 
+        </br>luego solicita al usuario que ingrese un nombre (línea 2) 
+        </br>y finalmente muestra el nombre leido acompañado de un saludo (línea 3).
+        </br></br>
+        El contenido del curso está organizado como un libro: capítulos, secciones, subsecciones y finalmente sesiones 
+        que pueden ser navegadas mediante la tabla de contenidos ubicada a la izquierda (initialmente oculta en pantallas de tamaño pequeño) 
+        o usando los botones en la barra de navegacion:
+        </br></br>
+        <i class='fa fa-arrow-circle-o-left'></i> para ir al contenido hermano previo (contenido anterior al mismo nivel).
+        </br></br>
+        <i class='fa fa-arrow-circle-o-up'></i> para ir al contenido del nivel padre (nivel que contiene la unidad).
+        </br></br>
+        <i class='fa fa-arrow-circle-o-down'></i> para ir al primer contenido hijo (primer contenido desarrollado en el nivel).
+        </br></br>
+        <i class='fa fa-arrow-circle-o-right'></i> para ir al siguiente contenido hermano (siguiente contenido en el mismo nivel).
+        </br></br>
+        <i class='fa fa-play-circle-o'></i> para correr el programa escrito en python en el editor (arriba/derecha) y usando el programa en la consola de python (abajo/derecha).
+        </br></br><i class='fa fa-language'></i> para cambiar el lenguaje usado por la interfaz (actualmente solo soporta español e inglés).
+        </br></br>
+        El contenido de la sesión se presenta en un componente enriquecido con matemáticas (abajo a la izquierda).
+        </br></br>
+        Finalmente, un elemento hipermedial en la parte superior izquierda le permite seguir el contenido como una presentación dinámica.        
+    </div>    
+	<script>
+
+        Konekti.uses('hypermedia', 'header')
+
+		function KonektiMain(){
+            Konekti.header('title','', 'Konekti Hypermedia', 3, 'w3-green w3-center' )
+
+            var audio = {'plugin':'media', 'setup':["mediacontrol", "100%", "", "audio", "mp3", "https://jgomezpe.github.io/numtseng/vlo/es/computer/program/python/intro.mp3"]}
+            var text = {'plugin':'latex', 'setup':["info", '100%', 'rest', Konekti.vc('infotext').innerHTML]}
+            var left = {'plugin':'container', 'setup':['explain','100%','100%', '', [audio,text]]}
+            var py = {'plugin':'iframe', 'setup':["pythonCoder", "100%", "100%", 'https://replit.com/@JonatanGomezP/pythonintroes?embed=true']}
+    
+            var control = {'plugin':'split', 'setup':['coderviewer', '100%', '100%', 'col', 50, left, py]}
+
+            var scripts = [{"target":"info", "mark":[
+                    {"time":0, "end":124, "add":""},
+                    {"time":7, "end":302, "add":""}, 
+                    {"time":37, "end":460, "add":""}, 
+                    {"time":50, "end":731, "add":""},		  
+                    {"time":84, "end":1045, "add":""}, 
+                    {"time":119, "end":1181, "add":""}, 
+                    {"time":127, "end":1325, "add":""}, 
+                    {"time":138, "end":1459, "add":""}, 
+                    {"time":141, "end":1607, "add":""}, 
+                    {"time":151, "end":1802, "add":""}, 
+                    {"time":178, "end":1941, "add":""}, 
+                    {"time":191, "end":2078, "add":""}, 
+                    {"time":207, "add":""} 
+                ]		
+            }]
+
+            Konekti.hypermedia('book','100%','rest', control, 'mediacontrol', scripts)
+
+            Konekti.resize()
+        }
+	</script>
+</body>
+</html>
