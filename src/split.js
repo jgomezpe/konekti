@@ -32,7 +32,7 @@ class Split extends Container{
 		var dtwo = {'plugin':'container', 'setup':[id+'Two', xwidth, xheight, "style='"+xfloat+"'", [two], id]}
 		
 		var children = [done, bar, dtwo] 
-		return {'plugin':'split','id':id, 'width':width, 'height':height, 'type':type, 'start':percentage, 'children':children, 'parent':parent}
+		return {'plugin':'split','id':id, 'width':width, 'height':height, 'config':'', 'type':type, 'start':percentage, 'children':children, 'parent':parent}
 	}
 
 	/** 
