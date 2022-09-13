@@ -6,6 +6,7 @@
         {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
         {"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
         {"id":"header", "icon":"fa fa-header", "caption": "Encabezado"},
+        {"id":"hypermedia", "icon":"fa fa-newspaper-o", "caption": "Hypermedia"},
         {"id":"div", "icon":"fa fa-code", "caption": "HTML"},
         {"id":"iframe", "icon":"fa fa-link", "caption": "IFrame"},
         {"id":"latex", "icon":"fa fa-superscript", "caption": "Latex"},
