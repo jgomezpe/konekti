@@ -89,9 +89,9 @@
 					var n = 0
 					var text = ''
 					for( var j=0; j<script.mark[k].replace.length; j++ ){
-						text += script.text.substring(n,script.mark[k].replace[j].start)
-						text += script.mark[k].replace[j].text
-						n = script.mark[k].replace[j].end
+						text += script.text.substring(n,script.mark[k].replace[j].start || 0)
+						text += script.mark[k].replace[j].text || ''
+						n = script.mark[k].replace[j].end || script.text.length
 					}
 					text += script.text.substring(n)	
 					target.setText(text)
