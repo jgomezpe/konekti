@@ -86,15 +86,14 @@
 				var k=script.mark.length-1
 				while( k>=0 && script.mark[k].time>time ){ k-- }
 				if(k!=script.current){
-					var text;
-					if(k>=0){
-						if(script.mark[k].txt === undefined){
-							var start = script.mark[k].start || 0
-							var end = script.mark[k].end || script.text.length
-							var add = script.mark[k].add || '' 
-							text = script.text.substring(start,end) + add
-						}else text = script.mark[k].txt
-					}else text = script.text
+					var n = 0
+					var text = ''
+					for( var j=0; j<script.mark[k].replace.length; j++ ){
+						text += script.text.substring(n,script.mark[k].replace[j].start)
+						text += script.mark[k].replace[j].text
+						n = script.mark[k].replace[j].end
+					}
+					text += script.text.substring(n)	
 					target.setText(text)
 					if(k>=0) target.scrollTop()
 					script.current = k
