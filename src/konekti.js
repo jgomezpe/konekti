@@ -338,7 +338,7 @@ class KonektiAPI{
 	 * @param callback function to be executed after loading plugins
 	 */
 	load(plugins, callback=function(){}){ 
-		for(var i=0; i<plugins.length; i++) plugins[i] = ((plugins[i].indexOf('/') < 0)?this.url:'')+plugins[i]+'.js'
+		for(var i=0; i<plugins.length; i++) plugins[i] = (plugins[i].indexOf('/') < 0)?(this.url+plugins[i]+'.js'):plugins[i]
 		function check(){
 			if(Konekti.manager === undefined) setTimeout(check,100)
 			else Konekti.manager.set('konekti'+Math.random(), plugins, function(id){
