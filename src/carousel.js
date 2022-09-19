@@ -31,7 +31,7 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
 	constructor( id, width, height, delay, imgs, select, parent='KonektiMain' ){
 		super(...arguments)
         var x = this
-        x.selmethod = x.config.select
+        x.sel = x.config.select
         x.setImages(x.config.imgs)
         function carousel() {
             x.plusDivs(1)
@@ -68,7 +68,10 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
     
     currentDiv(n) { this.showDivs(this.slideIndex = n) }
     
-    select(){ this.selmethod(this.slideIndex) }
+    select(){
+        if(typeof this.sel === 'function') this.sel(this.slideIndex) 
+        else Konekti.client[this.sel.client][this.sel.method || this.id](this.slideIndex)
+    }
     
     showDivs(n) {
       var i
