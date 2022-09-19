@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Dialogo de Konekti</title>
+	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
+</head>
+
+<body>
+
+<div id="log" style='width:100%'>El botón seleccionado aparecerá aquí...</div>
+
+<script>
+
+Konekti.uses('btn','dialog','header')
+
+/* When the Run button is selected*/
+function run(){ Konekti.vc("log").innerHTML =  'Mostrar el diálogo fue seleccionado' }
+
+/* Client is defined */
+class TheClient extends MainClient{
+	constructor(){ super() }
+	/* When the Play button is selected (id=show) */
+	show(){ Konekti.vc("dlg").style.display='block' }
+	/* When the care button is selected (id=car) */
+	car(){ 
+        Konekti.vc("dlg").style.display='none'
+        Konekti.vc("log").innerHTML =  'Botón de carro seleccionado'; 
+    }
+	/* When the plane button is seletected (id=plane) */
+	plane(){ 
+        Konekti.vc("dlg").style.display='none'
+        Konekti.vc("log").innerHTML =  'Botón de avión seleccionado'; 
+    }
+}
+
+/* Konekti's main function*/
+function KonektiMain(){
+	/* Client that will answer to buttons */
+	var client = new TheClient()
+	/* Connecting components */
+	Konekti.header('title','fa-gavel','Diálogo de Konekti', 2, 'w3-green' )
+	Konekti.btn('show','fa-eye', ' Mostrar diálogo', {'client':'client'}, 'w3-blue-gray w3-large', 'Mostrar diálogo' )
+    var btns=[
+		{'plugin':'btn', 'setup':["car","fa-car", " Carro", {"client":'client'}, "w3-black w3-large", "Botón de carro"]},
+		{'plugin':'btn', 'setup':["plane","fa-plane", " Avión", {"client":'client'}, "w3-black w3-large", "Botón de avión"]}
+	]		
+
+    Konekti.dialog('dlg', {'plugin':'div', 'setup':['content','100%','100%','','<p>Seleccione el vehículo de transporte</p>']},btns)
+}
+</script>
+
+</body>
+</html>
