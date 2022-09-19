@@ -24,9 +24,14 @@
 					this.page = page
 					var url = 'https://jgomezpe.github.io/konekti/demo/'+this.lang+'/'+page+'.html'
 					Konekti.resource.TXT(url, function(txt){
-						Konekti.client['coder'].setText(txt) 
-						Konekti.client['viewer'].setText(txt)
-						Konekti.resize()
+						function check(){
+							if( Konekti.client['coder'] !== undefined ){
+								Konekti.client['coder'].setText(txt) 
+								Konekti.client['viewer'].setText(txt)
+								Konekti.resize()
+							}else setTimeout(check, 100)
+						}
+						check()
 					})
 				}
 			}
