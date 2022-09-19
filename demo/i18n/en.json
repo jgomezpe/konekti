@@ -4,6 +4,7 @@
         {"id":"accordion", "icon":"fa fa-sitemap", "caption": "Accordion"},
         {"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Button"},
         {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
+        {"id":"carousel", "icon":"fa fa-spinner fa-pulse", "caption": "Img Carousel"},
         {"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
         {"id":"header", "icon":"fa fa-header", "caption": "Header"},
         {"id":"hypermedia", "icon":"fa fa-newspaper-o", "caption": "Hypermedia"},
