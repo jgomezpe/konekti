@@ -9,12 +9,13 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
 	 * @param id Id of the media component
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
+     * @param delay Delay between image display (milliseconds)
 	 * @param imgs URLs of the carousel images 
      * @param select Function called when an image is selected 
 	 * @param parent Parent component
 	 */
-    setup(id, width, height, imgs, select, parent='KonektiMain'){ 
-		return {"plugin":"carousel", "id":id, "imgs":imgs, 'select':select, 'width':width, 'height':height, 'parent':parent } 
+    setup(id, width, height, delay, imgs, select, parent='KonektiMain'){ 
+		return {"plugin":"carousel", "id":id, "delay":delay, "imgs":imgs, 'select':select, 'width':width, 'height':height, 'parent':parent } 
 	}
 
 	/**
@@ -22,18 +23,19 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
 	 * @param id Id of the media component
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
+     * @param delay Delay between image display (milliseconds)
 	 * @param imgs URLs of the carousel images 
      * @param select Function called when an image is selected 
 	 * @param parent Parent component
 	 */
-	constructor( id, width, height, imgs, select, parent='KonektiMain' ){
+	constructor( id, width, height, delay, imgs, select, parent='KonektiMain' ){
 		super(...arguments)
         var x = this
         x.selmethod = x.config.select
         x.setImages(x.config.imgs)
         function carousel() {
             x.plusDivs(1)
-            setTimeout(carousel, 5000); // Change image every 2 seconds
+            setTimeout(carousel, x.config.delay)
         }
         carousel()    
     }
@@ -86,10 +88,11 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
  * @param id Id of the media component
  * @param width Width of the div's component
  * @param height Height of the div's component
+ * @param delay Delay between image display (milliseconds)
  * @param imgs URLs of the carousel images 
  * @param select Function called when an image is selected 
  * @param parent Parent component
  */
-Konekti.carousel = function(id, width, height, imgs, select, parent='KonektiMain'){ 
-    return new Carousel(id, width, height, imgs, select, parent) 
+Konekti.carousel = function(id, width, height, delay, imgs, select, parent='KonektiMain'){ 
+    return new Carousel(id, width, height, delay, imgs, select, parent) 
 }
