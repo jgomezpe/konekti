@@ -8,7 +8,7 @@
 
 <body>
 	
-<script>
+<script> 
 
 Konekti.uses('header')
 
@@ -16,11 +16,14 @@ Konekti.uses('header')
 function KonektiMain(){
 	/* Connecting components */
 	Konekti.header('header1','fa-gavel', 'Header using size 3, blue-grey color, and center aligned text', 3, 'w3-blue-grey w3-center' )
-	Konekti.header('header2', 'fa-smile-o','Header with size 4, black color, and left aligned text (default alignment)', 4, 'w3-black' )
-	Konekti.header('header3', '','Header without icon, size 2, orange color, and right aligned text', 2, 'w3-orange w3-right-align' )
+	Konekti.header('header2', {'type':'img', 'src':'https://www.w3schools.com/w3css/img_avatar.png'},'Header with image icon (taken from w3schools), size 2, black color, and left aligned text (default alignment)', 2, 'w3-black' )
+	Konekti.header('header3', {'type':'fa', 'src':['fa-ban', 'fa-camera']},'Header with stacked icons, size 4, red color', 4, 'w3-red' )
+	Konekti.header('header4', '','Header without icon, size 3, orange color, and right aligned text', 3, 'w3-orange w3-right-align' )
 }
 
+KonektiMain()
 </script>
 
 </body>
 </html>
+
