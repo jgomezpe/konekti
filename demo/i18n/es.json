@@ -5,6 +5,7 @@
         {"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Botón"},
         {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
         {"id":"carousel", "icon":"fa fa-spinner", "caption": "Carrusel de Imgs"},
+        {"id":"dialog", "icon":"fa fa-window-restore", "caption": "Diálogo"},
         {"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
         {"id":"header", "icon":"fa fa-header", "caption": "Encabezado"},
         {"id":"hypermedia", "icon":"fa fa-newspaper-o", "caption": "Hypermedia"},
