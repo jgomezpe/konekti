@@ -9,11 +9,17 @@ class Grid extends Container{
 	 * @param parent Parent component
 	 */
 	setup( id, columns, min_cell_width, cells, parent='KonektiMain' ){
+        cells = this.children_setup(columns, cells)
+		return {'plugin':'grid', 'id':id, 'width':'', 'height':'', 'min_width':min_cell_width, 'columns':columns, 
+			'config':'class="w3-row-padding w3-section w3-stretch"', 'children':cells, 'parent':parent} 
+	}
+
+	children_setup(columns, cells){
         var col_size = 100/columns
         var rsp = 'class="w3-col" style="padding:4px;width:'+col_size+'%"'
         for(var i=0; i<cells.length; i++)
             cells[i] = {'plugin':'container', 'setup':[id+'Cell-'+i, '', '', rsp, [cells[i]], id]}
-		return {'plugin':'grid', 'id':id, 'width':'', 'height':'', 'min_width':min_cell_width, 'columns':columns, 'config':'class="w3-row-padding w3-section w3-stretch"', 'children':cells, 'parent':parent} 
+		return cells
 	}
 
 	/**
@@ -24,7 +30,18 @@ class Grid extends Container{
 	 * @param cells Contained components
 	 * @param parent Parent component
 	 */
-     constructor( id, columns, min_cell_width, cells, parent='KonektiMain' ){ super(...arguments) }
+    constructor( id, columns, min_cell_width, cells, parent='KonektiMain' ){ super(...arguments) }
+
+	set(cells){
+		var x = this
+		x.children = undefined
+		x.config.children = x.children_setup(x.config.columns, cells)
+		x.vc().innerHTML = ''
+		Konekti.load_dependecies(x.config.children, function(){ 
+			x.setChildrenBack() 
+			Konekti.resize()
+		})
+	}
 
 	/**
 	 * Sets the parent's size (adjust each of its children components)
