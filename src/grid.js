@@ -12,14 +12,14 @@ class Grid extends Container{
 	setup( id, max_cols, min_cell_width, max_cell_width, cells, parent='KonektiMain' ){
         cells = this.children_setup(id, max_cols, min_cell_width, max_cell_width, cells)
 		return {'plugin':'grid', 'id':id, 'width':'', 'height':'', 'min_width':min_cell_width, 'max_width':max_cell_width, 
-				'max_cols':max_cols, 'config':'class="w3-row-padding w3-section w3-stretch"', 'children':cells, 'parent':parent} 
+				'max_cols':max_cols, 'config':'class="w3-row-padding w3-section w3-stretch" style="margin:auto"', 'children':cells, 'parent':parent} 
 	}
 
-	children_setup(id, min_cell_width, max_cell_width, max_cols, cells){
+	children_setup(id, max_cols, min_cell_width, max_cell_width, cells){
         var col_size = 100/max_cols
-        var rsp = 'class="w3-col" style="padding:4px;width:'+col_size+'%;"'
+        var rsp = 'class="w3-col w3-center" style="padding:4px;width:'+col_size+'%;max-width:'+max_cell_width+'px;min-width:'+min_cell_width+'px;"'
         for(var i=0; i<cells.length; i++)
-            cells[i] = {'plugin':'container', 'setup':[id+'Cell-'+i, '', 'class="w3-center" style="max-width:'+max_cell_width+'px;min-width:'+min_cell_width+'px;"', rsp, [cells[i]], id]}
+            cells[i] = {'plugin':'container', 'setup':[id+'Cell-'+i, '', '', rsp, [cells[i]], id]}
 		return cells
 	}
 
@@ -54,7 +54,7 @@ class Grid extends Container{
         var x = this
          function check(){
             if(x.children !== undefined){
-					var cols = Math.floor(parentWidth / x.config.min_width)
+					var cols = Math.floor(parentWidth / (x.config.min_width+10))
 					cols = Math.min(Math.max(x.children.length,1), cols)
 					var size = 100/cols
 					for(var i=0; i<x.children.length; i++){
