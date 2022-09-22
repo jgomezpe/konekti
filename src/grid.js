@@ -32,7 +32,9 @@ class Grid extends Container{
 	 * @param cells Contained components
 	 * @param parent Parent component
 	 */
-    constructor( id, columns, min_cell_width, max_cell_width, cells, parent='KonektiMain' ){ super(...arguments) }
+    constructor( id, columns, min_cell_width, max_cell_width, cells, parent='KonektiMain' ){
+		super(...arguments) 
+	}
 
 	set(cells){
 		var x = this
@@ -40,8 +42,7 @@ class Grid extends Container{
 		x.config.children = x.children_setup(x.id, x.config.max_cols, x.config.min_width, x.config.max_width, cells)
 		x.vc().innerHTML = ''
 		Konekti.load_dependecies(x.config.children, function(){ 
-			x.setChildrenBack() 
-			Konekti.resize()
+			x.setChildrenBack() 	
 		})
 	}
 
@@ -51,19 +52,20 @@ class Grid extends Container{
 	 * @param parentHeight Parent's height
 	 */
     setParentSize( parentWidth, parentHeight ){
+        super.setParentSize(parentWidth,parentHeight)
         var x = this
-         function check(){
+        function check(){
             if(x.children !== undefined){
-					var cols = Math.floor(parentWidth / (x.config.min_width+10))
-					cols = Math.min(Math.max(x.children.length,1), cols)
-					var size = 100/cols
-					for(var i=0; i<x.children.length; i++){
-                    x.vc('Cell-'+i).style.width = ''+size+'%'
+				var cols = Math.floor(parentWidth / (x.config.min_width+10))
+				cols = Math.min(cols, x.config.max_cols)
+				cols = Math.min(Math.max(x.children.length,1), cols)
+				var size = 100/cols
+				for(var i=0; i<x.children.length; i++){
+					x.vc('Cell-'+i).style.width = ''+size+'%'
                 }    
 			}else setTimeout(check,100) 
         }    
         check()
-        super.setParentSize(parentWidth,parentHeight)
     }
 }
 
