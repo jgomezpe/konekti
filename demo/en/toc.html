@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Konekti Accordion</title>
+	<title>Konekti TOC</title>
 	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
 </head>
 
@@ -15,14 +15,14 @@ Konekti.uses('toc','header')
 function select(id){ Konekti.vc('log').innerHTML = 'Selected TOC entry..'+id }
 
 function KonektiMain(){	
-	Konekti.header('aHeader2', 'fa-home', 'Testing a Table of Content (TOC)', 3, 'w3-yellow')	
-	Konekti.toc(4, '', select, {'id':'aTOC', 'caption':'Home', 'icon':'fa-folder', 'open':true, 'children':[
-        {'id':'child1', 'caption':'Topic A', 'icon':'fa-arrow-left'}, 
-        {'id':'child2', 'caption':'Topic B', 'icon':'fa-smile-o', 'children':[
-            {'id':'child21', 'caption':'Topic D', 'icon':'fa-edit'}, 
-            {'id':'child22', 'caption':'Topic E', 'icon':'fa-copy'}]
-        }, 
-        {'id':'child3', 'caption':'Topic C', 'icon':'fa-edit'}]}
+	Konekti.header('body', 'aHeader2', 'fa-home', 'Testing a Table of Content (TOC)', 3, {'class':'w3-yellow'})	
+	Konekti.toc('body', 'aTOC', {}, select, [
+        ['child1', 'fa-arrow-left', 'Topic A'], 
+        ['child2', 'fa-smile-o', 'Topic B', {}, true, false, [
+            ['child21', 'fa-edit', 'Topic D'], 
+            ['child22', 'fa-copy', 'Topic E']]
+        ], 
+        ['child3', 'fa-edit', 'Topic C']]
     )
 }
 

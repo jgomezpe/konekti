@@ -13,7 +13,7 @@
 Konekti.uses('navbar','header', 'dropdown')
 
 function add(){
-    Konekti.append("navbar3", {'plugin':'btn', 'setup':['soccer','fa-soccer-ball-o','','','w3-blue-grey']})
+    Konekti.client["navbar3"].add({'plugin':'btn', 'setup':['soccer','fa-soccer-ball-o','',null]})
 }
 
 function del(){
@@ -25,48 +25,53 @@ class TheClient extends MainClient{
 	select(optId){ Konekti.vc("log").innerHTML =  'Selected: '+ optId; }
 	language(optId){ Konekti.vc("log").innerHTML =  'Language: '+ optId; }
 	
-	addleaf(){ Konekti.append("navbar4", {'plugin':'btn', 'setup':['leaf', 'fa-leaf','','','w3-blue-grey', 'Leaf']}) }
-	addmobile(){ Konekti.append("navbar4", {'plugin':'btn', 'setup':['mobile','fa-mobile','', '', 'w3-blue-grey', 'Mobile']}) }
-	addmoon(){ Konekti.client["navbar4"].insertBefore('keep', {'plugin':'btn', 'setup':['moon','fa-moon-o','', '', 'w3-blue-grey', 'Moon']}) }
+	addleaf(){ Konekti.client["navbar4"].add({'plugin':'btn', 'setup':['leaf', 'fa-leaf', '', null, {'title':'Leaf'}]}) }
+	addmobile(){ Konekti.client["navbar4"].add({'plugin':'btn', 'setup':['mobile','fa-mobile','', null, {'title':'Mobile'}]}) }
+	addmoon(){ Konekti.client["navbar4"].insertBefore('keep', {'plugin':'btn', 'setup':['moon', 'fa-moon-o', '', null, {'title':'Moon'}]}) }
 	keep(){ Konekti.client["navbar4"].keep(['addleaf','addmobile', 'addmoon', 'keep']) }
 }
 
 function KonektiMain(){
 	var client = new TheClient()
 
-	Konekti.header('title','', 'Konekti Navigation Bars', 3, 'w3-green' )
-	Konekti.header('header1','', 'Navbar with blue-grey style and dropdown button', 4, 'w3-black' )	
+	Konekti.header('body', 'title','', 'Konekti Navigation Bars', 3, {'class':'w3-green'} )
+	Konekti.header('body', 'header1','', 'Navbar with blue-grey style and dropdown button', 4, {'class':'w3-black'} )
+	var dd = {'plugin':'toc', 'setup': ['sel_lang', {'title':'Selecting language'}, {"client":'client', "method":"language"},
+				 ["English", "Español"]]}	
 	var btn=[
-		{'plugin':'btn', 'setup':["config", "fa-cogs", '', '', "w3-blue-grey", "Configure"]},
-		{'plugin':'btn', 'setup':["coffee", "fa-coffee", '', '', "w3-blue-grey", "Coffe"]},
-		{'plugin':'btn', 'setup':["html", "fa-file-code-o", '', '', "w3-blue-grey", "HTML"]},
-		{'plugin':'btn', 'setup':["file", "fa-file-text-o", '', '', "w3-blue-grey", "File"]},
-		{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", 'w3-red ', 'Selecting language', 'list', {"options":["English", "Español"], "onclick":{"client":'client', "method":"language"}}]}
+		{'plugin':'btn', 'setup':["config", "fa-cogs", '', null, {'title':"Configure"}]},
+		{'plugin':'btn', 'setup':["coffee", "fa-coffee", '', null, {'title':"Coffe"}]},
+		{'plugin':'btn', 'setup':["html", "fa-file-code-o", '', null, {'title':"HTML"}]},
+		{'plugin':'btn', 'setup':["file", "fa-file-text-o", '', null, {'title':"File"}]},
+		{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", dd]}
 	]		
-	var navbar = Konekti.navbar('navbar1', '', btn, 'client', 'select' ) 
+	var navbar = Konekti.navbar('body', 'navbar1', btn, {'client':'client', 'method':'select'}, {'class':'w3-blue-grey'} ) 
 
-	Konekti.header('header2','', 'Navbar with orange style and large icons', 4, 'w3-black' )	
+	Konekti.header('body','header2','', 'Navbar with orange style, medium icons and input component', 4, {'class':'w3-black'} )
 	var btn2=[
-		{'plugin':'btn', 'setup':["hand", "fa-hand-paper-o", '', '', '', 'Hand']},
-		{'plugin':'btn', 'setup':["arrow","fa-arrow-left", '', '', '', 'Arrow']},
-		{'plugin':'btn', 'setup':["face","fa-smile-o", '', '', '', 'Face']}
+		{'plugin':'btn', 'setup':["hand", "fa-hand-paper-o", '', null, {'title':'Hand'}]},
+		{'plugin':'btn', 'setup':["arrow","fa-arrow-left", '', null, {'title':'Arrow'}]},
+		{'plugin':'html', 'setup':["editor",'', '', {'tag':'input', 'class':"w3-bar-item w3-input w3-border w3-round-xlarge",
+			'placeholder':"&#xF002; I want...", 'style':"margin-top:2px;margin-bottom:2px;font-family:Arial, FontAwesome"}]},
+		{'plugin':'btn', 'setup':["face","fa-smile-o", '', null, {'title':'Face', 'class':'w3-right'}]}
 	]		
-	var navbar2 = Konekti.navbar('navbar2', 'w3-orange w3-large', btn2, 'client', 'select') 
-	Konekti.header('header3','', 'Adds and removes a button', 4, 'w3-black' )	
+	var navbar2 = Konekti.navbar('body', 'navbar2', btn2, {'client':'client', 'method':'select'}, {'class':'w3-orange w3-medium'}) 
+	
+	Konekti.header('body', 'header3','', 'Adds and removes a button', 4, {'class':'w3-black'} )	
 	var btn3=[
-		{'plugin':'btn', 'setup':["add", "fa-plus", "", "add()", "", "Add button"]},
-		{'plugin':'btn', 'setup':["remove", "fa-minus", "", "del()", "", "Remove button"]}
+		{'plugin':'btn', 'setup':["add", "fa-plus", "", "add()", {'title':"Add button"}]},
+		{'plugin':'btn', 'setup':["remove", "fa-minus", "", "del()", {'title':"Remove button"}]}
 	]		
-	var navbar3 = Konekti.navbar('navbar3', 'w3-teal w3-xlarge', btn3, 'client', 'select' )
+	var navbar3 = Konekti.navbar('body', 'navbar3', btn3, {'client':'client', 'method':'select'}, {'class':'w3-teal w3-xlarge'} )
 
-	Konekti.header('header4','', 'Dynamic Navbar', 4, 'w3-black' )	
+	Konekti.header('body','header4','', 'Dynamic Navbar', 4, {'class':'w3-black'} )	
 	var btn4=[
-		{'plugin':'btn', 'setup':["addleaf","fa-key", "", {"client":'client', "method":"addleaf"}, "", "Add leaf button"]},
-		{'plugin':'btn', 'setup':["addmobile","fa-pencil", "", {"client":'client', "method":"addmobile"}, "", "Add mobile button"]},
-		{'plugin':'btn', 'setup':["addmoon", "fa-lemon-o", "", {"client":'client', "method":"addmoon"}, "", "Insert moon button"]},
-		{'plugin':'btn', 'setup':["keep", "fa-magic", "", {"client":'client', "method":"keep"}, "", "Goes to the original navbar state"]}
+		{'plugin':'btn', 'setup':["addleaf","fa-key", "", {"client":'client'}, {'title':"Add leaf button"}]},
+		{'plugin':'btn', 'setup':["addmobile","fa-pencil", "", {"client":'client'}, {'title':"Add mobile button"}]},
+		{'plugin':'btn', 'setup':["addmoon", "fa-lemon-o", "", {"client":'client'}, {'title':"Insert moon button"}]},
+		{'plugin':'btn', 'setup':["keep", "fa-magic", "", {"client":'client'}, {'title':"Goes to the original navbar state"}]}
 	]		
-	var navbar4 = Konekti.navbar('navbar4', 'w3-blue w3-xlarge', btn4, 'client', 'select' )
+	var navbar4 = Konekti.navbar('body', 'navbar4', btn4, {'client':'client','method':'select'}, {'class':'w3-blue w3-xlarge'} )
 }
 
 </script>

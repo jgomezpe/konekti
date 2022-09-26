@@ -110,19 +110,19 @@ function run(){
 
 function KonektiMain(){
 	// Commands to be run (left as string to show them into the editor)
-	var initial = '{"command":"compound","commands":[\n	{"r":true,"x":1,"y":1,"command":"fit", "commands":[\n		{"x":1,"y":0,"command":"translate","commands":[\n			{"r":1.5707963267948966,"x":0.5,"y":0.5,"command":"rotate","commands":[{"command":"/"}, {"command":"_"}]}\n		]},\n		{"command":"compound","commands":[{"command":"_"},{"command":"-"}]}\n	]}\n]}'
+	var initial = '{"command":"compound","commands":[\n	{"r":true,"x":1,"y":1,"command":"fit", "commands":[\n {"x":1,"y":0,"command":"translate","commands":[\n			{"r":1.5707963267948966,"x":0.5,"y":0.5,"command":"rotate","commands":[{"command":"/"}, {"command":"_"}]}\n		]},\n		{"command":"compound","commands":[{"command":"_"},{"command":"-"}]}\n	]}\n]}'
 
 	// Customized commands (based on primitive commands)
 	var commands = custom_commands()  
     
-	Konekti.header('title','', 'Konekti Canvas', 3, 'w3-green' )
-	Konekti.header('hcanvas','fa-edit', 'Canvas', 4, 'w3-black' )
+	Konekti.header('body','title','', 'Konekti Canvas', 3, {'class':'w3-green'} )
+	Konekti.header('body','hcanvas','fa-edit', 'Canvas', 4, {'class':'w3-black'} )
 
 	// Connecting the canvas to the HTML component
-	Konekti.canvas( 'canvas', '100%', '40%', initial, commands )
+	Konekti.canvas('body', 'canvas', '100%', '40%', initial, commands )
 
-	Konekti.btn('btn',"fa-play", "Compile","run()",'w3-bar-item w3-large',"Compile commands")
-	Konekti.ace( 'coder', '100%', '40%', initial, 'json' )
+	Konekti.btn('body', 'btn',"fa-play", "Draw", "run()", {'class':'w3-bar-item w3-large',"title":"Run commands"})
+	Konekti.ace('body', 'coder', '100%', '40%', initial, 'json' )
 
 }
 

@@ -8,7 +8,7 @@
 
 <body>
 
-<div id="log" style='width:100%;height:10%'>Video progress/events will appear here...</div>
+<div id="log" style='width:100%'>Video progress/events will appear here...</div>
 
 <script>
 
@@ -26,9 +26,9 @@ class TheClient extends MainClient{
 
 function KonektiMain(){
 	var client = new TheClient()
-	Konekti.header('title','fa-youtube', 'Konekti Youtube', 3, 'w3-green' )
+	Konekti.header('body', 'title','fa-youtube', 'Konekti Youtube', 3, {'class':'w3-green'} )
 	// Connects the youtube video with the HTML component
-	var yt = Konekti.youtube( 'youtube', '100%', '60%', 'fv2Ms3C7Xrw' )
+	var yt = Konekti.youtube( 'body', 'youtube', '100%', '60%', 'fv2Ms3C7Xrw' )
 	// Adds a listener to the Youtube player
 	yt.addListener(client.id)
 }

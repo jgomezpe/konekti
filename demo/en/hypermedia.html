@@ -50,11 +50,11 @@
         Konekti.uses('hypermedia', 'header')
 
 		function KonektiMain(){
-            Konekti.header('title','', 'Konekti Hypermedia', 3, 'w3-green w3-center' )
+            Konekti.header('body', 'title','', 'Konekti Hypermedia', 3, {'class':'w3-green w3-center'} )
 
             var audio = {'plugin':'media', 'setup':["mediacontrol", "100%", "", "audio", "mp3", "https://jgomezpe.github.io/numtseng/vlo/es/computer/program/python/intro.mp3"]}
             var text = {'plugin':'latex', 'setup':["info", '100%', 'rest', Konekti.vc('infotext').innerHTML]}
-            var left = {'plugin':'container', 'setup':['explain','100%','100%', '', [audio,text]]}
+            var left = {'plugin':'container', 'setup':['container', 'explain', [audio,text], '100%', '100%']}
             var py = {'plugin':'iframe', 'setup':["pythonCoder", "100%", "100%", 'https://replit.com/@JonatanGomezP/pythonintroes?embed=true']}
     
             var control = {'plugin':'split', 'setup':['coderviewer', '100%', '100%', 'col', 50, left, py]}
@@ -75,10 +75,8 @@
                     {"time":207, "replace":[]} 
                 ]		
             }]
-
-            Konekti.hypermedia('book','100%','rest', control, 'mediacontrol', scripts)
-
-            Konekti.resize()
+            
+            Konekti.hypermedia('body', 'book', control, '100%','rest', 'mediacontrol', scripts)
         }
 	</script>
 </body>

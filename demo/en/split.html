@@ -14,17 +14,17 @@
 Konekti.uses('header','split','youtube','iframe','ace','latex')
 
 function KonektiMain(){
-	Konekti.header('title','', 'Konekti Splits', 3, 'w3-green')
-	Konekti.header('vsplit1','', 'Vertical Split', 4, 'w3-black' )
+	Konekti.header('body', 'title','', 'Konekti Splits', 3, {'class':'w3-green'})
+	Konekti.header('body', 'vsplit1','', 'Vertical Split', 4, {'class':'w3-black'} )
 
-	Konekti.split('vSplit', '100%', '50%', 'col', 70, 
+	Konekti.split('body', 'vSplit', '100%', '50%', 'col', 70, 
 		{'plugin':'ace','setup':['aceview', '100%','100%', '<div>Inside an ACE editor</div>', 'html']},
 		{'plugin':'latex','setup':['latexview', '100%', '100%', 'When \\(a \\ne 0\\), there are two solutions to \\(ax^2 + bx + c = 0\\) and they are $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$']}
 	)
 
-	Konekti.header('hsplit2','', 'Horizontal Split', 4, 'w3-black' )
+	Konekti.header('body', 'hsplit2','', 'Horizontal Split', 4, {'class':'w3-black'} )
 
-	Konekti.split('hSplit', '100%', '100%', 'row', 50, 
+	Konekti.split('body', 'hSplit', '100%', '100%', 'row', 50, 
 		{'plugin':'iframe','setup':['aIframe', '100%', '100%', 'https://wikipedia.com']},
 		{'plugin':'youtube','setup':['youtube', '100%', '100%', 'rPjpA4sn7yI']}
 	)

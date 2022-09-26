@@ -12,11 +12,12 @@
 Konekti.uses('header','tab','youtube','ace')
 
 function KonektiMain(){
-	Konekti.header('title','', 'Konekti Tabs', 3, 'w3-green' )
+	Konekti.header('body', 'title','', 'Konekti Tabs', 3, {'class':'w3-green'} )
 	
-	Konekti.tab('aTab', '50%', '40%', "YouTubeTab", [
-		{'caption':"YouTube", 'icon':"fa fa-youtube", 'title':'Youtube Tab','content':{'plugin':'youtube','setup':["YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw']}}, 
-		{'caption':"Editor", 'icon':'fa fa-edit', 'title':'Ace Tab', 'content':{'plugin':'ace','setup':['EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' ]}}
+	Konekti.tab('body', 'aTab', '50%', '40%', "YouTubeTab", [
+		{'plugin':'youtube', 'setup':["YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw'], 'label':["fa fa-youtube", "YouTube", {'title':'Youtube Tab'}]}, 
+		{'plugin':'ace','setup':['EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' ], 
+			'label':['fa fa-edit', "Editor", {'title':'Ace Tab'}]}
 	])
 }
 

@@ -23,15 +23,9 @@ class TheClient extends MainClient{
 	/* When the Play button is selected (id=show) */
 	show(){ Konekti.vc("dlg").style.display='block' }
 	/* When the care button is selected (id=car) */
-	car(){ 
-        Konekti.vc("dlg").style.display='none'
-        Konekti.vc("log").innerHTML =  'Car button selected'; 
-    }
+	car(){ Konekti.vc("log").innerHTML =  'Car button selected' }
 	/* When the plane button is seletected (id=plane) */
-	plane(){ 
-        Konekti.vc("dlg").style.display='none'
-        Konekti.vc("log").innerHTML =  'Plane button selected'; 
-    }
+	plane(){ Konekti.vc("log").innerHTML =  'Plane button selected' }
 }
 
 /* Konekti's main function*/
@@ -39,14 +33,14 @@ function KonektiMain(){
 	/* Client that will answer to buttons */
 	var client = new TheClient()
 	/* Connecting components */
-	Konekti.header('title','fa-gavel','Konekti Dialog', 2, 'w3-green' )
-	Konekti.btn('show','fa-eye', ' Show dialog', {'client':'client'}, 'w3-blue-gray w3-large', 'Show dialog' )
+	Konekti.header('body','title','fa-gavel','Konekti Dialog', 2, {'class':'w3-green'} )
+	Konekti.btn('body', 'show','fa-eye', 'Show dialog', {'client':'client'}, {'class':'w3-blue-gray w3-large', 'title':'Show dialog'} )
     var btns=[
-		{'plugin':'btn', 'setup':["car","fa-car", " Car", {"client":'client'}, "w3-black w3-large", "Car button"]},
-		{'plugin':'btn', 'setup':["plane","fa-plane", " Plain", {"client":'client'}, "w3-black w3-large", "Plane button"]}
+		{'plugin':'btn', 'setup':["car", "fa-car", "Car", {"client":'client'}, {'class':"w3-black w3-large", 'title':"Car button"}]},
+		{'plugin':'btn', 'setup':["plane", "fa-plane", "Plain", {"client":'client'}, {'class':"w3-black w3-large", 'title':"Plane button"}]}
 	]		
 
-    Konekti.dialog('dlg', {'plugin':'div', 'setup':['content','100%','100%','','<p>Select the transportation vehicle</p>']},btns)
+    Konekti.dialog('body', 'dlg', {'plugin':'html', 'setup':['content','100%','100%',{},'<p>Select a vehicle</p>']},btns)
 }
 </script>
 

@@ -15,8 +15,8 @@ Konekti.uses('accordion', 'header', 'iframe')
 function select(id){ Konekti.vc('log').innerHTML = 'Selected TOC entry..'+id }
 
 function KonektiMain(){
-	Konekti.header('aHeader', '', 'Testing an accordion', 3, 'w3-green')
-	Konekti.accordion('anAccordion', 'fa-link', 'Showing wikipedia', 4, 'w3-blue-grey', {'plugin':'iframe', 'setup':['aIframe', '80%', '40%', 'https://wikipedia.com']}, false)	
+	Konekti.header('body','aHeader', '', 'Testing an accordion', 3, {'class':'w3-green'})
+	Konekti.accordion('body', 'anAccordion', 'fa-link', 'Showing wikipedia', 4, {'class':'w3-blue-grey'}, {'plugin':'iframe', 'setup':['aIframe', '80%', '40%', 'https://wikipedia.com']}, false, "select('anAccordion')")	
 }
 
 </script>
