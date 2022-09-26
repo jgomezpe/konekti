@@ -2,19 +2,16 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0, shrink-to-fit=no">
 	<title>Konekti</title>
 	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
-	<style>
-		html {
-    			-webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
-		}
-	</style>	
 </head>
 
 <body>
 
 	<script>
+		let KONEKTI_URL = "https://jgomezpe.github.io/konekti/demo/" // Internationalization resources are stored in github
+		//let SERVER_URL = "https://numtseng.com/konekti/" // Change this to your server name
+		let SERVER_URL = "" // Change this to your server name
 		Konekti.uses('toc','sidebar','navbar','dropdown','ace','iframe','split')
 
 		class KMain extends MainClient{
@@ -28,22 +25,22 @@
 				if(page=='github') window.open("https://github.com/jgomezpe/konekti/")
 				else if( this.page != page ){			
 					this.page = page
-					var url = 'https://jgomezpe.github.io/konekti/demo/'+this.lang+'/'+page+'.html'
+					var url = KONEKTI_URL+this.lang+'/'+page+'.html'
 					Konekti.resource.TXT(url, function(txt){
 						function check(){
-							if( Konekti.client['coder'] !== undefined ){
+							if(Konekti.client['coder']!==undefined && Konekti.client['coder'] != null){
 								Konekti.client['coder'].setText(txt) 
 								Konekti.client['viewer'].setText(txt)
 								Konekti.resize()
-							}else setTimeout(check, 100)
+							}else setTimeout(check,100)	
 						}
-						check()
+						check()	
 					})
 				}
 			}
 
 			language(lang){
-				if( lang != this.lang ) window.open("https://jgomezpe.github.io/konekti/demo/index.html?lang="+lang+"&page="+this.page,"_self")
+				if( lang != this.lang ) window.open(SERVER_URL+"index.html?lang="+lang+"&page="+this.page,"_self")
 			}
 
 			run(){ Konekti.client['viewer'].setText( Konekti.client['coder'].getText() ) }
@@ -55,31 +52,28 @@
 			var callback = function(json){ 
 				if(json===undefined || json===null){
 					lang = 'en'
-					Konekti.resource.JSON('https://jgomezpe.github.io/konekti/demo/i18n/'+lang+'.json', callback)
+					Konekti.resource.JSON(KONEKTI_URL+'i18n/'+lang+'.json', callback)
 				}else{
 					console.log(json.toc)
 					var client = new KMain(lang)
-					var toc = {'plugin':'toc', 'setup':[4, '', {'client':'client', 'method':'select'}, json.toc]}
+					var toc = {'plugin':'toc', 'setup':['tockonekti', {}, {'client':'client', 'method':'select'}, json.toc]}
 
+					var dd = {'plugin':'toc', 'setup': ['sel_lang', {'title':'Selecting language'}, {"client":'client', "method":"language"},
+						 ["English", "Español"]]}	
 					var btn=[
-						{'plugin':'btn', 'setup':["run", "fa-play", '', {'client':'client'}, "w3-blue-grey", "Run"]},
-						{'plugin':'dropdown', 'setup':["language", "fa-language", "", 'w3-blue-grey', json.language, 'list', {'options':[
-								{'id':'en', 'caption':"English"}, 
-								{'id':'es','caption':"Español"}], 
-								'onclick':{"client":'client', "method":"language"}}
-							]
-						}	
+						{'plugin':'btn', 'setup':["run", "fa-play", '', {'client':'client'}, {'class':"w3-blue-grey", 'title':"Run"}]},
+						{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", dd]}	
 					]
-					var navbar = {'plugin':'navbar', 'setup':['main-navbar', 'w3-blue-grey', btn, 'client', 'select']}
+					var navbar = {'plugin':'navbar', 'setup':['main-navbar', btn, {'client':'client', 'method':'select'}, {'class':'w3-blue-grey'}]}
 
 					var control = {'plugin':'split', 'setup':['coderviewer', '100%', 'rest', 'col', 50, 
 						{'plugin':'ace', 'setup':['coder', '100%','100%', '', 'html']},
 						{'plugin':'iframe', 'setup':['viewer', '100%', '100%', '']}
 					]}
 
-					var main = {'plugin':'container', 'setup':['main-content','100%','100%', '', [navbar,control]]}
+					var main = {'plugin':'container', 'setup':['container', 'main-content', [navbar,control],'100%','100%']}
 
-					Konekti.sidebar('root', '100%', '100%', toc, main)	
+					Konekti.sidebar('body', 'root', '100%', '100%', toc, main)	
 					Konekti.resize()
 
 					var page = Konekti.dom.getURLSearchParam('page', 'home')
@@ -87,7 +81,7 @@
 				}
 			}
 
-			Konekti.resource.JSON('https://jgomezpe.github.io/konekti/demo/i18n/'+lang+'.json', callback)
+			Konekti.resource.JSON(KONEKTI_URL+'i18n/'+lang+'.json', callback)
 		}
 	</script>
 </body>
