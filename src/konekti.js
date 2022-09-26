@@ -16,37 +16,43 @@
 
 /** Class for managable resources */
 class Resource{
-	constructor(){ this.loaded = {} }
-	
+	constructor(){}
+
 	/**
-	 * Creates a HTML element from a string, if possible
-	 * @param str String representing a single HTML element
-	 * @return A HTML version of the string
+	 * Loads the given script (if possible)
+	 * @param type Type of the script to be loaded
+	 * @param src Script's src
+	 * @param callback Function that will be called if the script is loaded
 	 */
-	html(str) {
-		var template = document.createElement('template')
-		template.innerHTML = str.trim()
-		return template.content.firstChild
+	script(type, src, callback){
+		if( this[src]===undefined){
+			this[src] = true
+			var element = document.createElement( 'script' )
+			if( type!=null ) element.type = type
+			element.async = true
+			element.defer = true
+			element.src = src 
+			element.onreadystatechange = null	
+			element.onload = callback
+			var b = document.getElementsByTagName('script')[0]
+			b.parentNode.insertBefore(element, b)
+		}else callback()
 	}
 
 	/**
-	 * Creates a CSS node from a string, if possible
-	 * @param str String representing a CSS file
-	 * @return A CSS node version of the string
+	 * Loads a Java Script resource (if possible)
+	 * @param src Java Script src
+	 * @param callback Function that will be called if the Java Script is loaded
 	 */
-	css(str){
-		str = str.trim()
-		var d = document.createElement('style')
-		d.innerHTML = str
-		document.getElementsByTagName('head')[0].appendChild(d)
-	}
+	JS(src, callback){ this.script('text/javascript', src, callback) }
+
 
 	/**
 	 * Loads a JSON resource (if possible)
 	 * @param id JSON id
 	 * @param callback Function that will be called if the JSON is loaded
 	 */
-	 JSON(id, callback){ fetch(id).then((response) => response.ok?response.json():null).then((json) => callback(json)) }
+	JSON(id, callback){ fetch(id).then((response) => response.ok?response.json():null).then((json) => callback(json)) }
 	
 	/**
 	 * Loads a text resource (if possible)
@@ -74,40 +80,6 @@ class Resource{
 	 */
 	stylesheet(url){ this.link( url, "stylesheet" ) }
 	
-	/**
-	 * Loads the given script (if possible)
-	 * @param type Type of the script to be loaded
-	 * @param url Script's url
-	 * @param callback Function that will be called if the script is loaded
-	 */
-	script(type, url, callback){
-		if( this.loaded[url] !== undefined ){
-			callback()
-			return
-		}
-		this.loaded[url] = true
-		var element = document.createElement( 'script' )
-		if( type!=null ) element.type = type
-		element.async = true
-		element.defer = true
-		element.src = url 
-		element.charset="utf-8"
-		element.onreadystatechange = null
-
-		element.onload = callback
-		var b = document.getElementsByTagName('script')[0]
-		b.parentNode.insertBefore(element, b)
-	}
-
-	/**
-	 * Loads a Java Script resource (if possible)
-	 * @param id Java Script id
-	 * @param callback Function that will be called if the Java Script is loaded
-	 */
-	JS(id, callback){
-		if( !id.endsWith('.js') ) id += '.js'
-		this.script('text/javascript', id, callback) 
-	}
 
 	/**
 	 * loads a resource from URI
@@ -115,7 +87,7 @@ class Resource{
 	 * @param callback Function that will be called after the resource is read 
 	 * from the server (it must has an argument that correspond to the resource that has been load)
 	 */ 
-	 load(resource, callback){
+	load(resource, callback){
 		if( resource==null ) return;
 		var xhttp = new XMLHttpRequest()
 		xhttp.onreadystatechange = function (){ 
@@ -130,25 +102,47 @@ class Resource{
 		xhttp.setRequestHeader("Cache-Control", "max-age=0")
 		xhttp.send()
 	}
-
-	/**
-	 * Loads a CSS resource (if possible)
-	 * @param id CSS id
-	 * @param callback Function that will be called if the CSS is loaded
-	 */
-	CSS(id, callback){
-	    var x = this
-		function add(str){
-		    if(str!==undefined && str!==null){ x.css(str) }
-			if(callback !== undefined) callback()
-		}
-		this.load(id+'.css', add)
-	}
 }
 
 /** Document utility functions */
 class DOM{
 	constructor(){}
+
+	/**
+	 * Creates a HTML element from a string, if possible
+	 * @param str String representing a single HTML element
+	 * @return A HTML version of the string
+	 */
+	html(str) {
+		var template = document.createElement('template')
+		template.innerHTML = str.trim()
+		return template.content.firstChild
+	}
+
+	/**
+	 * Creates a CSS node from a string, if possible
+	 * @param str String representing a CSS file
+	 * @return A CSS node version of the string
+	 */
+	css(str){
+		str = str.trim()
+		var d = document.createElement('style')
+		d.innerHTML = str
+		document.getElementsByTagName('head')[0].appendChild(d)
+	}
+
+	/**
+	 * Creates a string for onclick
+	 * @param id Visual component programming the onclick method
+	 * @param run Code associated to the onclick method
+	 */
+	onclick(id, run){
+		if( typeof run == 'string' ) return run
+		if( typeof run == 'function' ) return run.name + '("' + id + '")'
+		var client = (run.client !== undefined)?'Konekti.client["'+run.client+'"].':''
+		var method = run.method || id
+		return client+method+'("'+id+'")'
+	}
 
 	/**
 	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
@@ -303,13 +297,11 @@ class KonektiAPI{
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 
 		Konekti = this
-		this.url = 'https://jgomezpe.github.io/konekti/src/'
-		function check(){ Konekti.manager = new Uses({}) }
-		if(typeof uses === 'undefined') this.resource.JS('https://jgomezpe.github.io/uses/src/uses.js', check)
-		else check()
-
+		this.url = '../src/'
+		//this.url = 'https://jgomezpe.github.io/konekti/src/'
+		
 		this.client = {}
-		this.plugin = {}
+		this.plugin = {'html':true, 'container':true}
 		this.root = new RootClient()
 		
 		window.addEventListener("resize", Konekti.resize);
@@ -320,14 +312,14 @@ class KonektiAPI{
 	 * @param component Konekti components to load and build (bootstrap)
 	 * @param plugs Colection of dependecies
 	 */
-	dependecies(component, plugs={}){
+	dependencies(component, plugs={}){
 		if(component===undefined || component===null) return plugs
 		function check(c){ return c !== undefined && c !== null && c.length > 0 }
-		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependecies(component[i], plugs)
+		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependencies(component[i], plugs)
 		else if( typeof component == 'object' && check(component.plugin)){
-			if(plugs[component.plugin] === undefined && component.plugin != 'container') plugs[component.plugin] = component.plugin
-			if(check(component.children)) plugs = this.dependecies(component.children, plugs)
-			else if(check(component.setup)) plugs = this.dependecies(component.setup, plugs)
+			if(plugs[component.plugin] === undefined && this.plugin[component.plugin] === undefined) plugs[component.plugin] = component.plugin
+			if(check(component.children)) plugs = this.dependencies(component.children, plugs)
+			else if(check(component.setup)) plugs = this.dependencies(component.setup, plugs)
 		}
 		return plugs
 	}
@@ -338,15 +330,34 @@ class KonektiAPI{
 	 * @param callback function to be executed after loading plugins
 	 */
 	load(plugins, callback=function(){}){ 
-		for(var i=0; i<plugins.length; i++) plugins[i] = (plugins[i].indexOf('/') < 0)?(this.url+plugins[i]+'.js'):plugins[i]
-		function check(){
-			if(Konekti.manager === undefined) setTimeout(check,100)
-			else Konekti.manager.set('konekti'+Math.random(), plugins, function(id){
-					callback()
-					Konekti.resize()
-				})
+		if(plugins.length == 0){
+			callback()
+			return
 		}
-		check()
+		var ids = []
+		function check_eval(){
+			var m=0;
+			while(m<ids.length && Konekti[ids[m]]!==undefined) m++
+			if(m==ids.length){
+				for(var i=0; i<ids.length; i++) Konekti.plugin[ids[i]] = true
+				callback()
+			}else setTimeout(check_eval, 100)
+		}
+
+		var k=0
+		function check(){
+			k++
+			if(k==plugins.length) check_eval()
+		}
+
+		for(var i=0; i<plugins.length; i++){
+			ids[i] = plugins[i].substring(Math.max(0,plugins[i].lastIndexOf('/')))
+			if( !plugins[i].endsWith('.js') ) plugins[i] += '.js'
+			else ids[i]= ids[i].substring(0,ids[i].length-3)
+			if( plugins[i].indexOf('/') < 0 ) plugins[i] = this.url+plugins[i]
+			if( Konekti.plugin[plugins[i]] === undefined ) this.resource.JS(plugins[i], check)
+			else check()
+		} 
 	}
 
 	/**
@@ -354,17 +365,38 @@ class KonektiAPI{
 	 * @param component Konekti components to load 
 	 * @param callback Function called as soon as all dependecies are loaded
 	 */
-	load_dependecies(component, callback){
-		var plugs = this.dependecies(component)
+	load_dependencies(component, callback){
+		var plugs = this.dependencies(component)
 		var aplugs = []
 		for( var c in plugs ){
-			if(plugs[c]!='container'){
+			if(this.plugin[plugs[c]] === undefined){
 				var i=0
 				while(i<aplugs.length && aplugs[i]!=plugs[c]) i++
 				if(i==aplugs.length) aplugs.push(plugs[c])
 			}	
-		} 
+		}
 		Konekti.load(aplugs,  callback)
+	}
+
+	
+	resize_required(){
+		function check(){
+			var flag = true
+			for(var x in Konekti.client){
+				flag &= (Konekti.client[x].done === undefined || Konekti.client[x].done )
+			}	
+			if(flag) Konekti.resize()
+			else setTimeout(check, 100)
+		}
+		check()	
+	}
+
+	build_aux( component ){
+		if( Array.isArray(component) ){
+			var plugs = []
+			for( var i=0; i<component.length; i++ ) plugs.push(Konekti.build_aux(component[i]))
+			return plugs
+		}else return Konekti[component.plugin](...component.setup)
 	}
 
 	/**
@@ -373,11 +405,9 @@ class KonektiAPI{
 	 * @returns An array of Konekti clients 
 	 */
 	build( component ){
-		if( Array.isArray(component) ){
-			var plugs = []
-			for( var i=0; i<component.length; i++ ) plugs.push(Konekti.build(component[i]))
-			return plugs
-		}else return Konekti[component.plugin](component)
+		var c = this.build_aux(component)
+		this.resize_required()
+		return c
 	}
 
 	/**
@@ -388,7 +418,14 @@ class KonektiAPI{
 		if( KonektiMain !== undefined ) Konekti.load(arguments, KonektiMain)
 		else Konekti.load(arguments)
 	}
-	
+
+	/**
+	 * Register a set of plugins (useful when more than one plugin is defined in the same JS)
+	 */
+	register(){
+		for( var i=0; i<arguments.length; i++ ) Konekti.plugin[arguments[i]] = true
+	}
+
 	/**
 	 * Appends a set of konekti component to a client
 	 * @param parent Parent client of the components (any other argument is a component to build)
@@ -396,8 +433,8 @@ class KonektiAPI{
 	append(parent){
 		var p = Konekti.client[parent]
 		for( var i=1; i<arguments.length; i++ ){
-			arguments[i].parent = parent
-			p.children.push(Konekti[arguments[i].plugin](arguments[i]))
+			arguments[i].setup.splice(0,0,parent)
+			p.children.push(Konekti[arguments[i].plugin](...arguments[i].setup))
 		}
 	}
 		
@@ -411,64 +448,74 @@ class KonektiAPI{
 	 * @param id Id of the visual component
 	 * @returns Visual componet with the given id
 	 */
-	vc(id='KonektiMain'){ return (id=='KonektiMain')?document.body:document.getElementById(id) }
+	vc(id='body'){ return (id=='body')?document.body:document.getElementById(id) }
 
 	/**
 	 * Creates a container bject
+	 * @param parent Parent component
+	 * @param plugin Component's plugin
 	 * @param id Id of the component 
 	 * @param width Width of the split component
 	 * @param height Height of the split component
+	 * @param config Extra configuration 
 	 * @param children Contained components
-	 * @param parent Parent component
 	 */
-	container( id, width, height, children, parent='KonektiMain' ){ return new Container(id, width, height, children, parent) }
+	container( parent, plugin, id, children=[], width='', height='', config={'tag':'div'} ){
+		return new Container(parent, plugin, id, children, width, height, config) 
+	}
+
+	html(parent, id, width='', height='', config={'tag':'div'}, inner=''){
+		return new Client(parent,'client', id, width, height, config, inner)
+	}
 }
 
 /** A Konekti client. */
 class Client{
+	assign( config ){ for( var x in config ) this[x] = config[x] }
+
 	/**
 	 * Creates a client configuration object
-	 * @param id Id of the component 
 	 * @param parent Parent component
+	 * @param plugin Id of the component 
+	 * @param id Id of the component 
+	 * @param width Width of the split component
+	 * @param height Height of the split component
+	 * @param config Extra configuration 
 	 */
-	setup( id, parent='KonektiMain' ){ return {'id':id, 'parent':parent} }
+	setup( parent, plugin, id, width, height, config, inner = '' ){
+		config.tag = config.tag || 'div'
+		return {'plugin':plugin, 'id':id, 'parent':parent, 'config':config, 'inner':inner,
+				'defwidth':width, 'defheight':height, 'listener':[]} 
+	}
 
 	/**	 
 	 * Creates a konekti client using the configuration information	 
-	 * @param id Id of the component 
-	 * @param parent Parent component
 	 */	
-	constructor(id, parent='KonektiMain'){ 
-		this.config = id	
-		if(typeof id !== 'object') this.config = this.setup(...arguments)
-		else{
-			var parent = this.config.parent || 'KonektiMain'
-			if(this.config.setup !== undefined) this.config = this.setup(...this.config.setup)
-			this.config.parent = parent
-		} 		
-		this.id = this.config.id
+	constructor(){
+		this.assign(this.setup(...arguments))
 		Konekti.client[this.id] = this
-		
-		this.parent = this.config.parent
-		if(this.parent !== null && this.parent=='KonektiMain') Konekti.client['KonektiMain'].children.push(this)
-
-		this.defHeight = this.config.height
-		this.defWidth = this.config.width
-		this.listener = []
-		this.fitRect = false
-		this.init_vc()
+		if(this.parent=='body') Konekti.client['body'].children.push(this)
+		if(this.parent!='') Konekti.vc(this.parent).appendChild(Konekti.dom.html(this.html()))
 	}
 
 	/**
 	  * Associated html code
 	  */
-	html(){ return "" }  
+	html(){
+		this.inner = this.inner || ''
+		var ctag = '</'+this.config.tag+'>'
+		switch(this.config.tag){
+			case 'img':
+				ctag = ''
+			break;
+		}
+		var code = "<"+this.config.tag + " id='" + this.id + "' "
+		for(var x in this.config)
+			if( x!=='tag' && x!=='extra') code += x + "='" + this.config[x] + "' "
+		code += (this.config.extra||'')+">" + this.inner + ctag
+		return code
+	}  
  
-	/**
-	 * Initializes the visual component associated to the client
-	 */
-	init_vc(){ Konekti.vc(this.parent).appendChild(Konekti.resource.html(this.html())) }
-	
 	/**
 	 * Gets the visual component associated to the client/subclient
 	 * @param {*} subId Id of the subclient (the subclient id is a combination of the client id and this argument)
@@ -477,31 +524,30 @@ class Client{
 	vc(subId=''){ return Konekti.vc(this.id+subId) }
 
 	/**
-	 * Computes the size of a visual component dimension according to a parent's dimension
-	 * @param {*} defSize Dimension definition (percentage, absolute or rest)
-	 * @param {*} size Size of the parent's dimension
-	 * @param {*} setWidth If setting the width (<i>true</i>) or the height (<i>false</i>)
+	 * Computes the size of a visual component side according to a parent's side dimension
+	 * @param {*} side 'width' or 'height'
+	 * @param {*} parent_size Size of the parent's dimension
 	 * @returns Computed dimension
 	 */
-	size( defSize, size, setWidth ){
-		var n = defSize.length-1
-		if( defSize.charAt(n) == '%' ){
-			var s = parseFloat(defSize.substring(0,n))
-			return Math.round(s*size/100)
-		}else if(defSize=='rest'){
-			var h = 0
-			var w = 0
-			var p = Konekti.client[this.parent]
-			for(var i=0; i<p.children.length; i++){
-				if( p.children[i] != this ){
-					var r = p.children[i].vc().getBoundingClientRect()
-					h += r.height
-					w += r.width
+	size( side, parent_size ){
+		var c = this.vc()
+		var r = c.getBoundingClientRect()
+		var defSize = this['def'+side]
+		if(defSize !== undefined && defSize!==null && defSize!=''){
+			var n = defSize.length-1
+			if(defSize=='rest'){
+				var s = 0
+				var p = Konekti.client[this.parent]
+				for(var i=0; i<p.children.length; i++){
+					if( p.children[i] != this ){
+						var r = p.children[i].vc().getBoundingClientRect()
+						s += r[side]
+					}
 				}
-			}
-			if(setWidth) return size - w
-			else return size - h
-		}else return parseInt(defSize.substring(0,n-1))
+				return parent_size - s
+			}else if( defSize.charAt(n) == '%' ) return Math.round(parseFloat(defSize.substring(0,n))*parent_size/100)
+			else return parseInt(defSize.substring(0,n-1))
+		}else return undefined	
 	}
 	
 	/**
@@ -509,27 +555,13 @@ class Client{
 	 * @param {*} parentWidth Parent's width
 	 * @param {*} parentHeight Parent's height
 	 */
-	updateSize( parentWidth, parentHeight ){
+	setParentSize( parentWidth, parentHeight ){
+		this.width = this.size('width', parentWidth)
+		this.height = this.size('height', parentHeight)
 		var c = this.vc()
-		var r = c.getBoundingClientRect()
-	
-		if(this.defHeight !== undefined && this.defHeight !== null && this.defHeight != ''){ 
-			this.height = this.size( this.defHeight, parentHeight, false )
-			if( this.height > 0 ) c.style.height = this.height + 'px'
-		}else if(this.fitRect) this.height = r.height		
-		
-		if(this.defWidth !== undefined && this.defWidth !== null && this.defWidth != ''){
-			this.width = this.size( this.defWidth, parentWidth, true )
-			if( this.width > 0 ) c.style.width = this.width + 'px'
-		}else if(this.fitRect) this.width = r.width
+		c.style.width = this.width + 'px'
+		c.style.height = this.height + 'px'
 	}
-	
-	/**
-	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
-	 */
-	setParentSize( parentWidth, parentHeight ){ this.updateSize( parentWidth, parentHeight ) }
 	
 	/**
 	 * Adds listener to events of the client
@@ -552,15 +584,24 @@ class Client{
 class Container extends Client{
 	/**
 	 * Creates a client configuration object
+	 * @param parent Parent component
+	 * @param plugin Component plugin
 	 * @param id Id of the component that will contain the ace editor
+	 * @param children Contained components
 	 * @param width Width of the split component
 	 * @param height Height of the split component
 	 * @param config Extra configuration 
-	 * @param children Contained components
-	 * @param parent Parent component
 	 */
-	setup( id, width, height, config, children, parent='KonektiMain' ){ 
-		return {'plugin':'container', 'id':id, 'width':width, 'height':height, 'config':config, 'children':children, 'parent':parent} 
+	setup( parent, plugin, id, children=[], width='', height='', config={"tag":"div"} ){
+		config.tag = config.tag || 'div'
+		var inner =''
+		if(typeof children == 'string'){
+			inner = children
+			children =[]
+		}else if(!Array.isArray(children)) children = [children]
+		var c = super.setup(parent, plugin, id, width, height, config, inner)
+		c.children = children
+		return c
 	}
 
 	/**	 
@@ -572,27 +613,32 @@ class Container extends Client{
 	 * @param children Contained components
 	 * @param parent Parent component
 	 */	
-	constructor( id, width, height, config, children=[], parent='KonektiMain' ){ 
+	constructor(){ 
 		super(...arguments)
 		var x = this
-		if(x.config.children !== undefined && x.config.children !== null & x.config.children.length>0)
-			Konekti.load_dependecies(x.config.children, function(){ x.setChildrenBack() })
-		else x.children = []
+		x.done = false
+		Konekti.load_dependencies(x.children, function(){ x.setChildrenBack() })
 	}
 
 	setChildrenBack(){
-		for(var i=0; i<this.config.children.length; i++) this.config.children[i] = this.init_child(this.config.children[i])
-		this.children = Konekti.build(this.config.children)
+		for(var i=0; i<this.children.length; i++) this.children[i].setup.splice(0,0,this.id)
+		this.children = Konekti.build(this.children)
+		this.done = true
 	}
 
 	/**
-	 * Initializes a child component (usually to set the parent id of the child) 
-	 * @param {*} child Child configuration
-	 * @returns 
+	 * Sets each children size
+	 * @param parentWidth Parent's width
+	 * @param parentHeight Parent's height
 	 */
-	init_child(child){ 
-		child.parent = this.id 
-		return child
+	 setChildrenSize( parentWidth, parentHeight ){
+		var x = this
+		function check(){
+			if( x.done )
+				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)
+			else setTimeout(check, 100)
+		}
+		check()
 	}
 
 	/**
@@ -601,27 +647,16 @@ class Container extends Client{
 	 * @param parentHeight Parent's height
 	 */
 	setParentSize( parentWidth, parentHeight ){
-		var x = this
 		super.setParentSize( parentWidth, parentHeight )
-		function check(){
-			if( x.children !== undefined && x.children !== null && x.children.length>0 )
-				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)
-			else setTimeout(check, 100)
-		}
-		check()
+		this.setChildrenSize(parentWidth, parentHeight)
 	}
-
-	/**
-	 * Associated html code
-	 */
-	html(){ return "<div id='"+this.id+"' " + (this.config.config||"") + "></div>" }
 
 	/**
 	 * Determines the child position 
 	 * @param {*} id Id of the child
 	 * @returns The child position or -1 if there is not such child
 	 */
-	 child_index(id){
+	child_index(id){
 		var i=0
 		while(i<this.children.length && this.children[i].id != id) i++
 		return i<this.children.length?i:-1
@@ -636,12 +671,7 @@ class RootClient extends Container{
 	 * Creates the main client
 	 * @param {*} ide Components defining the ide
 	 */
-	constructor(){ super('KonektiMain', '', '', '', [], null) }
-
-	/**
-	 * Initializes the visual component associated to the client
-	 */
-	init_vc(){}
+	constructor(){ super('', 'container', 'body', [], '100%', '100%', {'style':'scroll:auto'}) }
 
 	/**
 	 * Sets the parent's size (adjust each of its children components)
@@ -649,16 +679,6 @@ class RootClient extends Container{
 	 * @param parentHeight Parent's height
 	 */
 	setParentSize( parentWidth, parentHeight ){ super.setParentSize(window.innerWidth, window.innerHeight) } 
-
-	/**
-	 * Computes the size of the visual component associated to the client
-	 * @param {*} parentWidth Parent's width
-	 * @param {*} parentHeight Parent's height
-	 */
-	updateSize( parentWidth, parentHeight ){
-		this.height = parentHeight
-		this.width = parentWidth		
-	}
 }
 
 class MainClient{ 
@@ -724,10 +744,7 @@ class Editor extends Client{
 	 * Updates the position of the scroll associated to the editor
 	 * @param pos New position for the scroll
 	 */
-	scrollTop(pos){
-		if(typeof pos=='undefined') pos = this.gui.scrollHeight
-		this.gui.scrollTop = pos
-	}
+	scrollTop(pos){}
 }
 
 /**

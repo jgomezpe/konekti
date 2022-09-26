@@ -4,44 +4,41 @@
 class Media extends MediaClient{
 	/**
 	 * Creates a media config object
+	 * @param parent Parent component
 	 * @param id Id of the media component
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
 	 * @param media Type of media to connect (audio/video)
 	 * @param type Type of media to connect
 	 * @param src url of media to connect
-	 * @param parent Parent component
+	 * @param config Style of component
 	 */
-	setup(id, width, height, media, type, src, parent='KonektiMain'){ 
-		return {"plugin":"media", "id":id, "media":media, "type":type, "src":src, 'width':width, 'height':height, 'parent':parent } 
+	setup(parent, id, width, height, media, type, src, config={}){
+		config.tag = media
+		config.type = type 
+		config.src = src
+		config.extra ='controls'
+		return super.setup(parent, 'media', id, width, height, config,'Your browser does not support the ' + media +' element.')
 	}
 
 	/**
 	 * Creates a media component
-	 * @param id Id of the media component
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-	 * @param media Type of media to connect (audio/video)
-	 * @param type Type of media to connect
-	 * @param src url of media to connect
-	 * @param parent Parent component
 	 */
-	constructor( id, width, height, media, type, src, parent='KonektiMain' ){
+	constructor(){
 		super(...arguments)
-		this.media = this.vc()
 		var x = this
-		var media = this.media
-		media.addEventListener('play', function(e){
+		x.media = this.vc()
+		x.media.addEventListener('play', function(e){
 			for( var i=0; i<x.listener.length; i++ )
 				if( Konekti.client[x.listener[i]].play !== undefined )
-					Konekti.client[x.listener[i]].play(x.id, media.currentTime) 
+					Konekti.client[x.listener[i]].play(x.id, x.media.currentTime) 
 		})
-		media.ontimeupdate = function(){
+		x.media.ontimeupdate = function(){
 			for( var i=0; i<x.listener.length; i++ )
 				if( Konekti.client[x.listener[i]].seek !== undefined )
-					Konekti.client[x.listener[i]].seek(x.id, media.currentTime) 
+					Konekti.client[x.listener[i]].seek(x.id, x.media.currentTime) 
 		}
-		media.addEventListener('pause', function(e){
+		x.media.addEventListener('pause', function(e){
 			for( var i=0; i<x.listener.length; i++ )
 				if( Konekti.client[x.listener[i]].pause !== undefined )
 					Konekti.client[x.listener[i]].pause(x.id) 
@@ -79,15 +76,6 @@ class Media extends MediaClient{
 				Konekti.client[this.listener[i]].seek(this.id,time) 
 	}
 	
-	/**
-	 * Associated html code
-	 */
-	html(){ 
-		return "<"+this.config.media+" id='"+this.id+"' controls><source id='" + 
-				this.id+"Src' src='"+this.config.src+"' type='"+this.config.media+"/" + 
-				this.config.type+"'>Your browser does not support the audio element.</"+this.config.media+">" 
-	}
-	
 	update( src ){
 		this.vc('Src').src = src
 		this.vc().load()
@@ -106,7 +94,7 @@ class Media extends MediaClient{
  * @param src url of media to connect
  * @param parent Parent component
  */
-Konekti.media = function(id, width, height, media, type, src, parent='KonektiMain'){ return new Media(id, width, height, media, type, src, parent) }
+Konekti.media = function(parent, id, width, height, media, type, src, config={}){ return new Media(parent, id, width, height, media, type, src, config) }
 
 /**
  * Associates/Adds a general video component
@@ -119,7 +107,7 @@ Konekti.media = function(id, width, height, media, type, src, parent='KonektiMai
  * @param src url of video to connect
  * @param parent Parent component
  */
- Konekti.video = function(id, width, height, type, src, parent='KonektiMain'){ return this.media(container, width, height, "video", type, src, parent) }
+ Konekti.video = function(parent, id, width, height, type, src, config={}){ return this.media(parent, id, width, height, "video", type, src, config) }
 
 /**
  * Associates/Adds a mp4 video component
@@ -131,7 +119,7 @@ Konekti.media = function(id, width, height, media, type, src, parent='KonektiMai
  * @param src url of video to connect
  * @param parent Parent component
  */
- Konekti.mp4 = function(id, width, height, src, parent='KonektiMain'){ return Konekti.media(id, width, height, "video", "mp4", src, parent) }
+ Konekti.mp4 = function(parent, id, width, height, src, config={}){ return Konekti.media(parent, id, width, height, "video", "mp4", src, config) }
 
 /**
  * Associates/Adds a general audio component
@@ -142,7 +130,7 @@ Konekti.media = function(id, width, height, media, type, src, parent='KonektiMai
  * @param src url of audio to connect
  * @param parent Parent component
  */
- Konekti.audio = function(id, type, src, parent='KonektiMain'){ return Konekti.media(id, '', '', "audio", type, src, parent) }
+ Konekti.audio = function(parent, id, type, src, config={}){ return Konekti.media(parent, id, '', '', "audio", type, src, config) }
 
 /** 
 * Associates/Adds a mp3 audio component
@@ -152,4 +140,6 @@ Konekti.media = function(id, width, height, media, type, src, parent='KonektiMai
 * @param src url of audio to connect
 * @param parent Parent component
 */
-Konekti.mp3 = function(id, src, parent='KonektiMain'){ return Konekti.audio(id, "mp3", src, parent) }
+Konekti.mp3 = function(parent, id, src, config={}){ return Konekti.audio(parent, id, "mp3", src, config) }
+
+Konekti.register('mp3', 'audio', 'mp4', 'video')

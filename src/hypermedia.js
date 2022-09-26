@@ -19,34 +19,26 @@
  class HyperMedia extends Container{
 	/**
 	 * Creates an hypermedia configuration object
+	 * @param parent parent component
 	 * @param id Id of the hypermedia component
+	 * @param layout Hypermedia layout
 	 * @param width Width of the hypermedia component
 	 * @param height Height of the hypermedia component
-	 * @param layout Hypermedia layout
 	 * @param media Id of the media controller (must be a component of the layout)
 	 * @param scripts Scripts followed by the hypermedia
-	 * @param parent parent component
+	 * @param config Style of component
 	 */
-	setup(id, width, height, layout, media, scripts, parent='KonektiMain'){
-		if(!Array.isArray(layout)) layout = [layout] 
-		return {'plugin':'hypermedia', 'id':id, 'parent':parent, 'width':width, 'height':height, 'media':media, 'scripts':scripts, 'children':layout}
+	setup(parent, id, layout, width, height, media, scripts, config={}){
+		var c = super.setup(parent, 'hypermedia', id, layout, width, height, config)
+		c.media = media
+		c.scripts = scripts
+		return c
 	}
 
 	/**
 	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
-	 * @param id Id of the hypermedia component
-	 * @param width Width of the hypermedia component
-	 * @param height Height of the hypermedia component
-	 * @param layout Hypermedia layout
-	 * @param media Id of the media controller (must be a component of the layout)
-	 * @param scripts Scripts followed by the hypermedia
-	 * @param parent parent component
 	 */	
-	constructor(id, width, height, layout, media, scripts, parent='KonektiMain'){
-		super(...arguments)
-		this.scripts = this.config.scripts || []
-		this.media = this.config.media
-	}
+	constructor(){ super(...arguments) }
 
 	setChildrenBack(){
 		super.setChildrenBack()
@@ -75,7 +67,7 @@
 	 * Locates the media component at the given time
 	 * @param time Time position for the media component
 	 */
-	locate(time){
+	 locate(time){
 		var scripts = this.scripts
 		for( var i=0; i<scripts.length; i++ ){
 			var script = scripts[i]
@@ -102,6 +94,7 @@
 		}
 	}
 
+
 	/**
 	 * Locates the media component at the given time
 	 * @param id The media id 
@@ -125,6 +118,6 @@
  * @param scripts Scripts followed by the hypermedia
  * @param parent parent component
  */
-Konekti.hypermedia = function(id, width, height, layout, media, scripts, parent='KonektiMain'){
-	return new HyperMedia(id, width, height, layout, media, scripts,parent)
+Konekti.hypermedia = function(parent, id, layout, width, height, media, scripts, config={}){
+	return new HyperMedia(parent, id, layout, width, height, media, scripts, config)
 }

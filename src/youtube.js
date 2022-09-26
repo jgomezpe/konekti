@@ -9,25 +9,24 @@ window.onYouTubeIframeAPIReady = function(){ youtube_ready=true }
 class Youtube extends MediaClient{
 	/**
 	 * Creates a Youtube video configuration object
+	 * @param parent Parent component
 	 * @param id Id of the youtube component
 	 * @param width Width of the split component
 	 * @param height Height of the split component
 	 * @param video youtube id of the video
-	 * @param parent Parent component
+	 * @param config Style of the youtube container
 	 */
-	setup(id, width, height, video, parent='KonektiMain'){
-		return {'plugin':'youtube', 'id':id, 'video':video, 'width':width, 'height':height, 'parent':parent}
+	setup(parent, id, width, height, video, config={}){
+		config.tag = 'div'
+		var c = super.setup(parent, 'youtube', id, width, height, config, "<div id='"+video+"' style='width:100%;height:100%;'></div>")
+		c.video = video
+		return c
 	}
 
 	/**
 	 * Creates a Youtube video 
-	 * @param id Id of the youtube component
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param video youtube id of the video
-	 * @param parent Parent component
 	 */
-	constructor(id, width, height, video, parent='KonektiMain'){ 
+	constructor(){ 
 		super(...arguments)
 		var x = this
 		function check(){
@@ -36,11 +35,6 @@ class Youtube extends MediaClient{
 		}
 		check()
 	}
-
-	/**
-	 * Associated html code
-	 */
-	html(){ return "<div id='"+this.id+"'><div id='"+this.config.video+"' style='width:100%;height:100%;'></div></div>" }
 
 	/**
 	 * Loads a Youtube player
@@ -68,8 +62,8 @@ class Youtube extends MediaClient{
 						Konekti.client[x.listener[i]].pause(x.id) 
 			}
 		}
-		window[x.id] = new YT.Player(x.config.video, {
-			videoId: x.config.video,
+		window[x.id] = new YT.Player(x.video, {
+			videoId: x.video,
 			playerVars: {rel: 0, fs:0, modestbranding:1},
 			events: {
 				'onReady': onPlayerReady,
@@ -114,10 +108,11 @@ class Youtube extends MediaClient{
  * Associates/Adds a youtube video component
  * @method
  * youtube
+ * @param parent Parent component
  * @param id Id of the youtube component
  * @param width Width of the split component
  * @param height Height of the split component
  * @param video youtube id of the video
- * @param parent Parent component
+ * @param config Style of the youtube container
  */
-Konekti.youtube = function(id, width, height, video, parent='KonektiMain'){ return new Youtube(id, width, height, video, parent) }
+Konekti.youtube = function(parent, id, width, height, video, config={}){ return new Youtube(parent, id, width, height, video, config) }

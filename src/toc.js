@@ -1,50 +1,46 @@
-uses('https://jgomezpe.github.io/konekti/src/accordion.js')
-
 /** Konekti Plugin for TOC (Table of content) components */
-class Toc extends Accordion{
-	/**
-	 * Creates a TOC configuration object
-	 * @param h Size of the main content (1,2,3..) recommended 3 or 4, maximum 6
-	 * @param style Style of the toc
-	 * @param onclick Method called when an item is selected
-	 * @param tree Table of Content component 
-	 * @param parent Parent component
-	 */
-	setup(h, style, onclick, tree, parent='KonektiMain'){
-		h = Math.min(h,6)
-		var content = null
-		if(tree.children !== undefined){
-			var children = []
-			for( var i=0; i<tree.children.length; i++ )
-				children.push({'plugin':'toc', 'setup':[h+1, style, onclick, tree.children[i], tree.id+'Content']})
-			content = {'plugin':'container', 'setup':[tree.id+'Content', '', '', '', children, tree.id]}		
+class Toc extends Container{
+	children_setup(children, style, onclick){
+		if(!Array.isArray(children)) children = [children]
+		var nchildren = []
+		for( var i=0; i<children.length; i++ ){
+			var c = children[i]
+			if(typeof c === 'string') c = [c, '', c,{}]
+			var nc = this.children_setup(c[6] || [], style, onclick)
+			nc = {'plugin':'container', 'setup':['container', c[0]+'Group', nc, '', '', {'style':'margin-left:8px;'}]}
+			nchildren[i] = {'plugin':'accordion', 'setup':[c[0], c[1], c[2], c[3]||{}, nc, c[4]||false, 
+			(c[5]===undefined || c[5])?Konekti.dom.onclick(c[0], onclick):'']}
 		}
-		var config = super.setup(tree.id, tree.icon, tree.caption, h, style, content, tree.open || false, parent)
-		if(tree.action === undefined) tree.action = true
-		config.expand = tree.action?onclick:function(id){}
-		config.plugin = 'toc'
-		return config
+		return nchildren
 	}
 
 	/**
 	 * Creates a TOC configuration object
-	 * @param h Size of the main content (1,2,3..) recommended 3 or 4, maximum 6
-	 * @param style Style of the toc
-	 * @param onclick Method called when an item is selected
-	 * @param tree Table of Content component 
 	 * @param parent Parent component
+	 * @param config Style of the toc
+	 * @param onclick Method called when an item is selected
+	 * @param content Table of Content component 
 	 */
-	constructor(h, style, onclick, tree, parent='KonektiMain'){ super(...arguments) }
+	setup(parent, id, config, onclick, content){
+		config.style = 'padding:0px;'+(config.style || '')
+		return super.setup(parent, 'toc', id, this.children_setup(content, config, onclick), '', '', config)
+	}
+
+	/**
+	 * Creates a TOC configuration object
+	 */
+	constructor(){ super(...arguments) }
 }
 
 /**
  * Associates/adds a table of contents
  * @method
  * toc
- * @param h Size of the main content (1,2,3..)
  * @param style Style of the toc
  * @param onclick Method called when an item is selected
  * @param tree Table of Content component 
  * @param parent Parent component
  */
-Konekti.toc = function(h, style, onclick, tree, parent='KonektiMain'){ return new Toc(h, style, onclick, tree, parent) }
+Konekti.toc = function(parent, id, style, onclick, content){ 
+	return new Toc(parent, id, style, onclick, content) 
+}

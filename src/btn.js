@@ -2,52 +2,30 @@
 class Btn extends Container{
 	/**
 	 * Creates a button configuration object
-	 * @param id Id of the header/Configuration of the header
-	 * @param icon Icon for the header
-	 * @param caption Caption of the header
-	 * @param onclick Information of the method that will be executed when the button is pressed
-	 * @param style Style of the header
-	 * @param title Message that will be shown when mouse is over the button
 	 * @param parent Parent component
+	 * @param id Id of the button
+	 * @param icon Icon for the button
+	 * @param caption Caption of the button
+	 * @param onclick Information of the method that will be executed when the button is pressed
+	 * @param config Style of the button
 	 */
-	 setup(id, icon, caption, onclick, style, title, parent='KonektiMain'){
-		return {'plugin':'btn', 'id':id, 'style':style, 'run':onclick, 'title':title, 'parent':parent, 'children':[{'plugin':'item', 'setup':[id+'Item', icon, caption, id]}]}
+	setup(parent, id, icon, caption, onclick='', config={}){
+		config.tag = 'div'
+		if(onclick!='') config.onclick = Konekti.dom.onclick(id,onclick)
+		config.class = (config.class||"") + " w3-button "
+		return super.setup(parent, 'btn', id, [{'plugin':'item', 'setup': [id+'Item', icon, caption]}], '', '', config)
 	}
 
 	/**
 	 * Creates a button configuration object
-	 * @param id Id of the header/Configuration of the header
-	 * @param icon Icon for the header
-	 * @param caption Caption of the header
-	 * @param onclick Information of the method that will be executed when the button is pressed
-	 * @param style Style of the header
-	 * @param title Message that will be shown when mouse is over the button
-	 * @param parent Parent component
 	 */
-	constructor(id, icon, caption, onclick, style, title, parent='KonektiMain'){ super(...arguments) }
+	constructor(){ super(...arguments) }
 
-	/**
-	 * Associated html code
-	 * @param config Client configuration
-	 */
-	html(){ 
-		var title = this.config.title || ''
-		var style = this.config.style || ''
-		var run = this.config.run || ''
-		if( typeof run !== 'string' ){
-			var client = this.config.run.client
-			this.config.run.method = this.config.run.method || this.id
-			run = ((client!==undefined && client!==null && client!=='')?'Konekti.client["'+client+'"].':'')+this.config.run.method+'("'+this.id+'")'
-		} 
-		this.config.config = " title='"+title+"' class='w3-button "+style+"' onclick='"+run+"'"
-		return "<div id='" + this.id + "' "+ this.config.config + "></div>"
-	}
-	
 	/**
 	 * Sets a component's attribute to the given value 
 	 * @param config Item configuration
 	 */
-	 update(icon, caption, title){
+	update(icon, caption, title){
 		Konekti.client[this.id+'Item'].update(icon, caption)
 		if( title !== undefined ) this.vc().title = title
 	}
@@ -57,14 +35,13 @@ class Btn extends Container{
  * Associates/adds a header
  * @method
  * btn
- * @param id Id of the header/Configuration of the header
- * @param icon Icon for the header
- * @param caption Caption of the header
- * @param onclick Information of the method that will be executed when the button is pressed
- * @param style Style of the header
- * @param title Message that will be shown when mouse is over the button
  * @param parent Parent component
+ * @param id Id of the button
+ * @param icon Icon for the button
+ * @param caption Caption of the button
+ * @param onclick Information of the method that will be executed when the button is pressed
+ * @param config Style of the button
  */
-Konekti.btn = function(id, icon, caption, onclick, style, title, parent='KonektiMain'){
-	return new Btn(id, icon, caption, onclick, style, title, parent)
+Konekti.btn = function(parent, id, icon, caption, onclick='', config={}){
+	return new Btn(parent, id, icon, caption, onclick, config)
 }

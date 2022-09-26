@@ -2,38 +2,32 @@
 class IFrameEditor extends Editor{
 	/**
 	 * Creates an IFrame configuration object
+	 * @param parent Parent component
 	 * @param id Id of the iframe container
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
 	 * @param src Url/code for the iframe component
-	 * @param parent Parent component
+	 * @param config Style of the youtube container
 	 */
-	setup(id, width, height, src, parent='KonektiMain'){ return {'plugin':'iframe', 'id':id, 'width':width,'height':height, 'src':src, 'parent':parent} }
+	setup(parent, id, width, height, src, config={}){
+		if( !src.startsWith('https://') ) config.src = this.getBlobURL(src, 'text/html') 
+		else config.src = src
+		config.tag = 'iframe'
+		config.frameBorder = 0
+		config.name = id
+		return super.setup(parent, 'iframe', id, width, height, config)  
+	}
 
 	/**
 	 * Creates an IFrame configuration object
-	 * @param id Id of the iframe container
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-	 * @param src Url/code for the iframe component
-	 * @param parent Parent component
 	 */
-	constructor(id, width, height, src, parent='KonektiMain'){ super(...arguments) }
+	constructor(){ super(...arguments) }
 	
 	getBlobURL(code, type){
 		const blob = new Blob([code], {type})
 		return URL.createObjectURL(blob)
 	}
 
-	/**
-	 * Associated html code
-	 */
-	html(){ 
-		if( this.config.src === undefined || this.config.src === null ) this.config.src = ''
-		if( !this.config.src.startsWith('https://') ){ this.config.src = this.getBlobURL(this.config.src, 'text/html') }
-		return "<iframe id='"+this.id+"' name='"+this.id+"' src='"+this.config.src+"' frameBorder='0'></iframe>" 
-	}  
-	 
 	/**
 	 * Gets current html code in the iframe component
 	 * @return Current html code in the iframe component
@@ -54,10 +48,11 @@ class IFrameEditor extends Editor{
  * Associates/Adds an IFrame 
  * @method
  * iframe
+ * @param parent Parent component
  * @param id Id of the iframe container
  * @param width Width of the div's component
  * @param height Height of the div's component
  * @param src Url/code for the iframe component
- * @param parent Parent component
+ * @param config Style of the youtube container
  */
-Konekti.iframe = function(id, width, height, src, parent='KonektiMain'){ return new IFrameEditor(id, width, height, src, parent) }
+Konekti.iframe = function(parent, id, width, height, src, config={}){ return new IFrameEditor(parent, id, width, height, src, config) }

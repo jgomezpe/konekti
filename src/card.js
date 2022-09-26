@@ -2,25 +2,20 @@
 class Card extends Container{
 	/**
 	 * Creates a card configuration object
+	 * @param parent Parent component
 	 * @param id Id of the card component
 	 * @param description Contained components with description of the product/person
-	 * @param parent Parent component
 	 */
-	setup( id, description, parent='KonektiMain' ){
-        var plug = 'container'
-        if(typeof description == 'string') plug = 'div'
-        else if(!Array.isArray(description)) description = [description]
-        var content = {'plugin':plug, 'setup':[id+'Content', '100%', '100%', 'class="w3-card"', description, id]}
-		return {'plugin':'card', 'id':id, 'width':'', 'height':'', 'config':'class="w3-container w3-center"', 'children':[content], 'parent':parent} 
+	setup( parent, id, description, config={} ){
+		config.tag = 'div'
+        var content = {'plugin':'container', 'setup':['container', id+'Content', description, '100%', '100%', {'class':"w3-card", 'tag':'div'}]}
+		return super.setup(parent, 'card', id, [content], '', '', {'class':"w3-container w3-center"}) 
 	}
 
 	/**
 	 * Creates a card component
-	 * @param id Id of the card component
-	 * @param description Contained components with description of the product/person
-	 * @param parent Parent component
 	 */
-     constructor( id, description, parent='KonektiMain' ){ super(...arguments) }
+     constructor(){ super(...arguments) }
 }
 
 /**	 
@@ -28,7 +23,8 @@ class Card extends Container{
  * @param id Id of the card
  * @param description Contained components with description of the product/person
  * @param parent Parent component
+ * @param config Card configuration
  */	
-Konekti.card = function( id, description, parent='KonektiMain' ){ 
-    return new Card(id, description, parent) 
+Konekti.card = function( parent, id, description, config={} ){ 
+    return new Card(parent, id, description, config) 
 }

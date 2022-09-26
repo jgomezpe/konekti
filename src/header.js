@@ -2,34 +2,23 @@
 class Header extends Container{
 	/**
 	 * Creates a Header configuration object
-	 * @method
-	 * headerConfig
-	 * @param id Id of the header/Configuration of the header
+	 * @param parent Parent component
+	 * @param id Id of the header
 	 * @param icon Icon for the header
 	 * @param caption Caption of the header
 	 * @param h Size of the header (1,2,3..)
-	 * @param style Style of the header
-	 * @param parent Parent component
+	 * @param config Style of the header
 	 */
-	setup(id, icon, caption, h, style, parent='KonektiMain'){
-		return {'plugin':'header', 'id':id, 'style':style, 'h':h, 'parent':parent, 'children':[{'plugin':'item', 'setup': [id+'Item', icon, caption, id]}]}
+	setup(parent, id, icon, caption, h, config={}){
+		config.tag = 'h'+h
+		config.style = config.style || "margin-top:0;margin-bottom:0;padding:2px"
+		return super.setup(parent, 'header', id, [{'plugin':'item', 'setup': [id+'Item', icon, caption]}], '', '', config)
 	}
 
 	/**
 	 * Creates a Header configuration object
-	 * @param id Id of the header/Configuration of the header
-	 * @param icon Icon for the header
-	 * @param caption Caption of the header
-	 * @param h Size of the header (1,2,3..)
-	 * @param style Style of the header
-	 * @param parent Parent component
 	 */
-	constructor(id, icon, caption, h, style, parent='KonektiMain'){ super(...arguments) }
-
-	/**
-	 * Associated html code
-	 */
-	html(){ return "<h"+this.config.h+" id='"+this.id+"' class='"+this.config.style+"' style='margin-top:0;margin-bottom:0;padding:2px'></h"+this.config.h+">" }   
+	constructor(){ super(...arguments) }
 }
 
 /**
@@ -43,6 +32,6 @@ class Header extends Container{
  * @param style Style of the header
  * @param parent Parent component
  */
-Konekti.header = function(id, icon, caption, h, style, parent='KonektiMain'){
-	return new Header(id, icon, caption, h, style, parent)
+Konekti.header = function(parent, id, icon, caption, h, style ){
+	return new Header(parent, id, icon, caption, h, style)
 }

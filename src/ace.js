@@ -1,11 +1,14 @@
-uses("https://ace.c9.io/build/src/ace.js")
-
 let ACE_PATH = "https://ace.c9.io/build/src/"
 
-ace.config.set('basePath', ACE_PATH)
-ace.config.set('modePath', ACE_PATH)
-ace.config.set('themePath', ACE_PATH)
-ace.config.set('workerPath', ACE_PATH)
+var ace_loaded = false
+
+Konekti.resource.JS("https://ace.c9.io/build/src/ace.js", function(){
+	ace.config.set('basePath', ACE_PATH)
+	ace.config.set('modePath', ACE_PATH)
+	ace.config.set('themePath', ACE_PATH)
+	ace.config.set('workerPath', ACE_PATH)	
+	ace_loaded = true
+})
 
 /** Konekti Plugin for ACE editors */
 class AcePlugIn{
@@ -178,6 +181,7 @@ let aceplugin = new AcePlugIn()
 class Ace extends Editor{
 	/**
 	 * Creates an Ace configuration object
+	 * @param parent Parent component
 	 * @param id Id of the component that will contain the ace editor
 	 * @param width Width of the split component
 	 * @param height Height of the split component
@@ -185,83 +189,68 @@ class Ace extends Editor{
 	 * @param mode Mode of the ace editor
 	 * @param theme Theme of the ace editor
 	 * @param code Lexical configuration for the ace editor  
-	 * @param parent Parent component
 	 */
-	setup(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
-		return {"plugin":"ace", "id":id, "initial":initial, "mode":mode, "theme":theme, "code":code, 'width':width, 'height':height, 'parent':parent}
+	setup(parent, id, width, height, initial, mode, theme, code=''){
+		var c = super.setup(parent, 'ace', id, width, height,{'tag':'div'} )
+		c.initial = initial
+		c.inner = "<div id='"+id+"Ace' style='width:100%;height:100%;'></div>"
+		c.mode = mode
+		c.theme = theme
+		c.code = code
+		return c
 	}
 
 	/**
 	 * Creates an Ace configuration object
-	 * @param id Id of the component that will contain the ace editor
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param initial Initial text inside the ace editor
-	 * @param mode Mode of the ace editor
-	 * @param theme Theme of the ace editor
-	 * @param code Lexical configuration for the ace editor  
-	 * @param parent Parent component
 	 */
-	constructor(id, width, height, initial, mode, theme, code, parent='KonektiMain'){ 
+	constructor(){ 
 		super(...arguments)
-		this.update(this.config)
-	}
-
-	/**
-	 * Associated html code
-	 */
-	html(){ return "<div id='"+this.id+"'><div id='"+this.id+"Ace' style='width:100%;height:100%;'></div></div>" }
-	
-	/**
-	 * Updates an Ace Editor
-	 * @param thing Ace editor configuration
-	 */
-	update(thing){
-		var id = this.id
 		var x = this
-		x.gui = x.vc('Ace')
-		if( x.edit === undefined ){
-			x.edit = ace.edit(id+'Ace');
-			x.sui = x.gui.getElementsByClassName('ace_scroller')[0]
-			x.sbui = x.gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
-			x.edit.setFontSize("16px")
-			x.edit.setShowPrintMargin(false)
 
-			x.edit.session.on("changeAnnotation", function () {
-				var annot = x.edit.session.getAnnotations();
-				for( var i=0; i<x.listener.length; i++ ){
-					var l = Konekti.client[x.listener[i]]
-					if( l != null && l.annotation != null ) l.annotation(id, annot)
-				}             
-			});	
+		function check(){
+			if(ace_loaded){
+				var gui = x.vc('Ace')
+				x.edit = ace.edit(x.id+'Ace');
+				x.sui = gui.getElementsByClassName('ace_scroller')[0]
+				x.sbui = gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
+				x.edit.setFontSize("16px")
+				x.edit.setShowPrintMargin(false)
+	
+				x.edit.session.on("changeAnnotation", function () {
+					var annot = x.edit.session.getAnnotations();
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.annotation != null ) l.annotation(x.id, annot)
+					}             
+				});	
+	
+				gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.onkeyup!=null ) l.onkeyup(x.id, event)
+					}
+				})
+							
+				x.edit.session.on('change', function(){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.onchange!=null ) l.onchange(x.id)
+					}
+				})
 
-			x.gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
-				for( var i=0; i<x.listener.length; i++ ){
-					var l = Konekti.client[x.listener[i]]
-					if( l != null && l.onkeyup!=null ) l.onkeyup(id, event)
-				}
-			})
-						
-			x.edit.session.on('change', function(){ 
-				for( var i=0; i<x.listener.length; i++ ){
-					var l = Konekti.client[x.listener[i]]
-					if( l != null && l.onchange!=null ) l.onchange(id)
-				}
-			})
-		}    
-		
-		if(thing.initial !== undefined){
-			x.edit.setValue(thing.initial,1)
+				if( x.theme !== undefined && x.theme!==null) x.edit.setTheme("ace/theme/"+x.theme)
+
+				if( x.code !== '' ){
+					x.code.cid = x.id
+					x.code.mode = x.mode
+					aceplugin.register(x.code, x.edit)
+				}else if( x.mode !== undefined ) x.edit.session.setMode("ace/mode/"+x.mode)
+				x.edit.$blockScrolling = Infinity
+
+				x.setText(x.initial)
+			}else setTimeout(check, 100)   
 		}
-
-		if( thing.theme !== undefined && thing.theme!==null) x.edit.setTheme("ace/theme/"+thing.theme)
-
-		if( thing.code !== undefined && thing.code != null ){
-			thing.code.cid = id
-			thing.code.mode = thing.mode
-			aceplugin.register(thing.code, x.edit)
-		}else if( thing.mode !== undefined ) x.edit.session.setMode("ace/mode/"+thing.mode)
-		x.edit.$blockScrolling = Infinity
+		check()
 	}
 
 	/**
@@ -275,8 +264,8 @@ class Ace extends Editor{
 	 * @param {*} parentWidth Parent's width
 	 * @param {*} parentHeight Parent's height
 	 */
-	updateSize( parentWidth, parentHeight ){
-		super.updateSize(parentWidth, parentHeight)
+	setParentSize( parentWidth, parentHeight ){
+		super.setParentSize(parentWidth, parentHeight)
 		var x = this
 		function check(){
 			if(x.edit===undefined) setTimeout(check,100)
@@ -371,6 +360,6 @@ class Ace extends Editor{
  * @param code Lexical configuration for the ace editor  
  * @param parent Parent component
  */
-Konekti.ace = function(id, width, height, initial, mode, theme, code, parent='KonektiMain'){
-	return new Ace(id, width, height, initial, mode, theme, code, parent)
+Konekti.ace = function(parent, id, width, height, initial, mode, theme, code){
+	return new Ace(parent, id, width, height, initial, mode, theme, code)
 }

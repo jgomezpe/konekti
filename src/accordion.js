@@ -4,53 +4,36 @@ class Accordion extends Container{
 	 * Creates an accordion configuration object
 	 * @method
 	 * accordionConfig
+	 * @param parent Parent component
 	 * @param id Id of the header
 	 * @param width Width of the sidebar
 	 * @param height Height of the div's component
 	 * @param icon Icon for the header
 	 * @param caption Caption of the header
-	 * @param h Size of the header (1,2,3..)
 	 * @param style Style of the header
 	 * @param content Content component
 	 * @param open If content component should be displayed or not
-	 * @param parent Parent component
+	 * @param onclick Method call when the accordion item is selected
 	 */
-	setup(id, icon, caption, h, style, content, open, parent='KonektiMain'){
-		var children = [{'plugin':'header', 'setup':[id+'Item', icon, caption, h, style, id]}]
-		if(content!=null){
-			content.parent = content.parent || id
-			content.id = content.id || id+'Content'
-			children.push(content)
-		}
-		return {'plugin':'accordion', 'id':id, 'parent':parent, 'open':open, 'children':children}
+	setup(parent, id, icon, caption, style, content, open, onclick=''){
+		var children = [{'plugin':'item', 'setup':[id+'Item', icon, caption, style]}, content]
+		var c = super.setup(parent, 'accordion', id, children)
+		c.onclick = Konekti.dom.onclick(id, onclick)
+		c.open = open
+		return c
 	}	
 
 	/**
 	 * Creates an accordion configuration object
-	 * @method
-	 * accordionConfig
-	 * @param id Id of the header
-	 * @param width Width of the sidebar
-	 * @param height Height of the div's component
-	 * @param icon Icon for the header
-	 * @param caption Caption of the header
-	 * @param h Size of the header (1,2,3..)
-	 * @param style Style of the header
-	 * @param content Content component
-	 * @param open If content component should be displayed or not
-	 * @param parent Parent component
 	 */
-	constructor(id, icon, caption, h, style, content, open, parent='KonektiMain'){ 
-		super(...arguments)
-		this.expand = this.config.expand
-	}
+	constructor(){ super(...arguments) }
 
 	setChildrenBack(){
 		super.setChildrenBack()
 		var x = this
 		this.children[0].vc().onclick = function(){ x.show() }
 		this.children[0].vc().style.cursor = 'pointer'
-		if( this.children.length == 2 ) this.children[1].vc().className += "w3-container w3-hide" + (this.config.open?" w3-show":"")
+		if( this.children.length == 2 ) this.children[1].vc().className += "w3-hide" + (this.open?" w3-show":"")
 	}
 
 	/**
@@ -79,19 +62,10 @@ class Accordion extends Container{
 	show(){
 		if(this.children.length>1){
 			var x = Konekti.vc(this.children[1].id)
-			if( x.className.indexOf("w3-show") == -1){
-				x.className += " w3-show"				
-				if(this.expand !== undefined){
-					if(typeof this.expand == 'function') this.expand(this.id)
-					else Konekti.client[this.expand.client][this.expand.method](this.id)
-				}  
-  			}else x.className = x.className.replace(" w3-show", "");
-  		}else{ 
-			if(this.expand !== undefined){
-				if(typeof this.expand == 'function') this.expand(this.id)
-				else Konekti.client[this.expand.client][this.expand.method](this.id)
-			}  
-	  	}			
+			if( x.className.indexOf("w3-show") == -1) x.className += " w3-show"				
+			else x.className = x.className.replace(" w3-show", "");
+  		}
+		eval(this.onclick) 		
 	}	
 }
 
@@ -99,15 +73,16 @@ class Accordion extends Container{
  * Associates/adds an accordion
  * @method
  * accordion
+ * @param parent Parent component
  * @param id Id of the header
  * @param icon Icon for the header
  * @param caption Caption of the header
- * @param h Size of the header (1,2,3..)
  * @param style Style of the header
  * @param content Content component
  * @param open If content component should be displayed or not
- * @param parent Parent component
+ * @param onclick Method call when the accordion item is selected
  */
-Konekti.accordion = function(id, icon, caption, h, style, content, open, parent='KonektiMain'){
-	return new Accordion(id, icon, caption, h, style, content, open, parent)
+Konekti.accordion = function(parent, id, icon, caption, style, content, open, onclick=''){
+	return new Accordion(parent, id, icon, caption, style, content, open, onclick)
 }
+

@@ -1,50 +1,41 @@
-Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-badge {cursor:pointer} \n.w3-badge {height:13px;width:13px;padding:0}")
+Konekti.dom.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-badge {cursor:pointer} \n.w3-badge {height:13px;width:13px;padding:0}")
 
 /**
- * A media manager.
+ * An image carousel manager.
  */
  class Carousel extends Client{
 	/**
-	 * Creates a media component
-	 * @param id Id of the media component
+	 * Creates an image carousel component
+	 * @param id Id of the image carousel component
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
      * @param delay Delay between image display (milliseconds)
 	 * @param imgs URLs of the carousel images 
-     * @param select Function called when an image is selected 
+     * @param onclick Function called when an image is selected 
 	 * @param parent Parent component
 	 */
-    setup(id, width, height, delay, imgs, select, parent='KonektiMain'){ 
-		return {"plugin":"carousel", "id":id, "delay":delay, "imgs":imgs, 'select':select, 'width':width, 'height':height, 'parent':parent } 
+    setup(parent, id, width, height, delay, imgs, onclick, config={}){
+        config.class = (config.class || '') + ' w3-content w3-display-container'
+        config.onclick ='Konekti.client["'+id+'"].select()'
+        var c = super.setup(parent, 'carousel', id, width, height, config)
+        c.onclick = onclick
+        c.delay = delay
+        c.imgs = imgs
+		return c
 	}
 
 	/**
-	 * Creates a media component
-	 * @param id Id of the media component
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-     * @param delay Delay between image display (milliseconds)
-	 * @param imgs URLs of the carousel images 
-     * @param select Function called when an image is selected 
-	 * @param parent Parent component
+	 * Creates an image carousel component
 	 */
-	constructor( id, width, height, delay, imgs, select, parent='KonektiMain' ){
+	constructor(){
 		super(...arguments)
         var x = this
-        x.sel = x.config.select
-        x.setImages(x.config.imgs)
+         x.setImages(x.imgs)
         function carousel() {
             x.plusDivs(1)
-            setTimeout(carousel, x.config.delay)
+            setTimeout(carousel, x.delay)
         }
         carousel()    
-    }
-
-	/**
-	 * Associated html code
-	 */
-	html(){ 
-        return "<div id='"+this.id+"' class='w3-content w3-display-container' onclick='Konekti.client[\""+this.id+"\"].select()' style='max-width:800px'></div>" 
     }
 
     setImages( imgs ){
@@ -68,10 +59,7 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
     
     currentDiv(n) { this.showDivs(this.slideIndex = n) }
     
-    select(){
-        if(typeof this.sel === 'function') this.sel(this.slideIndex) 
-        else Konekti.client[this.sel.client][this.sel.method || this.id](this.slideIndex)
-    }
+    select(){ eval(Konekti.dom.onclick(''+this.slideIndex, this.onclick)) }
     
     showDivs(n) {
       var i
@@ -87,15 +75,16 @@ Konekti.resource.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-b
 }
 
 /**
- * Creates a media component
- * @param id Id of the media component
+ * Creates image carousel component
+ * @param id Id of the image carousel component
  * @param width Width of the div's component
  * @param height Height of the div's component
  * @param delay Delay between image display (milliseconds)
  * @param imgs URLs of the carousel images 
- * @param select Function called when an image is selected 
+ * @param onclick Function called when an image is selected 
  * @param parent Parent component
+ * @param config Carousel style
  */
-Konekti.carousel = function(id, width, height, delay, imgs, select, parent='KonektiMain'){ 
-    return new Carousel(id, width, height, delay, imgs, select, parent) 
+Konekti.carousel = function(parent, id, width, height, delay, imgs, onclick, config={}){ 
+    return new Carousel(parent, id, width, height, delay, imgs, onclick, config) 
 }

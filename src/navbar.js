@@ -1,59 +1,36 @@
-uses('https://jgomezpe.github.io/konekti/src/btn.js')
-
 /** A Navigation Bar manager */
 class NavBar extends Container{
 	/**
 	 * Creates a Navigation bar configuration object
-	 * @param id Id/configuration of the navbar component
-	 * @param style Style of the navbar
-	 * @param btns Array of buttons to maintain by the navbar
-	 * @param client Client of the navbar component
-	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
 	 * @param parent Parent component
+	 * @param id Id/configuration of the navbar component
+	 * @param btns Array of buttons to maintain by the navbar
+	 * @param config Style of the navbar
+	 * @param onclick Method to call (by default) when a button in the navbar is presses
 	 * @return A NavBar manager
 	 */
-	setup(id, style, btns, client, method, parent='KonektiMain'){
-		return {'plugin':'navbar', 'id':id, 'style':style, 'client':client, 'method':method, 'children':btns, 'parent':parent}
-	}
-	/** 
-	 * Creates a NavBar Manager
-	 * @param id Id/configuration of the navbar component
-	 * @param style Style of the navbar
-	 * @param btns Array of buttons to maintain by the navbar
-	 * @param client Client of the navbar component
-	 * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
-	 * @param parent Parent component
-	 */
-	constructor(id, style, btns, client, method, parent='KonektiMain'){
-		super(...arguments)
-		this.fitRect = true
+	setup(parent, id, btns, onclick, config){
+		config.tag = 'div'
+		config.class = (config.class || '') + " w3-bar "
+		for(var i=0; i<btns.length; i++) this.init_child(btns[i], onclick)
+		var c = super.setup( parent, 'navbar', id, btns, '100%', '', config)
+		c.onclick = onclick
+		return c
 	}
 
-	/**
-	 * Initializes the visual component associated to the client
-	 * @param child Child to be initilized
-	 * @param config Configuration of the client
-	 */
-	init_child(child){ 
-		function check(c){ return c===undefined || c===null || c=='' }
-		super.init_child(child)
-		child.plugin = child.plugin || 'btn'
-		child.style = (child.style!='')?child.style:(config.style||this.style)
-		switch(child.plugin){
-			case 'btn':
-				if(child.setup!==undefined && check(child.setup[3])) child.setup[3] = {'client':this.config.client, 'method':this.config.method}
-			break;
-			case 'dropdown':
-			break;
-			default:
-		}
+	init_child( child, onclick ){
+		if(child.plugin=='btn'){
+			if(child.setup.length<4 || child.setup[3]==null) child.setup[3] = onclick
+			if(child.setup.length<5 ) child.setup[4] = {}
+			child.setup[4].class =  'w3-bar-item ' + (child.setup[4].class||'')
+		}	
 		return child
 	}
-	
-	/**
-	 * Associated html code
+
+	/** 
+	 * Creates a NavBar Manager
 	 */
-	html(){ return "<div id='"+this.id+"' class='"+this.config.style+" w3-bar'></div>" }   
+	constructor(){ super(...arguments) }
 
 	/**
 	 * Inserts components into the navbar before the given component
@@ -61,30 +38,25 @@ class NavBar extends Container{
 	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	 add(){
-		for( var i=0; i<arguments.length; i++ ) this.init_child(arguments[i])
-		var children = Konekti.build(arguments)
-		for( var i=0; i<children.length; i++ ) this.children.push(children[i])
+	add(child){
+		child = this.init_child(child, this.onclick)
+		Konekti.append(this.id, child)
+		Konekti.vc(child.id).class = (Konekti.vc(child.id).class || '') + ' w3-bar-item'
 	}
 
 	/**
 	 * Inserts components into the navbar before the given component
 	 * @param sister Id of the component that will be the next sister of the new component
-	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
+	 * @param child PlugIn information for creating the component that will be inserted as previous brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	 insertBefore(sister){
-		var children = []
-		for( var i=1; i<arguments.length; i++ ){
-			this.init_child(arguments[i])
-			children.push(arguments[i])
-		}
-		children = Konekti.build(children)
+	insertBefore(sister, child){
+		this.add(child)
 		var sister_idx = this.child_index(sister)
-		for( var i=0; i<children.length; i++ ){
-			Konekti.dom.insertBefore(children[i].id, sister)
-			this.children.splice(sister_idx+i,0,children[i])
-		}
+		child = this.children[this.children.length-1]
+		Konekti.dom.insertBefore(child.id, sister)
+		this.children.splice(sister_idx,0,this.children[this.children.length-1])
+		this.children.splice(this.children.length-1, 1)
 	}
 
 	/**
@@ -114,12 +86,11 @@ class NavBar extends Container{
  * Associates/adds a navigation bar component
  * @method
  * navbar
- * @param id Id/configuration of the navbar component
- * @param style Style of the navbar
- * @param btns Array of buttons to maintain by the navbar
- * @param client Client of the navbar component
- * @param method Method of the client that will be called when a button is pressed and it does not have associated a run code
  * @param parent Parent component
+ * @param id Id/configuration of the navbar component
+ * @param btns Array of buttons to maintain by the navbar
+ * @param onclick Method of the client that will be called when a button is pressed and it does not have associated a run code
+ * @param config Style of the navbar
  * @return A NavBar manager
  */
-Konekti.navbar = function(id, style, btns, client, method, parent='KonektiMain'){ return new NavBar(id, style, btns, client, method, parent) }
+Konekti.navbar = function(parent, id, btns, onclick, config){ return new NavBar(parent, id, btns, onclick, config) }

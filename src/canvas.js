@@ -15,53 +15,45 @@ window.addEventListener("resize", function(){ canvasplugin.resize() } )
 class Canvas extends Editor{
 	/**
 	 * Creates a canvas config object
+	 * @param parent Parent component
 	 * @param id Id of the canvas
 	 * @param width Width of the div's component
 	 * @param height Height of the div's component
 	 * @param initial Initial set of commands to run (as JSON object or stringify object)
 	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
-	 * @param parent Parent component
+	 * @param config Component style
 	 */
-	setup(id, width, height, initial, custom_commands, parent='KonektiMain'){
-		if( typeof initial === 'string' ) initial = JSON.parse(initial)
+	setup(parent, id, width, height, initial, custom_commands, config={}){
+		//if( typeof initial === 'string' ) initial = JSON.parse(initial)
 		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
-		return {'plugin':'canvas', "id":id, "custom":custom_commands, "commands":initial, 'width':width, 'height':height, 'parent':parent}
+		config.style = (config.style || '') + 'border:1px solid #d3d3d3'
+		config.tag = 'canvas'
+		var c = super.setup(parent, 'canvas', id, width, height, config )
+		c.custom = this.custom_commands(custom_commands)
+		c.initial = initial
+		return c
 	}
 
 	/**
 	 * Creates a canvas config object
-	 * @param id Id of the canvas
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-	 * @param initial Initial set of commands to run (as JSON object or stringify object)
-	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
-	 * @param parent Parent component
 	 */
-	constructor(id, width, height, initial, custom_commands, parent='KonektiMain'){
+	constructor(){
 		super(...arguments)
+		this.commands = {}
 		this.gui = this.vc()
-		this.custom_commands(this.config.custom)
-		this.commands = this.config.commands || {}
 		canvasplugin.render[this.id] = this
-		this.redraw()
+		this.setText(this.initial)
 	}
-	
-	/**
-	 * Associated html code
-	 */
-	html(){ return "<canvas id='"+this.id+"' style='border:1px solid #d3d3d3'></canvas>" }   	
 	
 	/**
 	 * Sets the custom commands of the canvas
 	 * @param custom Custom commands
 	 */
 	custom_commands( custom ){
-		this.custom = {}
-		if( custom !== undefined ){
-			for( var i=0; i<custom.length; i++ ){
-	        		this.custom[custom[i].command] = custom[i]
-			}
-		}
+		var xcustom = {}
+		if( custom !== undefined )
+			for( var i=0; i<custom.length; i++ ) xcustom[custom[i].command] = custom[i]
+		return xcustom
 	}
 
 	/**
@@ -687,13 +679,14 @@ class Canvas extends Editor{
  * Associates/Adds a canvas
  * @method
  * canvas
+ * @param parent Parent component
  * @param id Id of the canvas
  * @param width Width of the div's component
  * @param height Height of the div's component
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
- * @param parent Parent component
+ * @param config Component style
  */
-Konekti.canvas = function(id, width, height, initial, custom_commands, parent='KonektiMain'){
-	return new Canvas(id, width, height, initial, custom_commands, parent)
+Konekti.canvas = function(parent, id, width, height, initial, custom_commands, config={}){
+	return new Canvas(parent, id, width, height, initial, custom_commands, config)
 }

@@ -18,42 +18,48 @@
  class Dialog extends Container{
 	/**
 	 * Creates a dialog configuration object
+	 * @param parent parent component
 	 * @param id Id of the dialo component
 	 * @param children Component children
 	 * @param btns Button Options
-	 * @param parent parent component
+	 * @param config Dialog style configuration
 	 */
-	setup(id, children, btns, parent='KonektiMain'){
-        var cfg = "onclick='Konekti.vc(\""+id+"\").style.display=\"none\"' class='w3-button w3-display-topright'"
-        var span = {'plugin':'span', 'setup':[id+'Span', cfg,[{'plugin':'div', 'setup':[id+'Close','','','','&times;', id+'Span']}], id+'Content']}
+	setup(parent, id, children, btns, config={}){
+        var span = {'plugin':'container', 'setup':['container', id+'Span', 
+			[{'plugin':'html', 'setup':[id+'Close','','',{"onclick":'Konekti.vc("'+id+'").style.display="none"',
+			 'class':'w3-button w3-display-topright'},'&times;']}]]}
         if(!Array.isArray(children)) children = [children]
         children.splice(0,0,span)
-        var navbar = {'plugin':'container','setup':[id+'Btns','100%','','class="w3-center"', btns, id+'Content']}
+		for( var i=0; i<btns.length; i++ ){
+			var onclick = Konekti.dom.onclick(btns[i].setup[0], btns[i].setup[3])
+			btns[i].setup[3] = 'Konekti.vc("'+id+'").style.display="none"\n' + onclick
+		}
+
+        var navbar = {'plugin':'container','setup':['container', id+'Btns', btns, '100%','',{'class':"w3-center"}]}
         children.push(navbar)
-        var content = {'plugin':'container', 'setup':[id+'Content','','','class="w3-container"',children,id+'Modal']}
-        var modal = {'plugin':'container', 'setup':[id+'Modal','','','class="w3-modal-content"', [content], id]}
-		return {'plugin':'dialog', 'id':id, 'parent':parent, 'width':'', 'height':'', 'config':'class="w3-modal"', 'children':[modal]}
+        var content = {'plugin':'container', 'setup':['container', id+'Content', children, '','',{'class':"w3-container"}]}
+        var modal = {'plugin':'container', 'setup':['container', id+'Modal',[content], '','',{'class':"w3-modal-content"}]}
+		config.class = (config.class || '') + " w3-modal"
+		config.style = 'display:none;'+(config.style || '') 
+		return super.setup(parent, 'dialog', id, [modal], '', '', config)
 	}
 
 	/**
 	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
-	 * @param id Id of the hypermedia component
-	 * @param children Component children
-	 * @param btns Options
-	 * @param parent parent component
 	 */	
-	constructor(id, children, btns, parent='KonektiMain'){ super(...arguments) }
+	constructor(){ super(...arguments) }
 }
 
 /**
  * Creates a modal dialog client
  * @method
  * dialog
+ * @param parent parent component
  * @param id Id of the hypermedia component
  * @param children Component children
  * @param btns Options
- * @param parent parent component
+ * @param config Dialog style configuration
  */
-Konekti.dialog = function(id, children, btns, parent='KonektiMain'){
-	return new Dialog(id, children, btns, parent)
+Konekti.dialog = function(parent, id, children, btns, config){
+	return new Dialog(parent, id, children, btns, config)
 }
