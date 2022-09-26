@@ -634,7 +634,7 @@ class Container extends Client{
 	 setChildrenSize( parentWidth, parentHeight ){
 		var x = this
 		function check(){
-			if( x.done )
+			if( x.done && x.children[0] instanceof Client )
 				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)
 			else setTimeout(check, 100)
 		}

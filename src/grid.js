@@ -50,7 +50,7 @@ class Grid extends Container{
         super.setParentSize(parentWidth,parentHeight)
         var x = this
         function check(){
-            if(x.done){
+            if(x.done && x.children[0] instanceof Client ){
 				var cols = Math.floor(parentWidth / (x.config.min_width+10))
 				cols = Math.min(cols, x.config.max_cols)
 				cols = Math.min(Math.max(x.children.length,1), cols)

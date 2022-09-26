@@ -42,9 +42,10 @@ class Accordion extends Container{
 	 * @param parentHeight Parent's height
 	 */
 	setParentSize( parentWidth, parentHeight ){
+		super.setParentSize(parentWidth, parentHeight)
 		var x = this
 		function check(){
-			if(x.children !== undefined){
+			if( x.children[0] instanceof Client ){
 				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(parentWidth,parentHeight)
 				var h = 0
 				for( var i=0; i<x.children.length; i++ ) h += x.children[i].height

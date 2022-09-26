@@ -118,7 +118,7 @@ class Split extends Container{
 	setChildrenSize( parentWidth, parentHeight ){
 		var x = this
 		function check(){
-			if( x.children !== undefined && x.children !== null && x.children.length>0 ){
+			if( x.children[0] instanceof Client  ){
 				parentWidth = x.width
 				parentHeight = x.height
 				var type = (parentWidth<992)? 'row': x.type

@@ -37,7 +37,7 @@ class SideBar extends Container{
 		this.closablesize = parentWidth<=992
 		var x = this
 		function check(){
-			if( x.vc('Bar') !== undefined ){
+			if( x.children[0] instanceof Client ){
 				if(parentWidth > 992){
 					x.vc('Bar').style.display = 'initial' 
 					x.children[0].setParentSize(200,x.height)
