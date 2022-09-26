@@ -10,9 +10,9 @@ class DropDown extends Container{
 	 * @param config Style of the dropdown
 	 */
 	 setup(parent, id, icon, caption, content, config={}){
-		var btn = {'plugin':'btn', 'setup':[id+'Btn', icon, caption]}
+		var btn = {'plugin':'btn', 'setup':[id+'Btn', icon, caption, '', config]}
 		var drop = {'plugin':'container', 'setup':['container', id+'Drop', content, '', '', {'tag':'div', "class":'w3-dropdown-content w3-bar-block w3-border'}]}
-		config.class = (config.class||'') + ' w3-dropdown-hover'
+		config = {'class':' w3-dropdown-hover'}
 		return super.setup(parent, 'dropdown', id, [btn,drop], '', '', config)		
 	}
 
