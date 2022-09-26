@@ -1,29 +1,27 @@
 {
-    "toc":{ "id": "home", "caption":"Inicio", "icon":"fa-home", "client":"client", "width":"100%", "open":true, "children":[
-        {"id":"ace", "icon":"fa fa-file-text-o", "caption": "Editor Ace"},
-        {"id":"accordion", "icon":"fa fa-sitemap", "caption": "Acordeón"},
-        {"id":"btn", "icon":"fa fa-dot-circle-o", "caption": "Botón"},
-        {"id":"canvas", "icon":"fa fa-edit", "caption": "Canvas"},
-        {"id":"carousel", "icon":"fa fa-spinner", "caption": "Carrusel de Imgs"},
-        {"id":"dialog", "icon":"fa fa-window-restore", "caption": "Diálogo"},
-        {"id":"dropdown", "icon":"fa fa-list-alt", "caption": "Drop Down"},
-        {"id":"header", "icon":"fa fa-header", "caption": "Encabezado"},
-        {"id":"hypermedia", "icon":"fa fa-newspaper-o", "caption": "Hypermedia"},
-        {"id":"div", "icon":"fa fa-code", "caption": "HTML"},
-        {"id":"iframe", "icon":"fa fa-link", "caption": "IFrame"},
-        {"id":"latex", "icon":"fa fa-superscript", "caption": "Latex"},
-        {"id":"media", "icon":"fa fa-film",  "caption": "Medio", "action":false, "children":[
-            {"id":"audio", "icon":"fa fa-volume-up", "caption":"Audio"},
-            {"id":"video", "icon":"fa fa-video-camera", "caption":"Video"}
-        ]},
-        {"id":"navbar", "icon":"fa fa-ellipsis-h",  "caption": "Barra de navegación"},
-        {"id":"sidebar", "icon":"fa fa-bookmark-o", "caption": "Barra lateral"},
-        {"id":"split", "icon":"fa fa-columns", "caption": "Split"},
-        {"id":"tab", "icon":"fa fa-clone", "caption": "Tab"},
-        {"id":"toc", "icon":"fa fa-sitemap", "caption": "TOC"},
-        {"id":"youtube", "icon":"fa fa-youtube", "caption": "Youtube"},
-        {"id":"github", "icon":"fa-github", "caption": "Código fuente"}
-    ]},
+    "toc":[
+        ["ace", "fa fa-file-text-o",  "Editor Ace"],
+        ["accordion", "fa fa-sitemap",  "Acordeón"],
+        ["btn", "fa fa-dot-circle-o",  "Botón"],
+        ["canvas", "fa fa-edit",  "Canvas"],
+        ["dropdown", "fa fa-list-alt",  "Drop Down"],
+        ["header", "fa fa-header",  "Encabezado"],
+        ["hypermedia", "fa fa-newspaper-o",  "Hipermedio"],
+        ["div", "fa fa-code",  "HTML"],
+        ["iframe", "fa fa-link",  "IFrame"],
+        ["latex", "fa fa-superscript",  "Latex"],
+        ["media", "fa fa-film", "Medio", {}, true, false, [
+            ["audio", "fa fa-volume-up", "Audio"],
+            ["video", "fa fa-video-camera", "Video"]
+        ]],
+        ["navbar", "fa fa-ellipsis-h",   "Barra de navegación"],
+        ["sidebar", "fa fa-bookmark-o",  "Barra lateral"],
+        ["split", "fa fa-columns",  "Split"],
+        ["tab", "fa fa-clone",  "Tab"],
+        ["toc", "fa fa-sitemap",  "TOC"],
+        ["youtube", "fa fa-youtube",  "Youtube"],
+        ["github", "fa-github",  "Código fuente"]
+    ],
     "language":"Idioma",
     "run":"Ejecutar"
 }
