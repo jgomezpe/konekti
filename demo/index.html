@@ -53,7 +53,6 @@
 					lang = 'en'
 					Konekti.resource.JSON(KONEKTI_URL+'i18n/'+lang+'.json', callback)
 				}else{
-					console.log(json.toc)
 					var client = new KMain(lang)
 					var toc = {'plugin':'toc', 'setup':['tockonekti', {}, {'client':'client', 'method':'select'}, json.toc]}
 
