@@ -26,17 +26,17 @@ function copy(){ Konekti.client['ace4'].setText(Konekti.client['ace3'].getText()
 function KonektiMain(){
 	var client = new TheClient()
 
-	Konekti.header('title','', 'Editor ACE Konekti', 2, 'w3-green' )
-	Konekti.header('hace1','', 'Editor en modo JavaScript y tema por defecto', 4, 'w3-black' )
-	var ed = Konekti.ace( 'ace1', "100%", "40%", "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
+	Konekti.header('body', 'title','', 'Editor ACE en Konekti', 2, {'class':'w3-green'} )
+	Konekti.header('body','hace1','', 'Editor en modo JavaScript y tema por defecto', 4, {'class':'w3-black'} )
+	var ed = Konekti.ace( 'body', 'ace1', "100%", "40%", "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
 	ed.addListener(client.id)
 
-	Konekti.header('hace2','', 'Editor en modo HTML y tema xcode', 4, 'w3-black' )
-	Konekti.ace( 'ace2', "100%", "40%", "<div>Un editor de texto ACE</div>", 'html', 'xcode' )
+	Konekti.header('body', 'hace2','', 'Editor en modo HTML y tema xcode', 4, {'class':'w3-black'} )
+	Konekti.ace('body', 'ace2', "100%", "40%", "<div>Inside an ACE editor</div>", 'html', 'xcode' )
 
-	Konekti.header('hace3','', 'Editor en modo FunPL/Quilt (usa el parámetro code) y tema xcode', 4, 'w3-black' )
-	// El analizador léxico del lenguaje de programación FunPL/Quilt desarrollado por el Profesor Jonatan Gómez
-	// ver https://quilt.numtseng.com and https://github.com/jgomezpe/quilt 
+	Konekti.header('body', 'hace3','', 'Editor en modo FunPL/Quilt (usa código como parámetro) y tema xcode ', 4, {'class':'w3-black'} )
+	// El analizador léxico de la clase de lenguajes de programaxión desarollado por el Profesor Jonatan Gómez
+	// ver https://quilt.numtseng.com y https://github.com/jgomezpe/quilt 
 	lexer = { 
 		"qName":"Quilt", 
 		"fileTypes":["qmp", "quilt"],
@@ -58,12 +58,12 @@ function KonektiMain(){
 		"parser":null, 
 		"meaner":null 
 		}	
-	Konekti.ace( 'ace3', "50%", "30%", "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer )
+	Konekti.ace( 'body', 'ace3', "50%", "30%", "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer )
 
-	Konekti.header('hace4','', 'Copia de ace3 al editor ace4 (sin tema ni modo)', 4, 'w3-black' )
-	Konekti.ace( 'ace4', "70%", "30%" )
+	Konekti.header('body', 'hace4','', 'Copia desde ace3 (editor sin modo ni tema)', 4, {'class':'w3-black'} )
+	Konekti.ace( 'body', 'ace4', "70%", "30%" )
 
-	Konekti.btn('btn',"fa fa-copy", "Copiar","copy()",'w3-bar-item w3-large',"Copiar")
+	Konekti.btn('body', 'btn',"fa fa-copy", "Copiar","copy()",{'class':'w3-bar-item w3-large'},"Copiar")
 }
 
 </script>

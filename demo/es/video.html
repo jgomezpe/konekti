@@ -27,9 +27,9 @@ class TheClient extends MainClient{
 
 function KonektiMain(){
 	var client = new TheClient()
-	Konekti.header('title','', 'Video de Konekti', 3, 'w3-green' )
+	Konekti.header('body','title','', 'Video de Konekti', 3, {'class':'w3-green'} )
 	// Connects the video with the HTML component
-	var vd = Konekti.mp4( 'video', '60%','40%', 'https://www.w3schools.com/html/mov_bbb.mp4' )
+	var vd = Konekti.mp4( 'body', 'video', '60%','40%', 'https://www.w3schools.com/html/mov_bbb.mp4' )
 	// Adds a listener to the video player
 	vd.addListener(client.id)
 }

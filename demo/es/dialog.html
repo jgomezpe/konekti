@@ -39,14 +39,14 @@ function KonektiMain(){
 	/* Client that will answer to buttons */
 	var client = new TheClient()
 	/* Connecting components */
-	Konekti.header('title','fa-gavel','Diálogo de Konekti', 2, 'w3-green' )
-	Konekti.btn('show','fa-eye', ' Mostrar diálogo', {'client':'client'}, 'w3-blue-gray w3-large', 'Mostrar diálogo' )
+	Konekti.header('body','title','fa-gavel','Diálogo de Konekti', 2, {'class':'w3-green'} )
+	Konekti.btn('body', 'show','fa-eye', 'Muestra diálogo', {'client':'client'}, {'class':'w3-blue-gray w3-large', 'title':'Muestra diálogo'} )
     var btns=[
-		{'plugin':'btn', 'setup':["car","fa-car", " Carro", {"client":'client'}, "w3-black w3-large", "Botón de carro"]},
-		{'plugin':'btn', 'setup':["plane","fa-plane", " Avión", {"client":'client'}, "w3-black w3-large", "Botón de avión"]}
+		{'plugin':'btn', 'setup':["car", "fa-car", "Carro", {"client":'client'}, {'class':"w3-black w3-large", 'title':"Botón de carro"}]},
+		{'plugin':'btn', 'setup':["plane", "fa-plane", "Avión", {"client":'client'}, {'class':"w3-black w3-large", 'title':"Botón de avión"}]}
 	]		
 
-    Konekti.dialog('dlg', {'plugin':'div', 'setup':['content','100%','100%','','<p>Seleccione el vehículo de transporte</p>']},btns)
+    Konekti.dialog('body', 'dlg', {'plugin':'html', 'setup':['content','100%','100%',{},'<p>Seleccione un vehículo</p>']},btns)
 }
 </script>
 

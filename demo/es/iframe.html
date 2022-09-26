@@ -20,14 +20,15 @@ function run(){
 var initial = "<!DOCTYPE html>\n<html>\n<head>\n<meta charset='UTF-8'>\n</head>\n<body>\n<style>\n html, body {\n height:100%;\n margin:0px;\n}\n</style>\n<div id='title'><h2>Dentro de un IFrame</h2></div>\n</body>\n</html>"
 
 function KonektiMain(){
-	Konekti.header('title','', 'IFrame de Konekti', 3, 'w3-green' )
-	Konekti.header('hiframe1', 'fa-wikipedia-w', 'Wikipedia', 4, 'w3-black' )
-	Konekti.iframe( 'iframe1', '100%', '40%', 'https://wikipedia.com' )
-	Konekti.header('hiframe','fa-file-code-o', 'IFrame a partir de código HTML', 4, 'w3-black' )
-	Konekti.iframe( 'iframe', '100%', '40%', initial )
-	Konekti.btn('btn',"fa-play", "Compilar","run()",'w3-blue-grey w3-bar-item w3-large',"Compila HTML")
-	Konekti.ace( 'coder', '100%', '40%', initial, 'html' )
+	Konekti.header('body', 'title','', 'IFrame de Konekti', 3, {'class':'w3-green'} )
+	Konekti.header('body', 'hiframe1', 'fa-wikipedia-w', 'Wikipedia', 4, {'class':'w3-black'} )
+	Konekti.iframe('body', 'iframe1', '100%', '40%', 'https://wikipedia.com' )
+	Konekti.header('body', 'hiframe','fa-file-code-o', 'IFrame desde código HTML', 4, {'class':'w3-black'} )
+	Konekti.iframe('body', 'iframe', '100%', '40%', initial )
+	Konekti.btn('body','btn',"fa-play", "Compilar","run()",{'class':'w3-blue-grey w3-bar-item w3-large'},"Compilar HTML")
+	Konekti.ace('body', 'coder', '100%', '40%', initial, 'html' )
 }
+
 
 </script>
 

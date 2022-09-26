@@ -25,21 +25,21 @@ class TheClient extends MainClient{
 function KonektiMain(){
 	var client = new TheClient()
 
-	Konekti.header('title','', 'Konekti Dropdown', 3, 'w3-green' )
-	Konekti.dropdown( "dd1", "fa-edit", "Editar", 'w3-blue-grey w3-xlarge', 'Opciones de edición', 'free', [
-			{'plugin':'btn', 'setup':["copy", "fa-copy", 'Copiar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de copiar"]}, 
-			{'plugin':'btn', 'setup':["cut", "fa-cut", 'Cortar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de cortar"]}, 
-			{'plugin':'btn', 'setup':["paste", "fa-copy", 'Pegar', {"client":'client', "method":"edit"}, 'w3-bar-item', "Opción de pegar"]}
-		] 
-	)
+	Konekti.header('body', 'title','', 'Dropdown de Konekti', 3, {'class':'w3-green'})
+	var dd1 = {'plugin':'toc', 'setup': ['sel_edit', {'title':'Selecciona edición'}, {"client":'client', "method":"edit"},
+		[["copy", "fa-copy", 'Copy', {'title':"Copiar"}], 
+		 ["cut", "fa-cut", 'Cut',  , {'title':"Cortar"}], 
+		 ["paste", "fa-copy", 'Paste', {'title':"Pegar"}]]]}	
+	Konekti.dropdown('body', "dd1", "fa-edit", "Editar", dd1, {'client':'client', 'method':'edit'}, {'class':'w3-blue-grey w3-xlarge', 'title':'Opciones de Edición'})
 
-	Konekti.dropdown( "dd2", "fa-film", "Media", 'w3-orange w3-large', 'Opciones de medios', 'free', [
-			{'plugin':'btn', 'setup':["video", "fa-video-camera", "Video", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de video"]}, 
-			{'plugin':'btn', 'setup':["audio", "fa-volume-up", "Audio", {"client":'client', "method":"media"}, 'w3-bar-item', "Opción de audio"]}
-		] 
-	)
+	var dd2 = {'plugin':'toc', 'setup': ['sel_media', {'title':'Seleccona Medio'}, {"client":'client', "method":"media"},
+				 [["video", "fa-video-camera", "Video", {"title":"Video"}], 
+				 ["audio", "fa-volume-up", "Audio", {"title":"Audio"}]]]}	
+	Konekti.dropdown('body', "dd2", "fa-film", "Media", dd2, {'class':'w3-orange w3-large', 'title':'Opción de Medio'})
 
-	Konekti.dropdown( "dd3", "fa-language", "Language", 'w3-red w3-medium', 'Selección de idionma','list', {'options':["English", "Español"], 'onclick':{"client":'client', "method":"language"}})
+	var dd3 = {'plugin':'toc', 'setup': ['sel_lang', {'title':'Selecciona idioma'}, {"client":'client', "method":"language"},
+				 ["English", "Español"]]}	
+	Konekti.dropdown('body', "dd3", "fa-language", "Lenguaje", dd3)
 }
 
 </script>

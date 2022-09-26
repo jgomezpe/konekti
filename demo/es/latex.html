@@ -13,19 +13,17 @@
 
 Konekti.uses('header','latex','btn','ace')
 
-function run(){
-	Konekti.client['latex'].setText( Konekti.client['coder'].getText() )
-}
+function run(){ Konekti.client['latex'].setText( Konekti.client['coder'].getText() ) }
 
 function KonektiMain(){
 	
 	var initial = 'Cuando \\(a \\ne 0\\), existen dos soluciones para \\(ax^2 + bx + c = 0\\) que son $$x = {-b \\pm \\sqrt{b^2-4ac} \\over 2a}.$$'
 
-	Konekti.header('title','', 'Componente Latex de Konekti usando MatJax', 3, 'w3-green')
-	Konekti.header('hlatex','fa-subscript', 'Latex', 4, 'w3-black' )
-	Konekti.latex( 'latex', '100%', '40%', initial )
-	Konekti.btn('btn',"fa-play", "Compilar","run()",'w3-blue-gray w3-bar-item w3-large',"Compila latex")
-	Konekti.ace('coder', '100%', '40%', initial, 'latex')
+	Konekti.header('body','title','', 'Componente Latex en Konekti usando MatJax', 3, {'class':'w3-green'})
+	Konekti.header('body','hlatex','fa-subscript', 'Latex', 4, {'class':'w3-black'} )
+	Konekti.latex('body', 'latex', '100%', '40%', initial )
+	Konekti.btn('body', 'btn',"fa-play", "Compilar","run()",{'class':'w3-blue-gray w3-bar-item w3-large'},"Compilar latex")
+	Konekti.ace('body', 'coder', '100%', '40%', initial, 'latex')
 
 }
 

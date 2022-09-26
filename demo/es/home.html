@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Konekti Youtube</title>
+	<title>Youtube en Konekti</title>
 	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
 </head>
 
@@ -26,9 +26,9 @@ class TheClient extends MainClient{
 
 function KonektiMain(){
 	var client = new TheClient()
-	Konekti.header('title','fa-youtube', 'Youtube de Konekti', 3, 'w3-green' )
+	Konekti.header('body', 'title','fa-youtube', 'Youtube en Konekti', 3, {'class':'w3-green'} )
 	// Connects the youtube video with the HTML component
-	var yt = Konekti.youtube( 'youtube', '100%', '60%', 'fv2Ms3C7Xrw' )
+	var yt = Konekti.youtube( 'body', 'youtube', '100%', '60%', 'fv2Ms3C7Xrw' )
 	// Adds a listener to the Youtube player
 	yt.addListener(client.id)
 }

@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>Konekti Tab Panel</title>
+	<title>Panel de hojas de Konekti</title>
 	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script> 
 </head>
 
@@ -12,11 +12,12 @@
 Konekti.uses('header','tab','youtube','ace')
 
 function KonektiMain(){
-	Konekti.header('title','', 'Tabs de Konekti', 3, 'w3-green' )
+	Konekti.header('body', 'title','', 'Panel de hojas de Konekti', 3, {'class':'w3-green'} )
 	
-	Konekti.tab('aTab', '50%', '40%', "YouTubeTab", [
-		{'caption':"YouTube", 'icon':"fa fa-youtube", 'title':'Tab de Youtube','content':{'plugin':'youtube','setup':["YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw']}}, 
-		{'caption':"Editor", 'icon':'fa fa-edit', 'title':'Tab editor Ace', 'content':{'plugin':'ace','setup':['EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' ]}}
+	Konekti.tab('body', 'aTab', '50%', '40%', "YouTubeTab", [
+		{'plugin':'youtube', 'setup':["YouTubeTab", '100%','100%', 'fv2Ms3C7Xrw'], 'label':["fa fa-youtube", "YouTube", {'title':'Hoja de Youtube'}]}, 
+		{'plugin':'ace','setup':['EditorTab', '100%', '100%', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' ], 
+			'label':['fa fa-edit', "Editor", {'title':'Hoja de Ace'}]}
 	])
 }
 

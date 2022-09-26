@@ -26,9 +26,9 @@ class TheClient extends MainClient{
 
 function KonektiMain(){
 	var client = new TheClient()
-	Konekti.header('title','', 'Audio de Konekti', 3, 'w3-green' )
+	Konekti.header('body', 'title','', 'Audio de Konekti', 3, {'class':'w3-green'} )
 	// Connects the audio with the HTML component
-	var vd = Konekti.mp3( 'audio', 'https://www.w3schools.com/html/horse.mp3' )
+	var vd = Konekti.mp3( 'body', 'audio', 'https://www.w3schools.com/html/horse.mp3' )
 	// Adds a listener to the audio player
 	vd.addListener(client.id)
 }

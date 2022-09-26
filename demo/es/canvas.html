@@ -115,14 +115,14 @@ function KonektiMain(){
 	// Customized commands (based on primitive commands)
 	var commands = custom_commands()    
     
-	Konekti.header('title','', 'Canvas de Konekti', 3, 'w3-green' )
-	Konekti.header('hcanvas','fa-edit', 'Canvas', 4, 'w3-black' )
+	Konekti.header('body','title','', 'Konekti Canvas', 3, {'class':'w3-green'} )
+	Konekti.header('body','hcanvas','fa-edit', 'Canvas', 4, {'class':'w3-black'} )
 
 	// Connecting the canvas to the HTML component
-	Konekti.canvas( 'canvas', '100%', '40%', initial, commands )
+	Konekti.canvas('body', 'canvas', '100%', '40%', initial, commands )
 
-	Konekti.btn('btn',"fa-play", "Compilar","run()",'w3-bar-item w3-large',"Compilar comandos")
-	Konekti.ace( 'coder', '100%', '40%', initial, 'json' )
+	Konekti.btn('body', 'btn',"fa-play", "Dibujar", "run()", {'class':'w3-bar-item w3-large',"title":"Ejecuta los comandos"})
+	Konekti.ace('body', 'coder', '100%', '40%', initial, 'json' )
 
 }
 
