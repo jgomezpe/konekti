@@ -297,8 +297,7 @@ class KonektiAPI{
 		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
 
 		Konekti = this
-		this.url = '../src/'
-		//this.url = 'https://jgomezpe.github.io/konekti/src/'
+		this.url = 'https://jgomezpe.github.io/konekti/src/'
 		
 		this.client = {}
 		this.plugin = {'html':true, 'container':true}
