@@ -10,7 +10,7 @@
 
 	<script>
 		let KONEKTI_URL = "https://jgomezpe.github.io/konekti/demo/" // Internationalization resources are stored in github
-		let SERVER_URL = "https://jgomezpe.github.io/konekti/demo/" // Change this to your server name
+		let SERVER_URL = "https://numtseng.com/konekti/" // Change this to your server name
 		Konekti.uses('toc','sidebar','navbar','dropdown','ace','iframe','split')
 
 		class KMain extends MainClient{
@@ -54,28 +54,27 @@
 					Konekti.resource.JSON(KONEKTI_URL+'i18n/'+lang+'.json', callback)
 				}else{
 					var client = new KMain(lang)
-					var toc = {'plugin':'toc', 'setup':['tockonekti', {}, {'client':'client', 'method':'select'}, json.toc]}
+					var toc = {'plugin':'toc', 'setup':['tockonekti', json.toc, {'client':'client', 'method':'select'}, {'style':'width:200px;'}]}
 
-					var dd = {'plugin':'toc', 'setup': ['sel_lang', {'title':'Selecting language'}, {"client":'client', "method":"language"},
-						 ["English", "Español"]]}	
+					var dd = {'plugin':'toc', 'setup': ['sel_lang', [['en','', "English"], ['es','',"Español"]],
+						{"client":'client', "method":"language"}, {'title':'Selecting language'}]}	
 					var btn=[
 						{'plugin':'btn', 'setup':["run", "fa-play", '', {'client':'client'}, {'class':"w3-blue-grey", 'title':"Run"}]},
 						{'plugin':'dropdown', 'setup':["dd3", "fa-language", "", dd]}	
 					]
 					var navbar = {'plugin':'navbar', 'setup':['main-navbar', btn, {'client':'client', 'method':'select'}, {'class':'w3-blue-grey'}]}
 
-					var control = {'plugin':'split', 'setup':['coderviewer', '100%', 'rest', 'col', 50, 
-						{'plugin':'ace', 'setup':['coder', '100%','100%', '', 'html']},
-						{'plugin':'iframe', 'setup':['viewer', '100%', '100%', '']}
+					var control = {'plugin':'split', 'setup':['coderviewer', 'col', 50, 
+						{'plugin':'ace', 'setup':['coder', '', 'html', '', '', {'style':'width:100%;height:100%;'}]},
+						{'plugin':'iframe', 'setup':['viewer', '', {'style':'width:100%;height:100%;'}]}, {'style':'width:100%;height:100%;'}
 					]}
 
-					var main = {'plugin':'container', 'setup':['container', 'main-content', [navbar,control],'100%','100%']}
+					var main = {'plugin':'raw', 'setup':['main-content', [navbar,control], {'style':'width:100%;height:100%;'}]}
 
-					Konekti.sidebar('body', 'root', '100%', '100%', toc, main)	
-					Konekti.resize()
+					Konekti.sidebar('body', 'root', toc, main, {'style':'width:100%;height:100%;'})	
 
 					var page = Konekti.dom.getURLSearchParam('page', 'home')
-					client.select(page)
+					//client.select(page)
 				}
 			}
 
