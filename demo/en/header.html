@@ -16,7 +16,8 @@ Konekti.uses('header')
 function KonektiMain(){
 	/* Connecting components */
 	Konekti.header('body', 'header1','fa-gavel', 'Header using size 3, blue-grey color, and center aligned text', 3, {"class":"w3-blue-grey w3-center"} )
-	Konekti.header('body', 'header2', {'type':'img', 'src':'https://www.w3schools.com/w3css/img_avatar.png'},'Header with image icon (taken from w3schools), size 2, black color, and left aligned text (default alignment)', 2, {"class":"w3-black"} )
+	Konekti.header('body', 'header2', {'type':'img', 'src':'https://www.w3schools.com/w3css/img_avatar.png'},
+		'Header with image icon (taken from w3schools), size 2, black color, and left aligned text (default alignment)', 2, {"class":"w3-black"} )
 	Konekti.header('body', 'header3', {'type':'fa', 'src':['fa-ban', 'fa-camera']},'Header with stacked icons, size 4, red color', 4, {"class":"w3-red"} )
 	Konekti.header('body', 'header4', '','Header without icon, size 3, orange color, and right aligned text', 3, {"class":"w3-orange w3-right-align"} )
 }
