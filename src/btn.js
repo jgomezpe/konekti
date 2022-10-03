@@ -1,5 +1,7 @@
-/** A Button manager */
-class Btn extends Container{
+/** Konekti plugin for button elements */
+class BtnPlugin extends PlugIn{
+	constructor(){ super('btn') }
+
 	/**
 	 * Creates a button configuration object
 	 * @param parent Parent component
@@ -9,17 +11,26 @@ class Btn extends Container{
 	 * @param onclick Information of the method that will be executed when the button is pressed
 	 * @param config Style of the button
 	 */
-	setup(parent, id, icon, caption, onclick='', config={}){
+	 setup(parent, id, icon, caption, onclick='', config={}){
 		config.tag = 'div'
 		if(onclick!='') config.onclick = Konekti.dom.onclick(id,onclick)
 		config.class = (config.class||"") + " w3-button "
-		return super.setup(parent, 'btn', id, [{'plugin':'item', 'setup': [id+'Item', icon, caption]}], '', '', config)
+		return super.setup(parent, id, [{'plugin':'item', 'setup': [id+'Item', icon, caption]}], config)
 	}
+
+	client(config){ return new Btn(config) }
+}
+
+/** Registers the btn plugin in Konekti */
+new BtnPlugin()
+
+/** A Button manager */
+class Btn extends Client{
 
 	/**
 	 * Creates a button configuration object
 	 */
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
 	/**
 	 * Sets a component's attribute to the given value 
@@ -41,7 +52,14 @@ class Btn extends Container{
  * @param caption Caption of the button
  * @param onclick Information of the method that will be executed when the button is pressed
  * @param config Style of the button
+ * @param callback Function called when the btn is ready
  */
-Konekti.btn = function(parent, id, icon, caption, onclick='', config={}){
-	return new Btn(parent, id, icon, caption, onclick, config)
+Konekti.btn = function(parent, id, icon, caption, onclick, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = ''
+	if(args.length==4) args[4] = ''
+	if(args.length==5) args[5] = {}
+	if(args.length==6) args[6] = function(){}
+	Konekti.add('btn', ...args)
 }

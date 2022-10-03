@@ -13,9 +13,11 @@
 */
 
 /**
- * Dialog: A modal dialog component for Konekti 
+ * Dialog: A modal dialog plugin for Konekti 
  */
- class Dialog extends Container{
+ class DialogPlugin extends PlugIn{
+	constructor(){ super('dialog') }
+
 	/**
 	 * Creates a dialog configuration object
 	 * @param parent parent component
@@ -25,30 +27,28 @@
 	 * @param config Dialog style configuration
 	 */
 	setup(parent, id, children, btns, config={}){
-        var span = {'plugin':'container', 'setup':['container', id+'Span', 
-			[{'plugin':'html', 'setup':[id+'Close','','',{"onclick":'Konekti.vc("'+id+'").style.display="none"',
-			 'class':'w3-button w3-display-topright'},'&times;']}]]}
-        if(!Array.isArray(children)) children = [children]
+		var span = {'plugin':'raw', 'setup':[id+'Close','&times;',{'tag':'span', "onclick":'Konekti.vc("'+id+'").style.display="none"',
+			 'class':'w3-button w3-display-topright', 'style':'margin:auto;height:34px;'}]}
+ 
+		if(!Array.isArray(children)) children = [children]
         children.splice(0,0,span)
 		for( var i=0; i<btns.length; i++ ){
 			var onclick = Konekti.dom.onclick(btns[i].setup[0], btns[i].setup[3])
 			btns[i].setup[3] = 'Konekti.vc("'+id+'").style.display="none"\n' + onclick
 		}
 
-        var navbar = {'plugin':'container','setup':['container', id+'Btns', btns, '100%','',{'class':"w3-center"}]}
+        var navbar = {'plugin':'raw','setup':[id+'Btns', btns, {'class':"w3-center", 'style':'width:100%;'}]}
         children.push(navbar)
-        var content = {'plugin':'container', 'setup':['container', id+'Content', children, '','',{'class':"w3-container"}]}
-        var modal = {'plugin':'container', 'setup':['container', id+'Modal',[content], '','',{'class':"w3-modal-content"}]}
+        var content = {'plugin':'raw', 'setup':[id+'Content', children, {'class':"w3-container", 'style':'width:100%;'}]}
+        var modal = {'plugin':'raw', 'setup':[id+'Modal',[content], {'class':"w3-modal-content", 'style':'width:100%;height:100%;'}]}
 		config.class = (config.class || '') + " w3-modal"
 		config.style = 'display:none;'+(config.style || '') 
-		return super.setup(parent, 'dialog', id, [modal], '', '', config)
+		return super.setup(parent, id, modal, config)
 	}
-
-	/**
-	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
-	 */	
-	constructor(){ super(...arguments) }
 }
+
+/** Registers the dialog plugin in Konekti */
+new DialogPlugin()
 
 /**
  * Creates a modal dialog client
@@ -60,6 +60,11 @@
  * @param btns Options
  * @param config Dialog style configuration
  */
-Konekti.dialog = function(parent, id, children, btns, config){
-	return new Dialog(parent, id, children, btns, config)
+Konekti.dialog = function(parent, id, children, btns, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = [{'plugin':'btn', 'setup':[id+'OK','fa-check','']}]
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('dialog', ...args)
 }

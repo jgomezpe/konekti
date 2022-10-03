@@ -1,5 +1,6 @@
-/** A Navigation Bar manager */
-class NavBar extends Container{
+/** Konekti plugin for navbar elements */
+class NavBarPlugin extends PlugIn{
+	constructor(){ super('navbar') }
 	/**
 	 * Creates a Navigation bar configuration object
 	 * @param parent Parent component
@@ -9,11 +10,12 @@ class NavBar extends Container{
 	 * @param onclick Method to call (by default) when a button in the navbar is presses
 	 * @return A NavBar manager
 	 */
-	setup(parent, id, btns, onclick, config){
+	setup(parent, id, btns, onclick, config={}){
 		config.tag = 'div'
 		config.class = (config.class || '') + " w3-bar "
+		config.style = 'width:100%;' + (config.style||'')
 		for(var i=0; i<btns.length; i++) this.init_child(btns[i], onclick)
-		var c = super.setup( parent, 'navbar', id, btns, '100%', '', config)
+		var c = super.setup( parent, id, btns, config)
 		c.onclick = onclick
 		return c
 	}
@@ -27,45 +29,36 @@ class NavBar extends Container{
 		return child
 	}
 
+	client(config){ return new NavBar(config) }
+}
+
+/** Registers the navbar plugin in Konekti */
+new NavBarPlugin()
+
+/** A Navigation Bar manager */
+class NavBar extends Client{
+
 	/** 
 	 * Creates a NavBar Manager
 	 */
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
 	/**
-	 * Inserts components into the navbar before the given component
+	 * Shows a components into the navbar before the given component
 	 * @param sister Id of the component that will be the next sister of the new component
 	 * @param thing PlugIn information for creating the component that will be inserted as previous brother of the 
 	 * HTML element in the document with the given <i>sister</i> id
 	 */
-	add(child){
-		child = this.init_child(child, this.onclick)
-		Konekti.append(this.id, child)
-		Konekti.vc(child.id).class = (Konekti.vc(child.id).class || '') + ' w3-bar-item'
+	show(child){
+		var c = Konekti.vc(child).className || ''
+		c = c.replace('w3-hide', 'w3-show')
+		Konekti.vc(child).className = c
 	}
 
-	/**
-	 * Inserts components into the navbar before the given component
-	 * @param sister Id of the component that will be the next sister of the new component
-	 * @param child PlugIn information for creating the component that will be inserted as previous brother of the 
-	 * HTML element in the document with the given <i>sister</i> id
-	 */
-	insertBefore(sister, child){
-		this.add(child)
-		var sister_idx = this.child_index(sister)
-		child = this.children[this.children.length-1]
-		Konekti.dom.insertBefore(child.id, sister)
-		this.children.splice(sister_idx,0,this.children[this.children.length-1])
-		this.children.splice(this.children.length-1, 1)
-	}
-
-	/**
-	 * Removes a component of the navbar
-	 * @param id Id of the component to remove 
-	 */
-	remove(id){ 
-		this.children.splice(this.child_index(id),1)
-		return Konekti.dom.remove(id)
+	hide(child){
+		var c = Konekti.vc(child).className || ''
+		c = c.replace('w3-show', '')
+		Konekti.vc(child).className = c + ' w3-hide'
 	}
 
 	/** 
@@ -73,12 +66,21 @@ class NavBar extends Container{
 	 * @param ids Ids of the components to keep in the navbar.
 	 */
 	keep( ids ){
-		var c = this.vc()
-		var r = []
-		for( var i=0; i<c.children.length; i++ ){
-			if( !ids.includes(c.children[i].id)  ) r.push(c.children[i].id)
+		for( var i=0; i<this.children.length; i++ ){
+			if( ids.includes(this.children[i].id)  ) this.show(this.children[i].id)
+			else this.hide(this.children[i].id)
 		}
-		for( var j=0; j<r.length; j++) this.remove(r[j])
+	}
+
+	/** 
+	 * Removes the given components from the navbar and keeps any other component.
+	 * @param ids Ids of the components to remove from the navbar.
+	 */
+	remove( ids ){
+		for( var i=0; i<this.children.length; i++ ){
+			if( ids.includes(this.children[i].id)  ) this.hide(this.children[i].id)
+			else this.show(this.children[i].id)
+		}
 	}
 }
 
@@ -91,6 +93,14 @@ class NavBar extends Container{
  * @param btns Array of buttons to maintain by the navbar
  * @param onclick Method of the client that will be called when a button is pressed and it does not have associated a run code
  * @param config Style of the navbar
- * @return A NavBar manager
+ * @param config NavBar style
+ * @param callback Function called when the navbar is ready
  */
-Konekti.navbar = function(parent, id, btns, onclick, config){ return new NavBar(parent, id, btns, onclick, config) }
+Konekti.navbar = function(parent, id, btns, onclick, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = ''
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('navbar', ...args)
+}

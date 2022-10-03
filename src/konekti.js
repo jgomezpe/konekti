@@ -13,7 +13,6 @@
 * @version 1.0
 */
 
-
 /** Class for managable resources */
 class Resource{
 	constructor(){}
@@ -205,42 +204,6 @@ class DOM{
 	 * Resets the application
 	 */
 	reset(){ window.location.reload(true) }	
-
-	/**
-	 * Moves a component as child of another component
-	 * @param element Id of the component to move 
-	 * @param parent Id of the component that receives the component
-	 */
-	move(element, parent){ Konekti.vc(parent).appendChild(this.remove(element)) }
-
-	/**
-	 * Removes a component of the document
-	 * @param element Id of the component to remove 
-	 */
-	remove(element){
-		var e = Konekti.vc(element)
-		if(e.parentElement !== undefined && e.parentElement!=null) e.parentElement.removeChild(e)
-		return e
-	}
-
-	/**
-	 * Appends an element as child of the <i>parent</i> component, if possible
-	 * @param element Id of the element 
-	 * @param parent Id of the parent element 
-	 */
-	append(element, parent){ Konekti.vc( parent ).appendChild( Konekti.vc( element ) ) }
-	
-	/**
-	 * Inserts an element as previous brother of the component <i>sister</i> element, if possible
-	 * @param element Id of the element
-	 * @param sister Id of the sister element 
-	 */
-	insertBefore(element, sister){
-		var e = this.remove(element)
-		var s = Konekti.vc(sister)
-		var p = s.parentElement
-		if( p!==undefined && p!==null) p.insertBefore( e, s )
-	}
 		
 	/**
 	 * Sets an URL search parameter to a given value
@@ -280,221 +243,51 @@ class DOM{
 	}
 }
 
-/**
- * Konekti Application program interface. Main object of the Konekti framework
- */
-var Konekti = null
-
-/** Aplication program interface. Plugins will be seen as methods of this class */
-class KonektiAPI{
-	/**
-	 * Inits the konekti framework
-	 */
-	constructor(){
-		this.dom = new DOM(this)
-		this.resource = new Resource()
-		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
-		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
-
-		Konekti = this
-		this.url = 'https://jgomezpe.github.io/konekti/src/'
-		
-		this.client = {}
-		this.plugin = {'html':true, 'container':true}
-		this.root = new RootClient()
-		
-		window.addEventListener("resize", Konekti.resize);
-	}
-    
-	/**
-	 * Determines all the required dependencies of an array of Konekti clients
-	 * @param component Konekti components to load and build (bootstrap)
-	 * @param plugs Colection of dependecies
-	 */
-	dependencies(component, plugs={}){
-		if(component===undefined || component===null) return plugs
-		function check(c){ return c !== undefined && c !== null && c.length > 0 }
-		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependencies(component[i], plugs)
-		else if( typeof component == 'object' && check(component.plugin)){
-			if(plugs[component.plugin] === undefined && this.plugin[component.plugin] === undefined) plugs[component.plugin] = component.plugin
-			if(check(component.children)) plugs = this.dependencies(component.children, plugs)
-			else if(check(component.setup)) plugs = this.dependencies(component.setup, plugs)
-		}
-		return plugs
-	}
-
-	/**
-	 * Loads a set of plugins and executes the callback function
-	 * @param plugins An array of plugin ids
-	 * @param callback function to be executed after loading plugins
-	 */
-	load(plugins, callback=function(){}){ 
-		if(plugins.length == 0){
-			callback()
-			return
-		}
-		var ids = []
-		function check_eval(){
-			var m=0;
-			while(m<ids.length && Konekti[ids[m]]!==undefined) m++
-			if(m==ids.length){
-				for(var i=0; i<ids.length; i++) Konekti.plugin[ids[i]] = true
-				callback()
-			}else setTimeout(check_eval, 100)
-		}
-
-		var k=0
-		function check(){
-			k++
-			if(k==plugins.length) check_eval()
-		}
-
-		for(var i=0; i<plugins.length; i++){
-			ids[i] = plugins[i].substring(Math.max(0,plugins[i].lastIndexOf('/')))
-			if( !plugins[i].endsWith('.js') ) plugins[i] += '.js'
-			else ids[i]= ids[i].substring(0,ids[i].length-3)
-			if( plugins[i].indexOf('/') < 0 ) plugins[i] = this.url+plugins[i]
-			if( Konekti.plugin[plugins[i]] === undefined ) this.resource.JS(plugins[i], check)
-			else check()
-		} 
-	}
-
-	/**
-	 * Loads all the required dependencies of an array of Konekti clients
-	 * @param component Konekti components to load 
-	 * @param callback Function called as soon as all dependecies are loaded
-	 */
-	load_dependencies(component, callback){
-		var plugs = this.dependencies(component)
-		var aplugs = []
-		for( var c in plugs ){
-			if(this.plugin[plugs[c]] === undefined){
-				var i=0
-				while(i<aplugs.length && aplugs[i]!=plugs[c]) i++
-				if(i==aplugs.length) aplugs.push(plugs[c])
-			}	
-		}
-		Konekti.load(aplugs,  callback)
-	}
-
-	
-	resize_required(){
-		function check(){
-			var flag = true
-			for(var x in Konekti.client){
-				flag &= (Konekti.client[x].done === undefined || Konekti.client[x].done )
-			}	
-			if(flag) Konekti.resize()
-			else setTimeout(check, 100)
-		}
-		check()	
-	}
-
-	build_aux( component ){
-		if( Array.isArray(component) ){
-			var plugs = []
-			for( var i=0; i<component.length; i++ ) plugs.push(Konekti.build_aux(component[i]))
-			return plugs
-		}else return Konekti[component.plugin](...component.setup)
-	}
-
-	/**
-	 * 
-	 * @param component Konekti components to build  
-	 * @returns An array of Konekti clients 
-	 */
-	build( component ){
-		var c = this.build_aux(component)
-		this.resize_required()
-		return c
-	}
-
-	/**
-	 * Defines the set of plugins used by Konekti and executes the KonektiMain function
-	 * @param plugins An array of plugin ids
-	 */
-	uses(){
-		if( KonektiMain !== undefined ) Konekti.load(arguments, KonektiMain)
-		else Konekti.load(arguments)
-	}
-
-	/**
-	 * Register a set of plugins (useful when more than one plugin is defined in the same JS)
-	 */
-	register(){
-		for( var i=0; i<arguments.length; i++ ) Konekti.plugin[arguments[i]] = true
-	}
-
-	/**
-	 * Appends a set of konekti component to a client
-	 * @param parent Parent client of the components (any other argument is a component to build)
-	 */
-	append(parent){
-		var p = Konekti.client[parent]
-		for( var i=1; i<arguments.length; i++ ){
-			arguments[i].setup.splice(0,0,parent)
-			p.children.push(Konekti[arguments[i].plugin](...arguments[i].setup))
-		}
-	}
-		
-	/**
-	 * Resizes the window 
-	 */
-	resize(){ Konekti.root.setParentSize() }
-
-	/**
-	 * Gets a visual component by id 
-	 * @param id Id of the visual component
-	 * @returns Visual componet with the given id
-	 */
-	vc(id='body'){ return (id=='body')?document.body:document.getElementById(id) }
-
-	/**
-	 * Creates a container bject
-	 * @param parent Parent component
-	 * @param plugin Component's plugin
-	 * @param id Id of the component 
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param config Extra configuration 
-	 * @param children Contained components
-	 */
-	container( parent, plugin, id, children=[], width='', height='', config={'tag':'div'} ){
-		return new Container(parent, plugin, id, children, width, height, config) 
-	}
-
-	html(parent, id, width='', height='', config={'tag':'div'}, inner=''){
-		return new Client(parent,'client', id, width, height, config, inner)
-	}
-}
-
 /** A Konekti client. */
 class Client{
+	/**
+	 * Assigns attributes in JSON configuration object to the client
+	 * @param {*} config JSON configuration object
+	 */
 	assign( config ){ for( var x in config ) this[x] = config[x] }
 
 	/**
-	 * Creates a client configuration object
-	 * @param parent Parent component
-	 * @param plugin Id of the component 
-	 * @param id Id of the component 
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param config Extra configuration 
+	 * Creates a client using the JSON configuration object
+	 * @param {*} config JSON configuration object
 	 */
-	setup( parent, plugin, id, width, height, config, inner = '' ){
-		config.tag = config.tag || 'div'
-		return {'plugin':plugin, 'id':id, 'parent':parent, 'config':config, 'inner':inner,
-				'defwidth':width, 'defheight':height, 'listener':[]} 
+	constructor( config ){
+		this.assign(config)
+		this.queue = []
+		Konekti.client[this.id] = this
+		if(this.parent!='') Konekti.vc(this.parent).appendChild(Konekti.dom.html(this.html())) 
+		var children = this.children
+		this.children=[]
+		for(var i=0; i<children.length; i++) 
+			this.children[i] = Konekti.build(children[i])
 	}
 
-	/**	 
-	 * Creates a konekti client using the configuration information	 
-	 */	
-	constructor(){
-		this.assign(this.setup(...arguments))
-		Konekti.client[this.id] = this
-		if(this.parent=='body') Konekti.client['body'].children.push(this)
-		if(this.parent!='') Konekti.vc(this.parent).appendChild(Konekti.dom.html(this.html()))
+	/**
+	 * Adds a component to the client
+	 * @param {*} component Component to add 
+	 * @param {*} callback Function called when the component may be successfully added
+	 */
+	add( component, callback ){
+		var x = this
+		x.queue.push(component.id || component.setup[1])
+		Konekti.plugin.setup(component, function(expanded){
+			var tout
+			function check(){
+				if(expanded.id == x.queue[0]){
+					clearTimeout(tout)
+					x.children.push(Konekti.build(expanded))
+					x.queue.splice(0,1)
+					if(callback !== undefined){
+						callback(expanded)
+					}			
+				}else tout = setTimeout(check,Konekti.TIMER)
+			}
+			check()
+		})
 	}
 
 	/**
@@ -514,54 +307,7 @@ class Client{
 		code += (this.config.extra||'')+">" + this.inner + ctag
 		return code
 	}  
- 
-	/**
-	 * Gets the visual component associated to the client/subclient
-	 * @param {*} subId Id of the subclient (the subclient id is a combination of the client id and this argument)
-	 * @returns Visual component associated to the client/subclient
-	 */
-	vc(subId=''){ return Konekti.vc(this.id+subId) }
 
-	/**
-	 * Computes the size of a visual component side according to a parent's side dimension
-	 * @param {*} side 'width' or 'height'
-	 * @param {*} parent_size Size of the parent's dimension
-	 * @returns Computed dimension
-	 */
-	size( side, parent_size ){
-		var c = this.vc()
-		var r = c.getBoundingClientRect()
-		var defSize = this['def'+side]
-		if(defSize !== undefined && defSize!==null && defSize!=''){
-			var n = defSize.length-1
-			if(defSize=='rest'){
-				var s = 0
-				var p = Konekti.client[this.parent]
-				for(var i=0; i<p.children.length; i++){
-					if( p.children[i] != this ){
-						var r = p.children[i].vc().getBoundingClientRect()
-						s += r[side]
-					}
-				}
-				return parent_size - s
-			}else if( defSize.charAt(n) == '%' ) return Math.round(parseFloat(defSize.substring(0,n))*parent_size/100)
-			else return parseInt(defSize.substring(0,n-1))
-		}else return undefined	
-	}
-	
-	/**
-	 * Computes the size of the visual component associated to the client
-	 * @param {*} parentWidth Parent's width
-	 * @param {*} parentHeight Parent's height
-	 */
-	setParentSize( parentWidth, parentHeight ){
-		this.width = this.size('width', parentWidth)
-		this.height = this.size('height', parentHeight)
-		var c = this.vc()
-		c.style.width = this.width + 'px'
-		c.style.height = this.height + 'px'
-	}
-	
 	/**
 	 * Adds listener to events of the client
 	 * @param listener Listener of the event
@@ -577,124 +323,297 @@ class Client{
 		while(i<this.listener.length && this.listener[i] !== listener) i++
 		if( i<this.listener.length ) this.listener.splice(i,1)
 	}
+
+	/**
+	 * Gets the visual component associated to the client/subclient
+	 * @param {*} subId Id of the subclient (the subclient id is a combination of the client id and this argument)
+	 * @returns Visual component associated to the client/subclient
+	 */
+	vc(subId=''){ return Konekti.vc(this.id+subId) }
+ 
 }
 
-/** A Konekti client. */
-class Container extends Client{
+/** A Konekti plugin. */
+class PlugIn{
+	/**
+	 * Creates a plugin
+	 * @param {*} id PlugIn's id
+	 */
+	constructor(id){
+		this.id = id
+		Konekti.plugin[id] = this
+	}
+
 	/**
 	 * Creates a client configuration object
 	 * @param parent Parent component
-	 * @param plugin Component plugin
-	 * @param id Id of the component that will contain the ace editor
-	 * @param children Contained components
-	 * @param width Width of the split component
-	 * @param height Height of the split component
+	 * @param plugin Id of the component 
+	 * @param id Id of the component 
+	 * @param children Inner components or pure html code
 	 * @param config Extra configuration 
 	 */
-	setup( parent, plugin, id, children=[], width='', height='', config={"tag":"div"} ){
-		config.tag = config.tag || 'div'
+	setup( parent, id, children = '', config={}  ){
 		var inner =''
 		if(typeof children == 'string'){
 			inner = children
-			children =[]
+			children = []
 		}else if(!Array.isArray(children)) children = [children]
-		var c = super.setup(parent, plugin, id, width, height, config, inner)
-		c.children = children
-		return c
+		for(var i=0; i<children.length; i++)
+			if(children[i].setup !== undefined) children[i].setup.splice(0,0,id)
+			
+		config.tag = config.tag || 'div'
+		return {'plugin':this.id, 'id':id, 'parent':parent, 'inner':inner, 'children':children, 'config': config, 
+		'listener':[] } 
 	}
 
-	/**	 
-	 * Creates a konekti client using the configuration information	 
-	 * @param id Id of the component that will contain the ace editor
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param config Extra configuration 
-	 * @param children Contained components
-	 * @param parent Parent component
-	 */	
-	constructor(){ 
-		super(...arguments)
-		var x = this
-		x.done = false
-		Konekti.load_dependencies(x.children, function(){ x.setChildrenBack() })
-	}
+	client( config ){ return new Client(config) }
+}
 
-	setChildrenBack(){
-		for(var i=0; i<this.children.length; i++) this.children[i].setup.splice(0,0,this.id)
-		this.children = Konekti.build(this.children)
-		this.done = true
-	}
-
+/** Konekti plugin's manager. Loads plugins as required and connect clients with plugins */
+class PlugInManager{
 	/**
-	 * Sets each children size
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
+	 * Inits the konekti framework
 	 */
-	 setChildrenSize( parentWidth, parentHeight ){
-		var x = this
-		function check(){
-			if( x.done && x.children[0] instanceof Client )
-				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)
-			else setTimeout(check, 100)
+	constructor( konekti ){
+		this.konekti = konekti
+		this.url = '../../src/' // 'https://jgomezpe.github.io/konekti/src/'
+	}
+    
+	/**
+	 * Determines all the required dependencies of an array of Konekti clients
+	 * @param component Konekti components to load and build (bootstrap)
+	 * @param plugs Colection of dependecies
+	 */
+	dependencies(component, plugs={}){
+		if(component===undefined || component===null) return plugs
+		function check(c){ return c !== undefined && c !== null && c.length > 0 }
+		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependencies(component[i], plugs)
+		else if( typeof component == 'object' && check(component.plugin)){
+			if(plugs[component.plugin] === undefined && this[component.plugin] === undefined) plugs[component.plugin] = component.plugin
+			if(check(component.children)) plugs = this.dependencies(component.children, plugs)
+			else if(check(component.setup)) plugs = this.dependencies(component.setup, plugs)
 		}
-		check()
+		return plugs
 	}
 
 	/**
-	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
+	 * Determines if there is a component or component element in the {'plugin':'xyz', 'setup':[..]} version (expandable)
+	 * @param {*} component Component to analyze
+	 * @returns <i>true</i> if some component or componet element in the {'plugin':'xyz', 'setup':[..]} version (expandable), <i>false</i> otherwise
 	 */
-	setParentSize( parentWidth, parentHeight ){
-		super.setParentSize( parentWidth, parentHeight )
-		this.setChildrenSize(parentWidth, parentHeight)
+	expandable(component){
+		function check(c){ return c !== undefined && c !== null }
+		if(Array.isArray(component)) for(var i=0; i<component.length; i++) if(this.expandable(component[i])) return true
+		if( (typeof component == 'object') && check(component.plugin)){
+			if(check(component.setup)) return true
+			else if(component.children.length>0) return this.expandable(component.children)
+		}
+		return false
 	}
 
 	/**
-	 * Determines the child position 
-	 * @param {*} id Id of the child
-	 * @returns The child position or -1 if there is not such child
+	 * Expands any component or component element in the in the {'plugin':'xyz', 'setup':[..]} version (expandable)
+	 * @param {*} component Component to analyze
+	 * @returns An expanded version (calling the setup method of the associated plugin 'xyz'). May produce expandable components
 	 */
-	child_index(id){
-		var i=0
-		while(i<this.children.length && this.children[i].id != id) i++
-		return i<this.children.length?i:-1
+	expand(component){
+		function check(c){ return c !== undefined && c !== null }
+		if(Array.isArray(component)) for(var i=0; i<component.length; i++) component[i] = this.expand(component[i])
+		else if( typeof component == 'object' && check(component.plugin)){
+			if(check(component.setup)) component = this[component.plugin].setup(...component.setup)
+			else if(component.children.length>0) component.children = this.expand(component.children)
+		}
+		return component
+	}
+
+	/**
+	 * Creates the expanded configuration JSON of a component (loads plugins if required)
+	 * @param {*} component Component to analyze
+	 * @param {*} callback Function that will be called when the component is completly analyzed
+	 */
+	setup(component, callback){
+		var x = this
+		var plugs = x.dependencies(component)
+		var aplugs = []
+		for( var c in plugs ){
+			if(x[plugs[c]] === undefined){
+				var i=0
+				while(i<aplugs.length && aplugs[i]!=plugs[c]) i++
+				if(i==aplugs.length) aplugs.push(plugs[c])
+			}	
+		}
+		if(aplugs.length==0){ 
+			if(this.expandable(component)){
+				component = x.expand(component)
+				x.setup(component, callback)
+			}else callback(component)
+		}else{
+			x.load(aplugs, function(){
+				component = x.expand(component)
+				x.setup(component, callback)
+			})
+		}
+	}
+
+	/**
+	 * Loads a set of plugins and executes the callback function
+	 * @param plugins An array of plugin ids
+	 * @param callback function to be executed after loading plugins
+	 */
+	 load(plugins, callback=function(){}){ 
+		if(plugins.length == 0){
+			callback()
+			return
+		}
+		var x = this
+		var ids = []
+		var tout
+		function check_eval(){
+			var m=0;
+			while(m<ids.length && x[ids[m]]!==undefined) m++
+			if(m==ids.length){ 
+				clearTimeout(tout)
+				callback()
+			}else tout = setTimeout(check_eval, Konekti.TIMER)
+		}
+
+		var k=0
+		function check(){
+			k++
+			if(k==plugins.length) check_eval()
+		}
+
+		for(var i=0; i<plugins.length; i++){
+			ids[i] = plugins[i].substring(Math.max(0,plugins[i].lastIndexOf('/')))
+			if( !plugins[i].endsWith('.js') ) plugins[i] += '.js'
+			else ids[i]= ids[i].substring(0,ids[i].length-3)
+			if( plugins[i].indexOf('/') < 0 ) plugins[i] = x.url+plugins[i]
+			if( x[plugins[i]] === undefined ) x.konekti.resource.JS(plugins[i], check)
+			else check()
+		} 
 	}
 }
 
 /**
- * The Main client
+ * Konekti Application program interface. Main object of the Konekti framework
  */
-class RootClient extends Container{
+var Konekti = null
+
+/** Aplication program interface. Plugins will be seen as methods of this class */
+class KonektiAPI{
 	/**
-	 * Creates the main client
-	 * @param {*} ide Components defining the ide
+	 * Inits the konekti framework
 	 */
-	constructor(){ super('', 'container', 'body', [], '100%', '100%', {'style':'scroll:auto'}) }
+	constructor(){
+		this.dom = new DOM(this)
+		this.resource = new Resource()
+		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
+		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
+		this.TIMER = 20
+		this.MEDIUMSIZE = 992
+
+		Konekti = this
+		
+		this.plugin = new PlugInManager(this)
+		this.raw = new PlugIn('raw')		
+
+		this.client = {'':{'children':[]}}
+		this.root = new RootClient()
+		
+		window.addEventListener("resize", this.resize);
+	}
+    
+	/**
+	 * 
+	 * @param component Konekti component to build  
+	 * @returns A Konekti client
+	 */
+	build( component ){ return this.plugin[component.plugin].client(component) }
 
 	/**
-	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
+	 * Creates and adds a component inside other component
 	 */
-	setParentSize( parentWidth, parentHeight ){ super.setParentSize(window.innerWidth, window.innerHeight) } 
+	add(){
+		var args = []
+		for(var i=1; i<arguments.length-1; i++)
+			args[i-1] = arguments[i]
+		var component = {'plugin':arguments[0], 'setup':args}
+		this.client[args[0]].add(component, arguments[arguments.length-1]) 
+	}
+
+	/**
+	 * Defines the set of plugins used by Konekti and executes the KonektiMain function
+	 * @param plugins An array of plugin ids
+	 */
+	uses(){
+		if( KonektiMain !== undefined ) this.plugin.load(arguments, KonektiMain)
+		else this.plugin.load(arguments)
+	}
+
+	/**
+	 * Gets a visual component by id 
+	 * @param id Id of the visual component
+	 * @returns Visual componet with the given id
+	 */
+	vc(id='body'){ return (id=='body')?document.body:document.getElementById(id) }
+
+	/**
+	 * Resizes the components
+	 */
+	resize(){
+		var c = Konekti.vc()
+		c.style.width = window.innerWidth + 'px'
+		c.style.height = window.innerHeight + 'px'
+	}
+
+	/**
+	 * Creates an item
+	 * @param parent Parent component
+	 * @param id Id of the item
+	 * @param children Client components
+	 * @param config Extra configuration 
+	 * @param callback Function called when the item is ready
+	 */
+	raw(parent, id, children, config, callback){ 
+		var args = []
+		for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+		if(args.length==2) args[2] = ''
+		if(args.length==3) args[3] = {}
+		if(args.length==4) args[4] = function(){}
+		Konekti.add('raw', ...args)
+	}
 }
 
-class MainClient{ 
-	constructor(id='client'){ 
-		Konekti.client[id] = this 
-		this.id = id
-	} 
+/**
+ * The root client
+ */
+class RootClient extends Client{
+	/**
+	 * Creates the root client
+	 */
+	constructor(){ 
+		super({'parent':'','plugin':'none','id':'body', 'children':[]})
+		var tout
+		function check(){
+			var c = Konekti.vc()
+			if(c!==undefined && c!==null){
+				clearTimeout(tout)
+				c.style.width = window.innerWidth + 'px'
+				c.style.height = window.innerHeight + 'px'
+			}else tout = setTimeout(check,Konekti.TIMER)
+		}
+		check()
+	}
 }
 
 /**
  * An editor (text) manager
  */
-class Editor extends Client{
+ class Editor extends Client{
 	/**
 	 * Creates an editor with the given id/client information, and registers it into the Konekti framework
 	 */	
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
 	/**
 	 * Gets current text in the editor
@@ -753,7 +672,7 @@ class MediaClient extends Client{
 	/**
 	 * Creates a media client with the given id/client information, and registers it into the Konekti framework
 	 */	
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
 	/**
 	 * Pauses the media component
@@ -772,4 +691,19 @@ class MediaClient extends Client{
 	seek(time){}
 }
 
+/**
+ * A main client.
+ */
+class MainClient{
+	/**
+	 * Creates a main client
+	 * @param {*} id Id of the main client (by default 'client')
+	 */ 
+	constructor(id='client'){ 
+		Konekti.client[id] = this 
+		this.id = id
+	} 
+}
+
+/** The main konekti object */
 Konekti = new KonektiAPI()

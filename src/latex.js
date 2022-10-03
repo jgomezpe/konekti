@@ -3,30 +3,39 @@ if(typeof window.MathJax=='undefined'){
 	Konekti.resource.JS('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js')
 }
 
-/** Latex editor */
-class Latex extends Editor{
+/** Konekti plugin for latex elements */
+class LatexPlugin extends PlugIn{
+	constructor(){ super('latex') }
+
 	/**
 	 * Creates a Latex config object 
 	 * @param parent Parent component
 	 * @param id Id of the latex component
-	 * @param width Width of the split component
-	 * @param height Height of the split component
 	 * @param config Extra configuration of the component
 	 * @param tex Latex code
 	 */
-	setup(parent, id, width, height, tex, config={}){
+	 setup(parent, id, tex, config={}){
 		config.tag = 'div'
 		config.style = 'padding:8px;overflow:auto;' + (config.style || '')
-		var c = super.setup(parent, "latex", id, width, height, config)
+		var c = super.setup(parent, id, '', config)
 		c.initial = tex
 		return c
 	}
 
+	client(config){ return new Latex(config) }
+}
+
+/** Registers the latex plugin in Konekti */
+new LatexPlugin()
+
+
+/** Latex editor */
+class Latex extends Editor{
 	/**
 	 * Creates a Latex config object 
 	 */
-	constructor(){ 
-		super(...arguments) 
+	constructor(config){ 
+		super(config) 
 		this.setText(this.initial)
 	}
 
@@ -76,9 +85,15 @@ class Latex extends Editor{
  * latex
  * @param parent Parent component
  * @param id Id of the latex component
- * @param width Width of the split component
- * @param height Height of the split component
  * @param tex Latex code
  * @param config Extra configuration of the component
+ * @param callback Function called when the latex component is ready
  */
-Konekti.latex = function(parent, id, width, height, tex, config = {}){ return new Latex(parent, id, width, height, tex, config) }
+Konekti.latex = function(parent, id, tex, config, callback){
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==2) args[2] = ''
+	if(args.length==3) args[3] = {}
+	if(args.length==4) args[4] = function(){}
+	Konekti.add('latex', ...args)
+}

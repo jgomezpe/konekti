@@ -1,37 +1,51 @@
-//  Using the youtube api
+/**  Using the youtube api */
 Konekti.resource.script(null,'https://www.youtube.com/iframe_api', null)
+/** Determines when the youtube module is loaded */
 let youtube_ready = false
+/** Function that is called when the youtube module is loaded */
 window.onYouTubeIframeAPIReady = function(){ youtube_ready=true }
 
-/**
- * A youtube media manager.
- */
-class Youtube extends MediaClient{
+/** Konekti plugin for youtube elements */
+class YoutubePlugin extends PlugIn{
+	constructor(){ super('youtube') }
+
 	/**
 	 * Creates a Youtube video configuration object
 	 * @param parent Parent component
 	 * @param id Id of the youtube component
-	 * @param width Width of the split component
-	 * @param height Height of the split component
 	 * @param video youtube id of the video
 	 * @param config Style of the youtube container
 	 */
-	setup(parent, id, width, height, video, config={}){
+	 setup(parent, id, video, config={}){
 		config.tag = 'div'
-		var c = super.setup(parent, 'youtube', id, width, height, config, "<div id='"+video+"' style='width:100%;height:100%;'></div>")
+		var c = super.setup(parent, id, "<div id='"+video+"' style='width:100%;height:100%;'></div>", config)
 		c.video = video
 		return c
 	}
 
+	client(config){ return new Youtube(config) }
+}
+
+/** Registers the youtube plugin in Konekti */
+new YoutubePlugin()
+
+/**
+ * A youtube client.
+ */
+class Youtube extends MediaClient{
 	/**
 	 * Creates a Youtube video 
 	 */
-	constructor(){ 
-		super(...arguments)
+	constructor(config){ 
+		super(config)	
 		var x = this
+		var tout
 		function check(){
-			if(youtube_ready) x.load()
-			else setTimeout(check,100)
+			if(youtube_ready){
+				clearTimeout(tout)
+				x.load()
+				x.vcready = true
+			}else tout = setTimeout(check,Konekti.TIMER)
 		}
 		check()
 	}
@@ -110,9 +124,14 @@ class Youtube extends MediaClient{
  * youtube
  * @param parent Parent component
  * @param id Id of the youtube component
- * @param width Width of the split component
- * @param height Height of the split component
  * @param video youtube id of the video
  * @param config Style of the youtube container
+ * @param callback Function called when the youtube video is ready
  */
-Konekti.youtube = function(parent, id, width, height, video, config={}){ return new Youtube(parent, id, width, height, video, config) }
+Konekti.youtube = function(parent, id, video, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = {}
+	if(args.length==4) args[4] = function(){}
+	Konekti.add('youtube', ...args)
+}

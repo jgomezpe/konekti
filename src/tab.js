@@ -1,18 +1,16 @@
-Konekti.load(['navbar'], function(){
+/** Konekti plugin for tab elements */
+class TabPlugin extends PlugIn{
+	constructor(){ super('tab') }
 
-/** Tab manager */
-class Tab extends Container{
 	/**
 	 * Creates a Tab panel configuration object 
 	 * @param parent Parent component
 	 * @param id Id of the tab component
-	 * @param width Width of the split component
-	 * @param height Height of the split component
-	 * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
 	 * @param tabs Tab configurations 
+	 * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
 	 * @param config Style of the tab
 	 */
-	setup(parent, id, width, height, initial, tabs, config){
+	setup(parent, id, tabs, initial, config){
 		var btns = []
 		var contents = []
 		for( var i=0; i<tabs.length; i++){
@@ -24,22 +22,30 @@ class Tab extends Container{
 			contents.push(tabs[i])
 		}
 		var bar = {'plugin':'navbar', 'setup':[id+'Bar', btns, {'client':id, 'method':'open'}, {'class':'w3-light-grey w3-medium'}]}
-		var content = {'plugin':'container', 'setup':['container', id+'Content', contents, '100%', 'rest']}
-		var c = super.setup(parent, 'tab', id, [bar,content], width, height, config )
+		var content = {'plugin':'raw', 'setup':[id+'Content', contents, {'style':'width:100%;height:100%;'}]}
+		var c = super.setup(parent, id, [bar,content], config )
 		c.initial = initial
 		return c
 	}
+	
+	client(config){ return new Tab(config) }
+}
 
+/** Registers the tab plugin in Konekti */
+new TabPlugin()
+
+/** Tab manager */
+class Tab extends Client{
 	/** 
 	 * Creates a tab component manager 
 	 * @param id Tab id
 	 * @param tabs Collection of tabs managed by the component
 	 */
-	constructor(){ 
-		super(...arguments) 
+	constructor(config){ 
+		super(config)
 		this.open(this.initial+'Btn')
 	}
-	
+
 	/**
 	 * Shows the given tab
 	 * @param page Tab to display
@@ -62,7 +68,6 @@ class Tab extends Container{
 				btn.className = btn.className.replace("w3-light-grey", "") + " w3-grey"
 				for( var c in tabs ) tabs[c].vc().style.display = "none"  
 				Konekti.vc(page).style.display = "initial"
-				Konekti.resize()
 				var ta = Konekti.vc(page).getElementsByTagName('textarea')
 				for( var k=0; k<ta.length; k++ ) ta[k].focus()
 			}else setTimeout(check, 100)
@@ -79,11 +84,15 @@ class Tab extends Container{
  * @param id Id of the tab component
  * @param width Width of the split component
  * @param height Height of the split component
- * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
  * @param tabs Tab configurations 
+ * @param initial Id of the tab that will be initially open or Function that will be executed as the box component is loaded
  * @param config Style of the tab
+ * @param callback Function called when the tab component is ready
  */
-Konekti.tab = function(parent, id, width, height, initial, tabs, config={}){
-	return new Tab(parent, id, width, height, initial, tabs, config)
+Konekti.tab = function(parent, id, tabs, initial, config, callback){
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('tab', ...args)
 }
-})

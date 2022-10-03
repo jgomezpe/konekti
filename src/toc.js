@@ -1,15 +1,25 @@
-/** Konekti Plugin for TOC (Table of content) components */
-class Toc extends Container{
+/** Konekti plugin for table of content (toc) elements */
+class TocPlugin extends PlugIn{
+	constructor(){ super('toc') }
+
 	children_setup(children, style, onclick){
 		if(!Array.isArray(children)) children = [children]
 		var nchildren = []
 		for( var i=0; i<children.length; i++ ){
 			var c = children[i]
-			if(typeof c === 'string') c = [c, '', c,{}]
-			var nc = this.children_setup(c[6] || [], style, onclick)
-			nc = {'plugin':'container', 'setup':['container', c[0]+'Group', nc, '', '', {'style':'margin-left:8px;'}]}
-			nchildren[i] = {'plugin':'accordion', 'setup':[c[0], c[1], c[2], c[3]||{}, nc, c[4]||false, 
-			(c[5]===undefined || c[5])?Konekti.dom.onclick(c[0], onclick):'']}
+			if(typeof c === 'string') c = [c, '', c]
+			var id = c[0] 
+			var icon = c[1]
+			var caption = c[2]
+			var cstyle = c[3] || {}
+			cstyle.class = 'w3-block w3-left-align ' + (cstyle.class||'')
+			var xchildren = c[4] || []
+			var call_action = c[6] || true
+			var showChildren = c[5] || false
+			var nc = (xchildren.length>0)?this.children_setup(xchildren, style, onclick):null
+			if(nc!==null) nc = {'plugin':'raw', 'setup':[id+'Group', nc, {'style':'margin-left:8px;width:100%'}]}
+			nchildren[i] = {'plugin':'accordion', 'setup':[id, icon, caption, nc, showChildren,
+			(call_action)?Konekti.dom.onclick(id, onclick):'', cstyle]}
 		}
 		return nchildren
 	}
@@ -17,30 +27,46 @@ class Toc extends Container{
 	/**
 	 * Creates a TOC configuration object
 	 * @param parent Parent component
-	 * @param config Style of the toc
-	 * @param onclick Method called when an item is selected
+	 * @param id Id of the toc
 	 * @param content Table of Content component 
+	 * @param onclick Method called when an item is selected
+	 * @param config Style of the toc
 	 */
-	setup(parent, id, config, onclick, content){
-		config.style = 'padding:0px;'+(config.style || '')
-		return super.setup(parent, 'toc', id, this.children_setup(content, config, onclick), '', '', config)
+	setup(parent, id, content, onclick, config){
+		config.style = 'width:100%;padding:0px;'+(config.style || '')
+		return super.setup(parent, id, this.children_setup(content, config, onclick), config)
 	}
 
+	client(config){ return new Toc(config) }
+}
+
+/** Registers the item plugin in Konekti */
+new TocPlugin()
+
+/** Konekti client for TOC (Table of content) components */
+class Toc extends Client{
 	/**
 	 * Creates a TOC configuration object
 	 */
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 }
 
 /**
  * Associates/adds a table of contents
  * @method
  * toc
- * @param style Style of the toc
- * @param onclick Method called when an item is selected
- * @param tree Table of Content component 
  * @param parent Parent component
+ * @param id Id of the accordion
+ * @param content Elements of the Table of Content 
+ * @param onclick Method called when an item is selected
+ * @param config Style of the toc
+ * @param callback Function called when the toc component is ready
  */
-Konekti.toc = function(parent, id, style, onclick, content){ 
-	return new Toc(parent, id, style, onclick, content) 
+Konekti.toc = function(parent, id, content, onclick, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = ''
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('toc', ...args)
 }

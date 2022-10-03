@@ -13,23 +13,22 @@
 */
 
 /**
- * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
- * When the media is played, the set of editors are updated accroding to thier associated scripts.
+ * HyperMedia: A hypermedia plugin for Konekti 
  */
- class HyperMedia extends Container{
+ class HyperMediaPlugin extends PlugIn{
+	constructor(){ super('hypermedia') }
+
 	/**
 	 * Creates an hypermedia configuration object
 	 * @param parent parent component
 	 * @param id Id of the hypermedia component
 	 * @param layout Hypermedia layout
-	 * @param width Width of the hypermedia component
-	 * @param height Height of the hypermedia component
 	 * @param media Id of the media controller (must be a component of the layout)
 	 * @param scripts Scripts followed by the hypermedia
 	 * @param config Style of component
 	 */
-	setup(parent, id, layout, width, height, media, scripts, config={}){
-		var c = super.setup(parent, 'hypermedia', id, layout, width, height, config)
+	setup(parent, id, layout, media, scripts, config={}){
+		var c = super.setup(parent, id, layout, config)
 		c.media = media
 		c.scripts = scripts
 		return c
@@ -38,19 +37,33 @@
 	/**
 	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
 	 */	
-	constructor(){ super(...arguments) }
+	client(config){ new HyperMedia(config) }
+}
 
-	setChildrenBack(){
-		super.setChildrenBack()
+/** Registers the hypermedia plugin in Konekti */
+new HyperMediaPlugin()
+
+/**
+ * HyperMedia: A hypermedia component for Konekti (composed by a media component and several editor components).
+ * When the media is played, the set of editors are updated accroding to thier associated scripts.
+ */
+ class HyperMedia extends Client{
+	/**
+	 * Creates a hyper media client with the given id/client information, and registers it into the Konekti framework
+	 */	
+	constructor(config){
+		super(config) 
 		var x = this
+		var tout
 		function check(){
-			if(Konekti.client[x.media] !== undefined && Konekti.client[x.media] !== null)
+			if(Konekti.client[x.media] !== undefined && Konekti.client[x.media] !== null){
+				clearTimeout(tout)
 				Konekti.client[x.media].addListener(x.id)
-			else setTimeout(check,100)
+			}else tout = setTimeout(check,Konekti.TIMER)
 		}
 		check()		
 	}
-	
+
 	/**
 	 * Plays the media component
 	 * @param id The media id 
@@ -117,7 +130,12 @@
  * @param media Id of the media controller (must be a component of the layout)
  * @param scripts Scripts followed by the hypermedia
  * @param parent parent component
+ * @param callback Function called when the hypermedia component is ready
  */
-Konekti.hypermedia = function(parent, id, layout, width, height, media, scripts, config={}){
-	return new HyperMedia(parent, id, layout, width, height, media, scripts, config)
+Konekti.hypermedia = function(parent, id, layout, media, scripts, config, callback){
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==5) args[5] = {}
+	if(args.length==6) args[6] = function(){}
+	Konekti.add('hypermedia', ...args)
 }

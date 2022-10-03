@@ -1,55 +1,13 @@
 /** Konekti Plugin for canvas */
-class CanvasPlugIn{
+class CanvasPlugIn extends PlugIn{
 	/** Creates a Plugin for canvas */
-	constructor(){ this.render = {} }
+	constructor(){ super('canvas') }
 
-	/**
-	 * Resizes all the canvas that have beien registered
-	 */
-	resize(){ for( var cc in this.render ) this.render[cc].redraw() }
-}
-let canvasplugin = new CanvasPlugIn()
-window.addEventListener("resize", function(){ canvasplugin.resize() } )
-
-/** Canvas Editor */
-class Canvas extends Editor{
-	/**
-	 * Creates a canvas config object
-	 * @param parent Parent component
-	 * @param id Id of the canvas
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-	 * @param initial Initial set of commands to run (as JSON object or stringify object)
-	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
-	 * @param config Component style
-	 */
-	setup(parent, id, width, height, initial, custom_commands, config={}){
-		//if( typeof initial === 'string' ) initial = JSON.parse(initial)
-		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
-		config.style = (config.style || '') + 'border:1px solid #d3d3d3'
-		config.tag = 'canvas'
-		var c = super.setup(parent, 'canvas', id, width, height, config )
-		c.custom = this.custom_commands(custom_commands)
-		c.initial = initial
-		return c
-	}
-
-	/**
-	 * Creates a canvas config object
-	 */
-	constructor(){
-		super(...arguments)
-		this.commands = {}
-		this.gui = this.vc()
-		canvasplugin.render[this.id] = this
-		this.setText(this.initial)
-	}
-	
 	/**
 	 * Sets the custom commands of the canvas
 	 * @param custom Custom commands
 	 */
-	custom_commands( custom ){
+	 custom_commands( custom ){
 		var xcustom = {}
 		if( custom !== undefined )
 			for( var i=0; i<custom.length; i++ ) xcustom[custom[i].command] = custom[i]
@@ -57,24 +15,70 @@ class Canvas extends Editor{
 	}
 
 	/**
+	 * Creates a canvas config object
+	 * @param parent Parent component
+	 * @param id Id of the canvas
+	 * @param initial Initial set of commands to run (as JSON object or stringify object)
+	 * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
+	 * @param config Component style
+	 */
+	setup(parent, id, initial, custom_commands, config={}){
+		//if( typeof initial === 'string' ) initial = JSON.parse(initial)
+		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
+		config.style = 'border:1px solid #d3d3d3;' +  (config.style || '') 
+		var inner = '<canvas id="'+id+'Canvas"></canvas>'
+		var c = super.setup(parent, id, inner, config )
+		c.custom = this.custom_commands(custom_commands)
+		c.initial = initial
+		return c
+	}
+	
+	client(config){ return new Canvas(config) }
+}
+
+/** Registers the canvas plugin in Konekti */
+let canvasplugin = new CanvasPlugIn()
+
+/** Canvas Editor */
+class Canvas extends Editor{
+	/**
+	 * Creates a canvas config object
+	 */
+	constructor(config){
+		super(config)
+		var x = this
+		this.commands = {}
+		var ro = new ResizeObserver(entry => {
+			entry = entry[0]
+			const cr = entry.contentRect
+			x.vc('Canvas').width = cr.width
+			x.vc('Canvas').height = cr.height
+			x.redraw()
+		});
+		  
+		// Resize observer
+		ro.observe(this.vc())
+		this.setText(this.initial)
+	}
+
+	/**
 	 * Gets the context of the canvas
 	 * @return context of the command
 	 */	
-	getContext(){  return this.gui.getContext('2d') }
+	getContext(){  return this.vc('Canvas').getContext('2d') }
 
 	/**
 	 * Cleans the canvas
 	 */
 	clear(){ 
 		this.commands = {}
-		this.getContext().strokeRect(0,0,this.width,this.height) 
+		this.getContext().strokeRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
 	}
 
 	/**
 	 * Redraws the canvas
 	 */
 	redraw(){
-		this.resize()
 		this.draw(this.commands) 
 	}
 	
@@ -297,8 +301,11 @@ class Canvas extends Editor{
 		var x = obj.x
 		var y = obj.y
 		var keepAspectRatio = obj.r
-		var w = this.width
-		var h = this.height
+		this.vc('Canvas').width = this.vc().clientWidth
+		this.vc('Canvas').height = this.vc().clientHeight
+		var w = this.vc('Canvas').width
+		var h = this.vc('Canvas').height
+		console.log(w+'..'+h)
 		if(keepAspectRatio) {
 			var s
 			if( w*x < h*y ) s = w*x
@@ -309,20 +316,13 @@ class Canvas extends Editor{
 			x *= w
 			y *= h
 		}
+		console.log(x+'..'+y)
 		c.x = x
 		c.y = y
 		c.commands = obj.commands
 		return this.scale(c)
 	}
 
-	/**
-	 * Resizes commands according to client container's size
-	 */
-	resize(){
-		var ctx = this.getContext()
-		ctx.canvas.width = this.width
-		ctx.canvas.height = this.height
-	}
 
 	/**
 	 * Draws an image
@@ -663,16 +663,6 @@ class Canvas extends Editor{
 		this.commands = JSON.parse(txt)
 		this.redraw()
 	}
-	
-	/**
-	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
-	 */
-	setParentSize( parentWidth, parentHeight ){
-		super.setParentSize( parentWidth, parentHeight )
-		this.redraw()
-	}	
 }
 
 /**
@@ -681,12 +671,16 @@ class Canvas extends Editor{
  * canvas
  * @param parent Parent component
  * @param id Id of the canvas
- * @param width Width of the div's component
- * @param height Height of the div's component
  * @param initial Initial set of commands to run (as JSON object or stringify object)
  * @param custom_commands Custom commands for the canvas (as JSON object or stringify object)
  * @param config Component style
+ * @param callback Function called when the canvas is ready
  */
-Konekti.canvas = function(parent, id, width, height, initial, custom_commands, config={}){
-	return new Canvas(parent, id, width, height, initial, custom_commands, config)
+Konekti.canvas = function(parent, id, initial, custom_commands, config, callback){
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = {}
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('canvas', ...args)
 }

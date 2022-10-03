@@ -1,36 +1,45 @@
 Konekti.dom.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-badge {cursor:pointer} \n.w3-badge {height:13px;width:13px;padding:0}")
 
-/**
- * An image carousel manager.
- */
- class Carousel extends Client{
-	/**
+/** Konekti plugin for carousel elements */
+class CarouselPlugin extends PlugIn{
+	constructor(){ super('carousel') }
+
+   	/**
 	 * Creates an image carousel component
 	 * @param id Id of the image carousel component
-	 * @param width Width of the div's component
-	 * @param height Height of the div's component
-     * @param delay Delay between image display (milliseconds)
 	 * @param imgs URLs of the carousel images 
+     * @param delay Delay between image display (milliseconds)
      * @param onclick Function called when an image is selected 
+	 * @param config Style of the header
 	 * @param parent Parent component
 	 */
-    setup(parent, id, width, height, delay, imgs, onclick, config={}){
+    setup(parent, id, imgs, delay, onclick, config={}){
         config.class = (config.class || '') + ' w3-content w3-display-container'
         config.onclick ='Konekti.client["'+id+'"].select()'
-        var c = super.setup(parent, 'carousel', id, width, height, config)
+        var c = super.setup(parent, id, '', config)
         c.onclick = onclick
         c.delay = delay
         c.imgs = imgs
-		return c
-	}
+        return c
+    }
+    
+	client(config){ return new Carousel(config) }
+}
 
+/** Registers the carousel plugin in Konekti */
+new CarouselPlugin()
+
+/**
+ * An image carousel manager.
+ */
+class Carousel extends Client{
 	/**
 	 * Creates an image carousel component
 	 */
-	constructor(){
-		super(...arguments)
+	constructor(config){ 
+        super(config) 
         var x = this
-         x.setImages(x.imgs)
+        x.setImages(x.imgs)
         function carousel() {
             x.plusDivs(1)
             setTimeout(carousel, x.delay)
@@ -76,15 +85,18 @@ Konekti.dom.css(".carouselslide {display:none} \n.w3-left, .w3-right, .w3-badge 
 
 /**
  * Creates image carousel component
- * @param id Id of the image carousel component
- * @param width Width of the div's component
- * @param height Height of the div's component
- * @param delay Delay between image display (milliseconds)
- * @param imgs URLs of the carousel images 
- * @param onclick Function called when an image is selected 
  * @param parent Parent component
+ * @param id Id of the image carousel component
+ * @param imgs URLs of the carousel images 
+ * @param delay Delay between image display (milliseconds)
+ * @param onclick Function called when an image is selected 
  * @param config Carousel style
+ * @param callback Function called when the carousel is ready
  */
-Konekti.carousel = function(parent, id, width, height, delay, imgs, onclick, config={}){ 
-    return new Carousel(parent, id, width, height, delay, imgs, onclick, config) 
+Konekti.carousel = function(parent, id, imgs, delay, onclick, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==5) args[5] = {}
+	if(args.length==6) args[6] = function(){}
+	Konekti.add('carousel', ...args)
 }

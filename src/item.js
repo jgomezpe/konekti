@@ -1,7 +1,7 @@
-/**
- * An item (icon/caption) manager
- */
-class Item extends Client{
+/** Konekti plugin for item elements */
+class ItemPlugin extends PlugIn{
+	constructor(){ super('item') }
+
 	/**
 	 * Item configuration object
 	 * @param parent Parent component
@@ -11,18 +11,28 @@ class Item extends Client{
 	 * @param config Extra configuration 
 	 */
 	setup(parent, id, icon, caption, config={}){ 
-		config.tag = 'div'
-		config.class = "vertical-align:middle;" + (config.class||'')
-		var c = super.setup(parent, 'item', id, '', '', config)
+		config.tag = config.tag || 'span'
+		config.style = "vertical-align:middle;" + (config.style||'')
+		var c = super.setup(parent, id, '', config)
 		c.icon = icon
 		c.caption = caption
 		return c
 	}
 
+	client(config){ return new Item(config) }
+}
+
+/** Registers the item plugin in Konekti */
+new ItemPlugin()
+
+/**
+ * An item (icon/caption) manager
+ */
+class Item extends Client{
 	/**
 	 * Creates an item client with the given id/information, and registers it into the Konekti framework
 	 */	
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
 	/**
 	 * Associated html code
@@ -77,5 +87,13 @@ class Item extends Client{
  * @param icon Icon of the item
  * @param caption Caption of the item
  * @param config Extra configuration 
+ * @param callback Function called when the item is ready
  */
-Konekti.item = function(parent, id, icon, caption, config={}){ return new Item(parent, id, icon, caption, config) }
+Konekti.item = function(parent, id, icon, caption, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = ''
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
+	Konekti.add('item', ...args)
+}

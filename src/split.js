@@ -1,6 +1,7 @@
+/** Konekti Split Plugin */
+class SplitPlugin extends PlugIn{
+	constructor(){ super('split') }
 
-/** Konekti Split Client */
-class Split extends Container{
 	/**
 	 * Creates a Split configuration object
 	 * @param parent Parent component
@@ -13,23 +14,20 @@ class Split extends Container{
 	 * @param two Right/Bottom component
 	 * @param config Style of the split
 	 */
-	setup(parent, id, width, height, type, percentage, one, two, config={}){
+	setup(parent, id, type, percentage, one, two, config={}){
 		percentage = percentage || 50
 		type = type || 'col'
 
-		var xfloat = type=='col'?'float:left;':''
-		var xheight = type=='col'?'100%':'8px'
-		var xwidth = type=='col'?'8px':'100%'
 
-		var done = {'plugin':'container', 'setup':['container', id+'One', [one], xwidth, xheight, {"style":xfloat}]}
+		var done = {'plugin':'raw', 'setup':[id+'One', one, {'style':'float:left;'}]}
 
-		var over = {'plugin':'html', 'setup':[id+'Over', '100%', '100%', 
+		var over = {'plugin':'raw', 'setup':[id+'Over', '',
 					{"style":'left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'}]}
-		var bar = {'plugin':'html', 'setup':[id+'Bar', xwidth, xheight, {"style":"cursor:"+type+"-resize;"+xfloat, "class":"w3-sand"}]}
+		var bar = {'plugin':'raw', 'setup':[id+'Bar', '', {"style":"cursor:"+type+"-resize;float:left;", "class":"w3-sand"}]}
 
-		var dtwo = {'plugin':'container', 'setup':['container', id+'Two', [two], xwidth, xheight, {"style":xfloat}]}
+		var dtwo = {'plugin':'raw', 'setup':[id+'Two', two, {'style':'float:left;'}]}
 		
-		var c = super.setup(parent, 'split', id,  [over, done, bar, dtwo], width, height, config)
+		var c = super.setup(parent, id,  [over, done, bar, dtwo], config)
 		c.type=type
 		c.start=percentage
 		return c
@@ -38,10 +36,21 @@ class Split extends Container{
 	/** 
 	 * Creates a Split client
 	 */
-	constructor(){ super(...arguments) }
+	client(config){ return new Split(config) }
+}
 
-	setChildrenBack(){
-		super.setChildrenBack()
+
+/** Adds the split plugin to Konekti */
+new SplitPlugin()
+
+
+/** Konekti Split Client */
+class Split extends Client{
+	/** 
+	 * Creates a Split client
+	 */
+	constructor(config){ 
+		super(config) 
 		var x = this
 		x.ctype = 'none'
 		var c = x.children[2].vc()
@@ -52,7 +61,14 @@ class Split extends Container{
 		window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
 		window.addEventListener("mouseup", function(){ x.dragend(); } )
 		window.addEventListener("touchend", function(){ x.dragend(); } )
-		Konekti.resize()
+		var ro = new ResizeObserver(entry => {
+			entry = entry[0]
+			const cr = entry.contentRect
+			x.resize( cr.width, cr.height )
+		});
+		// Resize observer
+		ro.observe(this.vc())
+		x.resize(this.vc().clientWidth, this.vc().clientHeight)
 	}
 
 	/**
@@ -77,22 +93,22 @@ class Split extends Container{
 		if (this.dragging){
 			var c = this.vc()
 			var r = c.getBoundingClientRect()
+			var type = (r.width<Konekti.MEDIUMSIZE)? 'row': this.type
+			this.ctype = type
 			var x = e.pageX-r.left-window.scrollX
 			var y = e.pageY-r.top-window.scrollY
-			if(this.ctype=='col'){
-				if(x>4 && x<this.width-4){
-					this.children[1].defwidth = (x-4) + 'px'
-					this.children[3].defwidth = (this.width-4-x) + 'px'
-					this.children[1].setParentSize(this.width, this.height)
-					this.children[3].setParentSize(this.width, this.height)
+			if(type=='col'){
+				if(x>4 && x<r.width-4){
+					this.children[1].vc().style.width = (x-4) + 'px'
+					this.children[3].vc().style.width = (r.width-4-x) + 'px'
+					for(var i=0; i<4; i++)	this.children[i].vc().style.height = r.height + 'px'	
 					this.vc('Bar').style.cursor = 'col-resize'
 				}
 			}else{
-				if(y>4 && y<this.height-4){
-					this.children[1].defheight = (y-4) + 'px'
-					this.children[3].defheight = (this.height-4-y) + 'px'
-					this.children[1].setParentSize(this.width, this.height)
-					this.children[3].setParentSize(this.width, this.height)
+				if(y>4 && y<r.height-4){
+					this.children[1].vc().style.height = (y-4) + 'px'
+					this.children[3].vc().style.height = (r.height-4-y) + 'px'
+					for(var i=0; i<4; i++)	this.children[i].vc().style.width = r.width + 'px'
 					this.vc('Bar').style.cursor = 'row-resize'
 				}
 			}
@@ -108,51 +124,39 @@ class Split extends Container{
 			this.vc('Over').style.display = 'none'
 		}
 	}  
-	
-	
+		
 	/**
 	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
+	 * @param width Parent's width
+	 * @param height Parent's height
 	 */
-	setChildrenSize( parentWidth, parentHeight ){
+	resize( width, height ){
 		var x = this
-		function check(){
-			if( x.children[0] instanceof Client  ){
-				parentWidth = x.width
-				parentHeight = x.height
-				var type = (parentWidth<992)? 'row': x.type
-				if(type!=x.ctype){
-					var s = x.start
-					if(type=='col'){
-						x.children[1].defwidth = Math.round(s*(parentWidth-8)/100)	+ 'px'
-						x.children[2].defwidth = '8px'
-						x.children[3].defwidth = Math.round((100-s)*(parentWidth-8)/100)	+ 'px'  
-						x.children[1].defheight = '100%'	
-						x.children[2].defheight = '100%'	
-						x.children[3].defheight = '100%'	  
-						x.vc('Bar').style.cursor = 'col-resize'
-					}else{
-						x.children[1].defheight = Math.round(s*(parentHeight-8)/100)	+ 'px'
-						x.children[2].defheight = '8px'
-						x.children[3].defheight = Math.round((100-s)*(parentHeight-8)/100)	+ 'px'  
-						x.children[1].defwidth = '100%'	
-						x.children[2].defwidth = '100%'
-						x.children[3].defwidth = '100%'	  
-						x.vc('Bar').style.cursor = 'row-resize'
-					}
-					x.ctype = type
-				}else{
-					if(type=='col'){
-						x.children[3].defwidth = (parentWidth - x.children[1].width - 8) + 'px'
-					}else{
-						x.children[3].defheight = (parentHeight - x.children[1].height - 8) + 'px'
-					}		
-				}
-				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(x.width,x.height)				
-			}else setTimeout(check, 100)
+		var c = this.vc()
+		var r = c.getBoundingClientRect()
+		var type = (width<Konekti.MEDIUMSIZE)? 'row': x.type
+		if(type=='col'){
+			var left = x.children[1].vc().clientWidth
+			if(type!=x.ctype){ 
+				left = Math.round(x.start*(width-8)/100)
+				x.children[1].vc().style.width = left + 'px'
+			}	
+			x.children[2].vc().style.width = '8px'
+			x.children[3].vc().style.width = (width-8-left) + 'px'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.height = height + 'px'
+			x.vc('Bar').style.cursor = 'col-resize'
+		}else{
+			var top = x.children[1].vc().clientHeight
+			if(type!=x.ctype){ 
+				top = Math.round(x.start*(height-8)/100)
+				x.children[1].vc().style.height = top + 'px'
+			}	
+			x.children[2].vc().style.height = '8px'
+			x.children[3].vc().style.height = (height-8-top) + 'px'
+			x.vc('Bar').style.cursor = 'row-resize'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.width = width + 'px'
 		}
-		check()		
+		x.ctype = type
 	} 
 }
 
@@ -169,7 +173,12 @@ class Split extends Container{
  * @param two Right/Bottom component
  * @param parent Parent component
  * @param config split configuration
+ * @param callback Function called when the split component is ready
  */
-Konekti.split = function(parent, id, width, height, type, percentage, one, two, config){
-	return new Split(parent, id, width, height, type, percentage, one, two, config)
+Konekti.split = function(parent, id, type, percentage, one, two, config, callback){
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==6) args[6] = {}
+	if(args.length==7) args[7] = function(){}
+	Konekti.add('split', ...args)
 }

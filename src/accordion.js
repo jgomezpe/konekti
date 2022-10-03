@@ -1,70 +1,57 @@
-/** An Accordion component */
-class Accordion extends Container{
+/** Konekti plugin for accordion elements */
+class AccordionPlugin extends PlugIn{
+	constructor(){ super('accordion') }
+
 	/**
 	 * Creates an accordion configuration object
-	 * @method
-	 * accordionConfig
 	 * @param parent Parent component
-	 * @param id Id of the header
-	 * @param width Width of the sidebar
-	 * @param height Height of the div's component
-	 * @param icon Icon for the header
-	 * @param caption Caption of the header
-	 * @param style Style of the header
+	 * @param id Id of the accordion
+	 * @param icon Icon for the accordion's header
+	 * @param caption Caption of the accordion's header
 	 * @param content Content component
-	 * @param open If content component should be displayed or not
+	 * @param showContent If the content will be shown or not
 	 * @param onclick Method call when the accordion item is selected
+	 * @param config Style of the accordion's header
 	 */
-	setup(parent, id, icon, caption, style, content, open, onclick=''){
-		var children = [{'plugin':'item', 'setup':[id+'Item', icon, caption, style]}, content]
-		var c = super.setup(parent, 'accordion', id, children)
+	setup(parent, id, icon, caption, content, showContent, onclick, config){
+		var children = [{'plugin':'item', 'setup':[id+'Item', icon, caption, 
+			{'class':'w3-button w3-left-align', 'style':'width:100%;cursor:pointer;', 'tag':'div', 'onclick':'Konekti.client["'+id+'"].show()'}]}]
+		if(content!==null) children[1] = content
+		config.style = 'width:100%;' + (config.style||'')
+		var c = super.setup(parent, id, children, config)
 		c.onclick = Konekti.dom.onclick(id, onclick)
-		c.open = open
+		var tout
+		function check(){
+			if(Konekti.vc(id)!==undefined && Konekti.vc(id) !== null){
+				clearTimeout(tout)
+				if(!showContent) Konekti.client[id].show()
+			}else tout = setTimeout(check, Konekti.TIMER)
+		}
+		check()
 		return c
 	}	
 
+	client(config){ return new Accordion(config) }
+}
+
+/** Registers the accordion plugin in Konekti */
+new AccordionPlugin()
+
+/** An Accordion component */
+class Accordion extends Client{
 	/**
 	 * Creates an accordion configuration object
 	 */
-	constructor(){ super(...arguments) }
+	constructor(config){ super(config) }
 
-	setChildrenBack(){
-		super.setChildrenBack()
-		var x = this
-		this.children[0].vc().onclick = function(){ x.show() }
-		this.children[0].vc().style.cursor = 'pointer'
-		if( this.children.length == 2 ) this.children[1].vc().className += "w3-hide" + (this.open?" w3-show":"")
-	}
-
-	/**
-	 * Sets the parent's size (adjust each of its children components)
-	 * @param parentWidth Parent's width
-	 * @param parentHeight Parent's height
-	 */
-	setParentSize( parentWidth, parentHeight ){
-		super.setParentSize(parentWidth, parentHeight)
-		var x = this
-		function check(){
-			if( x.children[0] instanceof Client ){
-				for( var i=0; i<x.children.length; i++ ) x.children[i].setParentSize(parentWidth,parentHeight)
-				var h = 0
-				for( var i=0; i<x.children.length; i++ ) h += x.children[i].height
-				x.height = h
-				x.vc().style.height = x.height
-			}else setTimeout(check, 100)
-		}
-		check()		
-	} 
-
-	
 	/**
 	 * Shows/hides the drop option list
 	 */
 	show(){
 		if(this.children.length>1){
 			var x = Konekti.vc(this.children[1].id)
-			if( x.className.indexOf("w3-show") == -1) x.className += " w3-show"				
-			else x.className = x.className.replace(" w3-show", "");
+			if( x.style.display=='none') x.style.display='block'
+			else x.style.display = 'none'
   		}
 		eval(this.onclick) 		
 	}	
@@ -75,15 +62,23 @@ class Accordion extends Container{
  * @method
  * accordion
  * @param parent Parent component
- * @param id Id of the header
- * @param icon Icon for the header
- * @param caption Caption of the header
- * @param style Style of the header
+ * @param id Id of the accordion
+ * @param icon Icon for the accordion's header
+ * @param caption Caption of the accordion's header
  * @param content Content component
- * @param open If content component should be displayed or not
+ * @param showContent If the content will be shown or not
  * @param onclick Method call when the accordion item is selected
+ * @param config Style of the accordion's header
+ * @param callback Function called when the item is ready
  */
-Konekti.accordion = function(parent, id, icon, caption, style, content, open, onclick=''){
-	return new Accordion(parent, id, icon, caption, style, content, open, onclick)
+Konekti.accordion = function(parent, id, icon, caption, content, showContent, onclick, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==3) args[3] = ''
+	if(args.length==4) args[4] = ''
+	if(args.length==5) args[5] = false
+	if(args.length==6) args[6] = ''
+	if(args.length==7) args[7] = {}
+	if(args.length==8) args[8] = function(){}
+	Konekti.add('accordion', ...args)
 }
-
