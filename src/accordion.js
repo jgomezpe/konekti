@@ -20,14 +20,7 @@ class AccordionPlugin extends PlugIn{
 		config.style = 'width:100%;' + (config.style||'')
 		var c = super.setup(parent, id, children, config)
 		c.onclick = Konekti.dom.onclick(id, onclick)
-		var tout
-		function check(){
-			if(Konekti.vc(id)!==undefined && Konekti.vc(id) !== null){
-				clearTimeout(tout)
-				if(!showContent) Konekti.client[id].show()
-			}else tout = setTimeout(check, Konekti.TIMER)
-		}
-		check()
+		c.showContent = showContent
 		return c
 	}	
 
@@ -42,7 +35,10 @@ class Accordion extends Client{
 	/**
 	 * Creates an accordion configuration object
 	 */
-	constructor(config){ super(config) }
+	constructor(config){ 
+		super(config)
+		if(!this.showContent) Konekti.vc(this.children[1].id).style.display = 'none'
+	}
 
 	/**
 	 * Shows/hides the drop option list
