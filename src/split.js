@@ -63,8 +63,9 @@ class Split extends Client{
 		window.addEventListener("touchend", function(){ x.dragend(); } )
 		var ro = new ResizeObserver(entry => {
 			entry = entry[0]
-			const cr = entry.contentRect
-			x.resize( cr.width, cr.height )
+			var w = x.vc().clientWidth
+			var h = x.vc().clientHeight
+			x.resize( w, h )
 		});
 		// Resize observer
 		ro.observe(this.vc())

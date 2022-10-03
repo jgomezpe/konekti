@@ -1,12 +1,12 @@
-Konekti.dom.css('.konekti-main{transition:margin-left .4s}\n'+
+Konekti.dom.css('.konekti-main{width:calc(100%-200px);height:100%;margin-left:200px!important;margin-right:0!important;transition:margin-left .4s}\n'+
 	'.konekti-sidebar{height:100%;width:200px;background-color:#fff;position:fixed!important;z-index:40;overflow:auto}\n'+
 	'.konekti-buttonsidebar{height:100%;width:20px;background-color:#fff;position:fixed!important;z-index:39;overflow:auto}\n'+
 	'@media (min-width:'+(Konekti.MEDIUMSIZE+1)+'px){\n'+
-	'.konekti-main{margin-left:200px!important;margin-right:0!important}\n'+
+	'.konekti-main{width:calc(100%-200px);margin-left:200px!important;margin-right:0!important}\n'+
 	'.konekti-sidebar{display:block!important}\n'+
 	'.konekti-buttonsidebar{display:none}\n}\n'+
 	'@media (max-width:'+Konekti.MEDIUMSIZE+'px){\n'+
-	'.konekti-main{margin-left:20px!important;margin-right:0!important}\n'+
+	'.konekti-main{width:calc(100%-20px);margin-left:20px!important;margin-right:0!important}\n'+
 	'.konekti-sidebar{display:none;}\n'+
 	'.konekti-buttonsidebar{display:block!important}\n}')
 
@@ -26,7 +26,7 @@ class SideBarPlugin extends PlugIn{
 		var client = 'Konekti.client["'+id+'"].'
 		var one = {'plugin':'raw', 'setup':[id+'Bar', [side], {'onmouseleave':client+"close()", 'class':'konekti-sidebar w3-card w3-animate-left'}]}
 		var two = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onmouseenter':client+"open()", 'style':'float:left', 'class':'w3-xlarge konekti-buttonsidebar'}]}
-		var three = {'plugin':'raw', 'setup':[id+'Main', main, {'class':'konekti-main', 'style':'width:100%;height:100%;'}]}
+		var three = {'plugin':'raw', 'setup':[id+'Main', main, {'class':'konekti-main'}]}
 		return super.setup(parent, id, [one,two,three], config)
 	}
 	
