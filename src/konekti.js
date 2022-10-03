@@ -376,7 +376,7 @@ class PlugInManager{
 	 */
 	constructor( konekti ){
 		this.konekti = konekti
-		this.url = '../../src/' // 'https://jgomezpe.github.io/konekti/src/'
+		this.url = 'https://jgomezpe.github.io/konekti/src/'
 	}
     
 	/**
