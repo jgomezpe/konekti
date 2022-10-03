@@ -29,9 +29,10 @@ function KonektiMain(){
 	var client = new TheClient()
 	Konekti.header('body','title','', 'Konekti Video', 3, {'class':'w3-green'} )
 	// Connects the video with the HTML component
-	var vd = Konekti.mp4( 'body', 'video', '60%','40%', 'https://www.w3schools.com/html/mov_bbb.mp4' )
-	// Adds a listener to the video player
-	vd.addListener(client.id)
+	var vd = Konekti.mp4( 'body', 'myvideo', 'https://www.w3schools.com/html/mov_bbb.mp4', {'style':'width:80%;height:60%'}, function(){
+		// Adds a listener to the video player
+		Konekti.client['myvideo'].addListener(client.id)
+	} )
 }
 
 </script>

@@ -28,9 +28,10 @@ function KonektiMain(){
 	var client = new TheClient()
 	Konekti.header('body', 'title','', 'Konekti Audio', 3, {'class':'w3-green'} )
 	// Connects the audio with the HTML component
-	var vd = Konekti.mp3( 'body', 'audio', 'https://www.w3schools.com/html/horse.mp3' )
-	// Adds a listener to the audio player
-	vd.addListener(client.id)
+	Konekti.mp3( 'body', 'myaudio', 'https://www.w3schools.com/html/horse.mp3', {}, function(){
+		// Adds a listener to the audio player
+		Konekti.client['myaudio'].addListener(client.id)
+	} )
 }
 
 </script>

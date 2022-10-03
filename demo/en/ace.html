@@ -28,11 +28,11 @@ function KonektiMain(){
 
 	Konekti.header('body', 'title','', 'Konekti ACE Editor', 2, {'class':'w3-green'} )
 	Konekti.header('body','hace1','', 'Editor with JavaScript mode and default theme', 4, {'class':'w3-black'} )
-	var ed = Konekti.ace( 'body', 'ace1', "100%", "40%", "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
-	ed.addListener(client.id)
+	Konekti.ace( 'body', 'ace1', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript', '', '', {'style':'width:100%;height:40%;'}, 
+		function(){ Konekti.client['ace1'].addListener(client.id) } )
 
 	Konekti.header('body', 'hace2','', 'Editor with HTML mode and xcode theme', 4, {'class':'w3-black'} )
-	Konekti.ace('body', 'ace2', "100%", "40%", "<div>Inside an ACE editor</div>", 'html', 'xcode' )
+	Konekti.ace('body', 'ace2', "<div>Inside an ACE editor</div>", 'html', 'xcode', '', {'style':'width:100%;height:40%;'} )
 
 	Konekti.header('body', 'hace3','', 'Editor with FunPL/Quilt mode (uses code parameter) and xcode theme', 4, {'class':'w3-black'} )
 	// The lexer of the FunPL/Quilt programming language developed by Professor Jonatan Gómez
@@ -58,12 +58,13 @@ function KonektiMain(){
 		"parser":null, 
 		"meaner":null 
 		}	
-	Konekti.ace( 'body', 'ace3', "50%", "30%", "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer )
+	Konekti.ace( 'body', 'ace3', "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer,
+		{'style':'width:50%;height:50%;'})
 
 	Konekti.header('body', 'hace4','', 'Copies from ace3 (editor with no theme and mode)', 4, {'class':'w3-black'} )
-	Konekti.ace( 'body', 'ace4', "70%", "30%" )
+	Konekti.ace( 'body', 'ace4', '', '',  '', '', {'style':'width:50%;height:50%;'} )
 
-	Konekti.btn('body', 'btn',"fa fa-copy", "Copy","copy()",{'class':'w3-bar-item w3-large'},"Copy")
+	Konekti.btn('body', 'btn',"fa fa-copy", "Copy","copy()",{'class':'w3-bar-item w3-large', 'title':'Copy'})
 }
 
 </script>

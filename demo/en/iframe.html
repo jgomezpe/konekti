@@ -22,11 +22,11 @@ var initial = "<!DOCTYPE html>\n<html>\n<head>\n<meta charset='UTF-8'>\n</head>\
 function KonektiMain(){
 	Konekti.header('body', 'title','', 'Konekti Iframe', 3, {'class':'w3-green'} )
 	Konekti.header('body', 'hiframe1', 'fa-wikipedia-w', 'Wikipedia', 4, {'class':'w3-black'} )
-	Konekti.iframe('body', 'iframe1', '100%', '40%', 'https://wikipedia.com' )
+	Konekti.iframe('body', 'iframe1', 'https://wikipedia.com', {'style':'width:100%;height:40%'} )
 	Konekti.header('body', 'hiframe','fa-file-code-o', 'IFrame from HTML code', 4, {'class':'w3-black'} )
-	Konekti.iframe('body', 'iframe', '100%', '40%', initial )
-	Konekti.btn('body','btn',"fa-play", "Compile","run()",{'class':'w3-blue-grey w3-bar-item w3-large'},"Compile HTML")
-	Konekti.ace('body', 'coder', '100%', '40%', initial, 'html' )
+	Konekti.iframe('body', 'iframe', initial, {'style':'width:100%;height:40%'}  )
+	Konekti.btn('body','btn',"fa-play", "Compile","run()",{'class':'w3-blue-grey w3-bar-item w3-large','title':"Compile HTML" })
+	Konekti.ace('body', 'coder', initial, 'html', '', '', {'style':'width:100%;height:40%'}  )
 }
 
 </script>

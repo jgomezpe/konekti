@@ -21,10 +21,9 @@ function KonektiMain(){
 
 	Konekti.header('body','title','', 'Konekti Latex Component using MatJax', 3, {'class':'w3-green'})
 	Konekti.header('body','hlatex','fa-subscript', 'Latex', 4, {'class':'w3-black'} )
-	Konekti.latex('body', 'latex', '100%', '40%', initial )
-	Konekti.btn('body', 'btn',"fa-play", "Compile","run()",{'class':'w3-blue-gray w3-bar-item w3-large'},"Compile latex")
-	Konekti.ace('body', 'coder', '100%', '40%', initial, 'latex')
-
+	Konekti.latex('body', 'latex', initial, {'style':'whidth:100%;height:40%'} )
+	Konekti.btn('body', 'btn',"fa-play", "Compile","run()",{'class':'w3-blue-gray w3-bar-item w3-large', 'title':"Compile latex"})
+	Konekti.ace('body', 'coder', initial, 'latex', '', '', {'style':'whidth:100%;height:40%'})
 }
 
 </script>
