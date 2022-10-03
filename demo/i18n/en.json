@@ -10,10 +10,10 @@
         ["div", "fa fa-code",  "HTML"],
         ["iframe", "fa fa-link",  "IFrame"],
         ["latex", "fa fa-superscript",  "Latex"],
-        ["media", "fa fa-film", "Media", {}, true, false, [
+        ["media", "fa fa-film", "Media", {}, [
             ["audio", "fa fa-volume-up", "Audio"],
             ["video", "fa fa-video-camera", "Video"]
-        ]],
+        ], true, false],
         ["navbar", "fa fa-ellipsis-h",   "Navigation bar"],
         ["sidebar", "fa fa-bookmark-o",  "Side bar"],
         ["split", "fa fa-columns",  "Split"],
