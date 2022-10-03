@@ -8,7 +8,7 @@
 
 <body>
 
-<div id="log" style='width:100%;height:10%'>Progreso/eventos aparecerán aquí...</div>
+<div id="log" style='width:100%'>Progreso/eventos aparecerán aquí...</div>
 
 <script>
 
@@ -28,9 +28,10 @@ function KonektiMain(){
 	var client = new TheClient()
 	Konekti.header('body', 'title','fa-youtube', 'Youtube en Konekti', 3, {'class':'w3-green'} )
 	// Connects the youtube video with the HTML component
-	var yt = Konekti.youtube( 'body', 'youtube', '100%', '60%', 'fv2Ms3C7Xrw' )
-	// Adds a listener to the Youtube player
-	yt.addListener(client.id)
+	var yt = Konekti.youtube( 'body', 'myyoutube', 'fv2Ms3C7Xrw', {'style':'width:80%;height:60%'}, function(){
+		// Adds a listener to the Youtube player
+		Konekti.client['myyoutube'].addListener(client.id)
+	})
 }
 
 </script>

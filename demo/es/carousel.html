@@ -16,11 +16,11 @@ function select(idx){ Konekti.vc('log').innerHTML = 'Imagen seleccionada:' + idx
 
 function KonektiMain(){
 	Konekti.header('body', 'title','', 'Carrusel de Konekti', 3, {'class':'w3-green'})
-	Konekti.carousel('body', 'carousel', '100%', '', 5000, [
+	Konekti.carousel('body', 'carousel', [
         "https://www.w3schools.com/w3css/img_nature_wide.jpg",
         "https://www.w3schools.com/w3css/img_snow_wide.jpg",
         "https://www.w3schools.com/w3css/img_mountains_wide.jpg"
-    ], select)
+    ], 5000, select, {'style':'width:100%'})
     
 }
 

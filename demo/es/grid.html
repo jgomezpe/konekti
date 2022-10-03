@@ -14,8 +14,8 @@ Konekti.uses('header', 'grid','card', 'navbar')
 
 var shown_cells = []
 function check(){
-    if(Konekti.client['grid'] !== undefined){
-        Konekti.client['grid'].set(shown_cells)
+    if(Konekti.client['mygrid'] !== undefined){
+        Konekti.client['mygrid'].set(shown_cells)
     }else setTimeout(check, 100)
 }
 
@@ -51,7 +51,7 @@ function KonektiMain(){
 	]		
 	Konekti.navbar('body', 'navbar2', btns, {'client':'client', 'method':'select'}, {'class':'w3-orange w3-large'}) 
 
-    Konekti.grid('body', 'grid', 3, 200, 10000, [])
+    Konekti.grid('body', 'mygrid', [], 3, 200)
 	client.select('three') 
 }
 </script>

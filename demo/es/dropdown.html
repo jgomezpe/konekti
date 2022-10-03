@@ -26,19 +26,18 @@ function KonektiMain(){
 	var client = new TheClient()
 
 	Konekti.header('body', 'title','', 'Dropdown de Konekti', 3, {'class':'w3-green'})
-	var dd1 = {'plugin':'toc', 'setup': ['sel_edit', {'title':'Selecciona edición'}, {"client":'client', "method":"edit"},
+	var dd1 = {'plugin':'toc', 'setup': ['sel_edit',
 		[["copy", "fa-copy", 'Copy', {'title':"Copiar"}], 
 		 ["cut", "fa-cut", 'Cut',  , {'title':"Cortar"}], 
-		 ["paste", "fa-copy", 'Paste', {'title':"Pegar"}]]]}	
-	Konekti.dropdown('body', "dd1", "fa-edit", "Editar", dd1, {'client':'client', 'method':'edit'}, {'class':'w3-blue-grey w3-xlarge', 'title':'Opciones de Edición'})
+		 ["paste", "fa-copy", 'Paste', {'title':"Pegar"}]], {"client":'client', "method":"edit"}, {'title':'Selecciona edición'}]}	
+	Konekti.dropdown('body', "dd1", "fa-edit", "Editar", dd1, {'class':'w3-blue-grey w3-xlarge', 'title':'Opciones de Edición'})
 
-	var dd2 = {'plugin':'toc', 'setup': ['sel_media', {'title':'Seleccona Medio'}, {"client":'client', "method":"media"},
+	var dd2 = {'plugin':'toc', 'setup': ['sel_media',
 				 [["video", "fa-video-camera", "Video", {"title":"Video"}], 
-				 ["audio", "fa-volume-up", "Audio", {"title":"Audio"}]]]}	
+				 ["audio", "fa-volume-up", "Audio", {"title":"Audio"}]], {"client":'client', "method":"media"}, {'title':'Seleccona Medio'}]}	
 	Konekti.dropdown('body', "dd2", "fa-film", "Media", dd2, {'class':'w3-orange w3-large', 'title':'Opción de Medio'})
 
-	var dd3 = {'plugin':'toc', 'setup': ['sel_lang', {'title':'Selecciona idioma'}, {"client":'client', "method":"language"},
-				 ["English", "Español"]]}	
+	var dd3 = {'plugin':'toc', 'setup': ['sel_lang', ["English", "Español"], {"client":'client', "method":"language"}, {'title':'Selecciona idioma'}]}	
 	Konekti.dropdown('body', "dd3", "fa-language", "Lenguaje", dd3)
 }
 

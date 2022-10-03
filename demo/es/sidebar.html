@@ -16,17 +16,17 @@ Konekti.uses('sidebar','header','accordion','youtube')
 function select(optId){ Konekti.vc("log").innerHTML =  'Seleccionado: '+ optId; }
 
 function KonektiMain(){
-	Konekti.header('body', 'title','', 'Konekti Sidebar', 4, {'class':'w3-green'} )
+	Konekti.header('body', 'title','', 'Barra lateral de Konekti', 4, {'class':'w3-green'} )
 
-	var toc = {'plugin':'toc', 'setup':['aTOC', 4, {}, select, [
-        ['child1', 'fa-arrow-left', 'Tema A'], 
-        ['child2', 'fa-smile-o', 'Tema B', true, false, [
+	var toc = {'plugin':'toc', 'setup':['aTOC', [
+	['child1', 'fa-arrow-left', 'Tema A'], 
+        ['child2', 'fa-smile-o', 'Tema B', {}, [
             ['child21', 'fa-edit', 'Tema D'], 
-            ['child22', 'fa-copy', 'Tema E']]
-        ], 
-        ['child3', 'fa-edit', 'Tema C']]]}
-		var main = {'plugin':'youtube', 'setup':['main','100%','100%',"fv2Ms3C7Xrw"]}
-	Konekti.sidebar('body', 'root', '100%', '100%', toc, main)
+            ['child22', 'fa-copy', 'Tema E']], true, true
+        ],
+        ['child3', 'fa-edit', 'Tema C']], select, {'style':'width:200px;'}]}
+	var main = {'plugin':'youtube', 'setup':['main',"fv2Ms3C7Xrw",{'style':'width:100%;height:100%;'}]}
+	Konekti.sidebar('body', 'root', toc, main, {'style':'width:100%;height:100%;'})
 }
 
 </script>

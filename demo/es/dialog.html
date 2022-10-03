@@ -21,17 +21,11 @@ function run(){ Konekti.vc("log").innerHTML =  'Mostrar el diálogo fue seleccio
 class TheClient extends MainClient{
 	constructor(){ super() }
 	/* When the Play button is selected (id=show) */
-	show(){ Konekti.vc("dlg").style.display='block' }
+	show(){ Konekti.vc("mydlg").style.display='block' }
 	/* When the care button is selected (id=car) */
-	car(){ 
-        Konekti.vc("dlg").style.display='none'
-        Konekti.vc("log").innerHTML =  'Botón de carro seleccionado'; 
-    }
+	car(){ Konekti.vc("log").innerHTML =  'Botón de carro seleccionado'; }
 	/* When the plane button is seletected (id=plane) */
-	plane(){ 
-        Konekti.vc("dlg").style.display='none'
-        Konekti.vc("log").innerHTML =  'Botón de avión seleccionado'; 
-    }
+	plane(){ Konekti.vc("log").innerHTML =  'Botón de avión seleccionado'; }
 }
 
 /* Konekti's main function*/
@@ -46,7 +40,7 @@ function KonektiMain(){
 		{'plugin':'btn', 'setup':["plane", "fa-plane", "Avión", {"client":'client'}, {'class':"w3-black w3-large", 'title':"Botón de avión"}]}
 	]		
 
-    Konekti.dialog('body', 'dlg', {'plugin':'html', 'setup':['content','100%','100%',{},'<p>Seleccione un vehículo</p>']},btns)
+    Konekti.dialog('body', 'mydlg', {'plugin':'raw', 'setup':['content','<p>Seleccione un vehículo</p>',{'style':'width:100%;height:100%;'}]},btns)
 }
 </script>
 

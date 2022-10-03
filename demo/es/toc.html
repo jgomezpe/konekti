@@ -16,13 +16,13 @@ function select(id){ Konekti.vc('log').innerHTML = 'Entrada de la TOC selecciona
 
 function KonektiMain(){	
 	Konekti.header('body', 'aHeader2', 'fa-home', 'Probando una Tabla de Contenido (TOC)', 3, {'class':'w3-yellow'})	
-	Konekti.toc('body', 'aTOC', {}, select, [
-        ['child1', 'fa-arrow-left', 'Tema A'], 
-        ['child2', 'fa-smile-o', 'Tema B', {}, true, false, [
+	Konekti.toc('body', 'aTOC', [
+    	['child1', 'fa-arrow-left', 'Tema A'], 
+        ['child2', 'fa-smile-o', 'Tema B', {}, [
             ['child21', 'fa-edit', 'Tema D'], 
-            ['child22', 'fa-copy', 'Tema E']]
-        ], 
-        ['child3', 'fa-edit', 'Tema C']]
+            ['child22', 'fa-copy', 'Tema E']], true, true
+        ],
+        ['child3', 'fa-edit', 'Tema C']], select, {'style':'width:200px;'} 
     )
 }
 

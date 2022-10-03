@@ -28,11 +28,11 @@ function KonektiMain(){
 
 	Konekti.header('body', 'title','', 'Editor ACE en Konekti', 2, {'class':'w3-green'} )
 	Konekti.header('body','hace1','', 'Editor en modo JavaScript y tema por defecto', 4, {'class':'w3-black'} )
-	var ed = Konekti.ace( 'body', 'ace1', "100%", "40%", "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript' )
-	ed.addListener(client.id)
+	Konekti.ace( 'body', 'ace1', "for(var i=0; i<10; i++){ console.log('i:'+i); }", 'javascript', '', '', {'style':'width:100%;height:40%;'}, 
+		function(){ Konekti.client['ace1'].addListener(client.id) } )
 
 	Konekti.header('body', 'hace2','', 'Editor en modo HTML y tema xcode', 4, {'class':'w3-black'} )
-	Konekti.ace('body', 'ace2', "100%", "40%", "<div>Inside an ACE editor</div>", 'html', 'xcode' )
+	Konekti.ace('body', 'ace2', "<div>Inside an ACE editor</div>", 'html', 'xcode', '', {'style':'width:100%;height:40%;'} )
 
 	Konekti.header('body', 'hace3','', 'Editor en modo FunPL/Quilt (usa código como parámetro) y tema xcode ', 4, {'class':'w3-black'} )
 	// El analizador léxico de la clase de lenguajes de programaxión desarollado por el Profesor Jonatan Gómez
@@ -58,12 +58,13 @@ function KonektiMain(){
 		"parser":null, 
 		"meaner":null 
 		}	
-	Konekti.ace( 'body', 'ace3', "50%", "30%", "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer )
+	Konekti.ace( 'body', 'ace3', "0=-\n1=@-\ninc(X|0)=X|1\ninc(X|1)=inc(X)|0\ninc(0)=1\ninc(1)=1|0", 'quilt', "xcode", lexer,
+		{'style':'width:50%;height:50%;'})
 
 	Konekti.header('body', 'hace4','', 'Copia desde ace3 (editor sin modo ni tema)', 4, {'class':'w3-black'} )
-	Konekti.ace( 'body', 'ace4', "70%", "30%" )
+	Konekti.ace( 'body', 'ace4', '', '',  '', '', {'style':'width:50%;height:50%;'} )
 
-	Konekti.btn('body', 'btn',"fa fa-copy", "Copiar","copy()",{'class':'w3-bar-item w3-large'},"Copiar")
+	Konekti.btn('body', 'btn',"fa fa-copy", "Copiar","copy()",{'class':'w3-bar-item w3-large','title':"Copiar"})
 }
 
 </script>

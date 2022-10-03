@@ -16,7 +16,9 @@ function select(id){ Konekti.vc('log').innerHTML = 'Entrada de la TOC selecciona
 
 function KonektiMain(){
 	Konekti.header('body','aHeader', '', 'Probando un acordeón', 3, {'class':'w3-green'})
-	Konekti.accordion('body', 'anAccordion', 'fa-link', 'Mostrando wikipedia', 4, {'class':'w3-blue-grey'}, {'plugin':'iframe', 'setup':['aIframe', '80%', '40%', 'https://wikipedia.com']}, false, "select('anAccordion')")	
+	Konekti.accordion('body', 'anAccordion', 'fa-link', 'Mostrando wikipedia',
+		{'plugin':'iframe', 'setup':['aIframe', 'https://wikipedia.com', {'style':'width:80%;height:40%;'}]}, false, "select('anAccordion')",
+		{'class':'w3-blue-grey'})	
 }
 
 </script>
