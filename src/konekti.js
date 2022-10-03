@@ -515,7 +515,7 @@ class KonektiAPI{
 		Konekti = this
 		
 		this.plugin = new PlugInManager(this)
-		this.raw = new PlugIn('raw')		
+		new PlugIn('raw')		
 
 		this.client = {'':{'children':[]}}
 		this.root = new RootClient()
