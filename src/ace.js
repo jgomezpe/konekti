@@ -209,8 +209,10 @@ let aceplugin = new AcePlugIn()
 class Ace extends Editor{
 	init_edit(){
 		var x = this
+		var height = x.vc().clientHeight
 		var gui = x.vc('Ace')
 		x.edit = ace.edit(x.id+'Ace');
+		gui.getElementsByClassName('ace_content')[0].style.height = height + 'px'
 		x.sui = gui.getElementsByClassName('ace_scroller')[0]
 		x.sbui = gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
 		x.edit.setFontSize("16px")
