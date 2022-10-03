@@ -37,7 +37,7 @@ class Accordion extends Client{
 	 */
 	constructor(config){ 
 		super(config)
-		if(!this.showContent) Konekti.vc(this.children[1].id).style.display = 'none'
+		if(this.children.length>1 && !this.showContent) Konekti.vc(this.children[1].id).style.display = 'none'
 	}
 
 	/**
