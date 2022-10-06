@@ -51,14 +51,14 @@ class Resource{
 	 * @param id JSON id
 	 * @param callback Function that will be called if the JSON is loaded
 	 */
-	JSON(id, callback){ fetch(id).then((response) => response.ok?response.json():null).then((json) => callback(json)) }
+	JSON(id, callback){ fetch(id).then((response) => { return response.ok?response.json():null; }).then((json) => callback(json)) }
 	
 	/**
 	 * Loads a text resource (if possible)
 	 * @param id text_URL id
 	 * @param callback Function that will be called if the text file is loaded
 	 */
-	TXT(id, callback){ fetch(id).then((response) => response.ok?response.text():null).then((txt) => callback(txt)) }
+	TXT(id, callback){ fetch(id).then((response) => { return response.ok?response.text():null; }).then((txt) => callback(txt)) }
 	
 	/**
 	 * Adds a link to the client from a cloud url
