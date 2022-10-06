@@ -51,7 +51,7 @@ class Resource{
 	 * @param id JSON id
 	 * @param callback Function that will be called if the JSON is loaded
 	 */
-	JSON(id, callback){ fetch(id).then((response) => { console.log(response); return response.ok?response.json():null; }).then((json) => callback(json)) }
+	JSON(id, callback){ fetch(id).then((response) => { console.log(response.text()); return response.ok?response.json():null; }).then((json) => callback(json)) }
 	
 	/**
 	 * Loads a text resource (if possible)
