@@ -48,8 +48,10 @@ class Item extends Client{
 		var fontSize = parseFloat(style) * 1.3
 		var code = ''
 		if(typeof this.icon == 'string') 
-			if(this.icon.length > 0) this.icon = {'type':'fa', 'src':this.icon} // Backward compatibility
-			else this.icon = {'type':''}
+			if(this.icon.length > 0){ 
+				if(this.icon.startsWith('fa')) this.icon = {'type':'fa', 'src':this.icon} // Backward compatibility
+				else this.icon = {'type':'plain', 'src':this.icon}
+			}else this.icon = {'type':''}
 		switch(this.icon.type){
 			case 'fa':
 				if(typeof this.icon.src == 'string') 
@@ -60,6 +62,9 @@ class Item extends Client{
 					code += '<i class="fa ' + this.icon.src[1] + ' fa-stack-1x"></i>\n'
 				  	code += '</span>\n'
 				}
+			break;
+			case 'plain': 
+				code = this.icon.src + ' '
 			break;
 			case 'img':
 				code = '<div style="float:left;width:' + fontSize +'px;height:100%;"><img src="' + this.icon.src + '" style="width:100%;height:100%"></div>' 
