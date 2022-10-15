@@ -137,27 +137,23 @@ class Split extends Client{
 		var r = c.getBoundingClientRect()
 		var type = (width<Konekti.MEDIUMSIZE)? 'row': x.type
 		if(type=='col'){
-			var left = x.children[1].vc().clientWidth
-			if(type!=x.ctype || left==0){ 
-				left = Math.round(x.start*(width-8)/100)
-				x.children[1].vc().style.width = left + 'px'
-			}	
+			var left = x.children[1].vc().clientWidth || 0
+			if(type!=x.ctype || left == 0) left = Math.round(x.start*(width-8)/100)
+			x.children[1].vc().style.width = left + 'px'
 			x.children[2].vc().style.width = '8px'
 			x.children[3].vc().style.width = (width-8-left) + 'px'
 			for(var i=0; i<4; i++)	x.children[i].vc().style.height = height + 'px'
 			x.vc('Bar').style.cursor = 'col-resize'
 		}else{
-			var top = x.children[1].vc().clientHeight
-			if(type!=x.ctype || top==0){ 
-				top = Math.round(x.start*(height-8)/100)
-				x.children[1].vc().style.height = top + 'px'
-			}	
+			var top = x.children[1].vc().clientHeight || 0
+			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
+			x.children[1].vc().style.height = top + 'px'
 			x.children[2].vc().style.height = '8px'
 			x.children[3].vc().style.height = (height-8-top) + 'px'
 			x.vc('Bar').style.cursor = 'row-resize'
 			for(var i=0; i<4; i++)	x.children[i].vc().style.width = width + 'px'
 		}
-		x.ctype = type
+		if(height!=0 && width!=0) x.ctype = type
 	} 
 }
 
