@@ -305,7 +305,6 @@ class Canvas extends Editor{
 		this.vc('Canvas').height = this.vc().clientHeight
 		var w = this.vc('Canvas').width
 		var h = this.vc('Canvas').height
-		console.log(w+'..'+h)
 		if(keepAspectRatio) {
 			var s
 			if( w*x < h*y ) s = w*x
@@ -316,7 +315,6 @@ class Canvas extends Editor{
 			x *= w
 			y *= h
 		}
-		console.log(x+'..'+y)
 		c.x = x
 		c.y = y
 		c.commands = obj.commands
