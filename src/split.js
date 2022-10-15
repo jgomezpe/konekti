@@ -138,7 +138,7 @@ class Split extends Client{
 		var type = (width<Konekti.MEDIUMSIZE)? 'row': x.type
 		if(type=='col'){
 			var left = x.children[1].vc().clientWidth
-			if(type!=x.ctype){ 
+			if(type!=x.ctype || left==0){ 
 				left = Math.round(x.start*(width-8)/100)
 				x.children[1].vc().style.width = left + 'px'
 			}	
@@ -148,7 +148,7 @@ class Split extends Client{
 			x.vc('Bar').style.cursor = 'col-resize'
 		}else{
 			var top = x.children[1].vc().clientHeight
-			if(type!=x.ctype){ 
+			if(type!=x.ctype || top==0){ 
 				top = Math.round(x.start*(height-8)/100)
 				x.children[1].vc().style.height = top + 'px'
 			}	
