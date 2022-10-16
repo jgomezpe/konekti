@@ -53,7 +53,6 @@ class InputList extends Client{
 	}
 
 	set(list){
-		console.log(list)
 		var x = this
 		x.options = list
 		var tout
