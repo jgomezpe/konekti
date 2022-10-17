@@ -1,6 +1,6 @@
 /** Konekti plugin for dropdown elements */
 class DropDownPlugin extends PlugIn{
-	constructor(){ super('dropdown') }
+	constructor(id='dropdown'){ super(id) }
 
 	/**
 	 * Creates a dropdown configuration object
