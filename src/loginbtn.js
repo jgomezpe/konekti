@@ -1,4 +1,4 @@
-Konekti.plugin.load('dropdown', function(){
+Konekti.plugin.load(['dropdown'], function(){
 /**
  * A login button plugin (dropdown with login/logout, registration, and extra information component)
  */
