@@ -1,4 +1,4 @@
-Konekti.plugin.load(['dropdown'], function(){
+Konekti.load('dropdown', function(){
 /**
  * A login button plugin (dropdown with login/logout, registration, and extra information component)
  */
@@ -18,7 +18,6 @@ class LoginBtnPlugin extends DropDownPlugin{
      * @param {*} config  Style of the components (input, buttons, etc)
      */
     setup(parent, id, extra, server, captions, config){
-        console.log('gello0')
         var login = {'plugin':'login', 'setup':[id+'login', id, captions, config]}
 
         var input = config.input
@@ -78,15 +77,11 @@ class LoginBtn extends DropDown{
      */
     login(user,password){
         var x = this
-        x.server.login(user, password, function(response){
-            if(response==true){
-                Konekti.client[x.id+'login'].log()
-                x.vc('login').style.display = 'none'
-                x.vc('connected').style.display = 'block'
-            }else{
-                Konekti.client[x.id+'login'].log(x.captions.invaliduser)
-            }
-        })
+        x.server.login(user, password, function(){
+            Konekti.client[x.id+'login'].log()
+            x.vc('login').style.display = 'none'
+            x.vc('connected').style.display = 'block'
+        }, function(){ Konekti.client[x.id+'login'].log(x.captions.invaliduser) })
     }
 
     /**
@@ -96,13 +91,8 @@ class LoginBtn extends DropDown{
      */
      register(user,password){
         var x = this
-        x.server.register(user, password, function(response){
-            if(response==true){
-                Konekti.client[x.id+'login'].showcode()
-            }else{
-                Konekti.client[x.id+'login'].log(x.captions.alreadyuser)
-            }
-        })	
+        x.server.register(user, password, function(){ Konekti.client[x.id+'login'].showcode() }, 
+            function(){ Konekti.client[x.id+'login'].log(x.captions.alreadyuser) })	
     }
 
     /**
@@ -111,16 +101,12 @@ class LoginBtn extends DropDown{
      */
     registercode(code){
         var x = this
-        x.server.registercode(code, function(response){
-            if(response==true){
-                Konekti.client[x.id+'login'].clear()
-                Konekti.client[x.id+'login'].hidecode()
-                x.vc('login').style.display = 'none'
-                x.vc('connected').style.display = 'block'	
-            }else{
-                Konekti.client[x.id+'login'].log(x.captions.invalidcode)
-            }
-        })	
+        x.server.registercode(code, function(){
+            Konekti.client[x.id+'login'].clear()
+            Konekti.client[x.id+'login'].hidecode()
+            x.vc('login').style.display = 'none'
+            x.vc('connected').style.display = 'block'	
+        }, function(){ Konekti.client[x.id+'login'].log(x.captions.invalidcode) })	
     }
 
     /**
@@ -130,13 +116,9 @@ class LoginBtn extends DropDown{
     remember(user){
         if(user != ''){
             var x = this
-            x.server.remember(user, function(response){
-                if(response==true)
-                    Konekti.client[x.id+'login'].log(x.captions.send+user)
-                else	
-                    Konekti.client[x.id+'login'].log(x.captions.invaliduser)
-            })
-        }	
+            x.server.remember(user, function(){ Konekti.client[x.id+'login'].log(x.captions.send+user) },
+            function(){ Konekti.client[x.id+'login'].log(x.captions.invaliduser) })
+        }
     }
 
     /**
@@ -157,21 +139,17 @@ class LoginBtn extends DropDown{
     /**
      * Calls the server's logout method with information from the gui and updates it accordingly
      */
-     updatepwd(){
+    updatepwd(){
         var x = this
         var newpassword = x.vc('newpwd').value
         var oldpassword = x.vc('oldpwd').value
 
-        x.server.updatepwd( newpassword, oldpassword, function(response){
-            if(response==true){
-                x.vc('oldpwd').value = ''
-                x.vc('newpwd').value = ''
-                x.vc('pwdlog').innerHTML = ''
-                Konekti.client[x.id+'cpwd'].show()
-            }else{
-                x.vc('pwdlog').innerHTML = x.captions.invalidpassword
-            }
-        })	
+        x.server.updatepwd( newpassword, oldpassword, function(){
+            x.vc('oldpwd').value = ''
+            x.vc('newpwd').value = ''
+            x.vc('pwdlog').innerHTML = ''
+            Konekti.client[x.id+'cpwd'].show()
+        }, function(){ x.vc('pwdlog').innerHTML = x.captions.invalidpassword })
     }
 }
 
@@ -190,7 +168,6 @@ Konekti.loginbtn = function(parent, id, extra, server, captions, config, callbac
     for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
     if(args.length==5) args[5] = {}
     if(args.length==6) args[6] = function(){}
-    console.log('hello')
     Konekti.add('loginbtn', ...args)
 }
 })
