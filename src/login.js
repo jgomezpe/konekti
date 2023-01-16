@@ -17,7 +17,7 @@ class LoginPlugin extends PlugIn{
 		config.input = config.input || {}
 		var input = config.input
 		input.class = (input.class || '') + ' col-form-label form-control '
-		input.style = 'width:100%;'+(input.style || '')
+		input.style = 'width:100%;font-family: FontAwesome, Arial, Verdana, sans-serif;'+(input.style || '')
 
 		var email = {'plugin':'raw', 'setup':[id+'email', '', 
 			{'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.email || 'email',
