@@ -14,7 +14,9 @@ class InputListPlugin extends PlugIn{
 	setup(parent, id, options, onselect='', onenter='', config={}){
 		config.tag = 'input'
 		config.class = (config.class||"") + " w3-input "
-		config.placeholder = '&#xF002; ' + (config.placeholder || '')
+		config.style = 'font-family: FontAwesome, Arial, Verdana, sans-serif;'+(config.style || '')
+
+		config.placeholder = (config.placeholder || '')
 		config.name = id
 		config.list = id+'List'
 		var c = super.setup(parent, id, '', config)
