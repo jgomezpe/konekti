@@ -336,11 +336,12 @@ class Client{
 		if(x.ro == undefined || x.ro == null){
 			x.ro = new ResizeObserver(entry => {
 				entry = entry[0]
-				var h = x.clientHeight
-				var w = x.clientWidth
+				var y = x.vc()
+				var h = y.clientHeight
+				var w = y.clientWidth
 				var c = 0
 				var v = 0
-				for (const child of x.children) {
+				for (const child of y.children) {
 					if(child.className.includes('konektifillrest')) c++
 					else 
 						if(type=='height') v += child.offsetHeight
@@ -349,7 +350,7 @@ class Client{
 				if(c>0){
 					if(type=='height') v = (h-v)/c
 					else v = (w-v)/c
-					for (const child of x.children) {
+					for (const child of y.children) {
 						if(child.className.includes('konektifillrest'))
 							if(type='height') child.style.height = v+'px'
 							else child.style.width = v+'px'
