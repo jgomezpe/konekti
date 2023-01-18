@@ -38,6 +38,7 @@ class FillRest extends Client{
 				c.startResizeObserver(x.type)
 			}else tout = setTimeout(check, Konekti.TIMER)
 		}
+		check()
 	}
 }
 
