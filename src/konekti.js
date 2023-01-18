@@ -330,7 +330,37 @@ class Client{
 	 * @returns Visual component associated to the client/subclient
 	 */
 	vc(subId=''){ return Konekti.vc(this.id+subId) }
- 
+
+	startResizeObserver( type='height' ){
+		var x = this
+		if(x.ro == undefined || x.ro == null){
+			x.ro = new ResizeObserver(entry => {
+				entry = entry[0]
+				var h = x.clientHeight
+				var w = x.clientWidth
+				var c = 0
+				var v = 0
+				for (const child of x.children) {
+					if(child.className.includes('konektifillrest')) c++
+					else 
+						if(type=='height') v += child.offsetHeight
+						else v += child.offsetWidth
+				}
+				if(c>0){
+					if(type=='height') v = (h-v)/c
+					else v = (w-v)/c
+					for (const child of x.children) {
+						if(child.className.includes('konektifillrest'))
+							if(type='height') child.style.height = v+'px'
+							else child.style.width = v+'px'
+					}
+				}
+			});
+						 
+			// Resize observer
+			x.ro.observe(x)
+		}	
+	}
 }
 
 /** A Konekti plugin. */
@@ -598,8 +628,12 @@ class RootClient extends Client{
 			var c = Konekti.vc()
 			if(c!==undefined && c!==null){
 				clearTimeout(tout)
-				c.style.width = window.innerWidth + 'px'
-				c.style.height = window.innerHeight + 'px'
+				c.style.position = 'absolute'
+				c.style.height = '100%'
+				c.style.width = '100%'
+				c.style.padding = '0px'
+				c.style.margin = '0px'
+				c.style.border = '0px'
 			}else tout = setTimeout(check,Konekti.TIMER)
 		}
 		check()
