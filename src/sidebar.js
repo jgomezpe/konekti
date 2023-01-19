@@ -65,7 +65,7 @@ class SideBarPlugin extends PlugIn{
 			{'plugin':'btn', 'setup':[id+'Close', 'fa fa-times', '', client+'close()', {'class':' w3-large w3-right-align '}]},
 			side
 		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
-		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'style':"margin-left:200px;", 'class':' w3-large w4-sidebtn '}]}
+		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
 		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main '}]}
 		return super.setup(parent, id, [expand,side,main], config)
 	}
