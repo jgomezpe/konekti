@@ -1,14 +1,51 @@
-Konekti.dom.css('.konekti-main{width:calc(100%-200px);height:100%;margin-left:200px!important;margin-right:0!important;transition:margin-left .4s}\n'+
-	'.konekti-sidebar{height:100%;width:200px;background-color:#fff;position:fixed!important;z-index:40;overflow:auto}\n'+
-	'.konekti-buttonsidebar{height:100%;width:20px;background-color:#fff;position:fixed!important;z-index:39;overflow:auto}\n'+
-	'@media (min-width:'+(Konekti.MEDIUMSIZE+1)+'px){\n'+
-	'.konekti-main{width:calc(100%-200px);margin-left:200px!important;margin-right:0!important}\n'+
-	'.konekti-sidebar{display:block!important}\n'+
-	'.konekti-buttonsidebar{display:none}\n}\n'+
-	'@media (max-width:'+Konekti.MEDIUMSIZE+'px){\n'+
-	'.konekti-main{width:calc(100%-20px);margin-left:20px!important;margin-right:0!important}\n'+
-	'.konekti-sidebar{display:none;}\n'+
-	'.konekti-buttonsidebar{display:block!important}\n}')
+Konekti.dom.css(
+	`w4-main{
+		transition:margin-left .4s;
+	}
+	  
+	.w4-sidebar{
+		height:100%;
+		width:200px;
+		background-color:#fff;
+		position:fixed!important;
+		z-index:1;
+		overflow:auto;
+	}
+	  
+	.w4-sidebtn{
+		height:100%;
+		width:20px;
+		background-color:#fff;
+		opacity:0.4;
+		position:fixed;
+		cursor:pointer;
+	}
+	  
+	@media (min-width:` + (Konekti.MEDIUMSIZE+1) + `px){
+		.w4-sidebtn{
+		   display:none;
+		}
+	   
+		.w4-sidebar{
+			display:block;
+		}
+	}
+	  
+	@media (max-width:` + Konekti.MEDIUMSIZE + `px){
+		.w4-sidebar{
+			display:none;
+		}
+	   
+		.w4-sidebtn{
+			display:block;
+		}
+	   
+		.w4-main{
+			margin-left:20px!important;
+			margin-right:0px!important;
+		}
+	}`
+)
 
 /** Konekti plugin for sidebarb elements */
 class SideBarPlugin extends PlugIn{
@@ -24,10 +61,13 @@ class SideBarPlugin extends PlugIn{
 	 */
 	 setup(parent, id, side, main, config={}){
 		var client = 'Konekti.client["'+id+'"].'
-		var one = {'plugin':'raw', 'setup':[id+'Bar', [side], {'onmouseleave':client+"close()", 'class':'konekti-sidebar w3-card w3-animate-left'}]}
-		var two = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onmouseenter':client+"open()", 'style':'float:left', 'class':'w3-xlarge konekti-buttonsidebar'}]}
-		var three = {'plugin':'raw', 'setup':[id+'Main', main, {'class':'konekti-main'}]}
-		return super.setup(parent, id, [one,two,three], config)
+		var side = {'plugin':'raw', 'setup':[id+'Bar', [
+			{'plugin':'btn', 'setup':[id+'Close', 'fa fa-times', '', client+'close()', {'class':' w3-large w3-right-align '}]},
+			side
+		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
+		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'style':"margin-left:200px;", 'class':' w3-large w4-sidebtn '}]}
+		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main '}]}
+		return super.setup(parent, id, [expand,side,main], config)
 	}
 	
 	client(config){ return new SideBar(config) }
@@ -47,14 +87,14 @@ class SideBar extends Client{
 	 * Displays the sidebar
 	 * @param barId Sidebar's id
 	 */
-	open(){ this.vc('Bar').style.display = 'initial' }
+	open(){ this.vc('Bar').style.display = 'block' }
 
 	/**
 	 * Hides the sidebar
 	 * @param barId Sidebar's id
 	 */
 	close(){ 
-		if(this.vc().clientWidth < 992) this.vc('Bar').style.display = 'none' 
+		this.vc('Bar').style.display = null 
 	}
 }
 

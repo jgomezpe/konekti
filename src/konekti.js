@@ -256,10 +256,35 @@ class Client{
 	 * @param {*} config JSON configuration object
 	 */
 	constructor( config ){
-		this.assign(config)
-		this.queue = []
-		Konekti.client[this.id] = this
-		if(this.parent!='') Konekti.vc(this.parent).appendChild(Konekti.dom.html(this.html())) 
+		var x = this
+		x.assign(config)
+		x.queue = []
+		Konekti.client[x.id] = x
+		if(x.parent!=''){
+			var p = Konekti.vc(x.parent)
+			var cl = x.config.class
+			if(cl!==undefined && cl!==null && cl.includes('konektifill')){
+				var type = 'height'
+				if(cl.includes('konektifillheight')){
+					x.config.class = cl.replace('konektifillheight', 'konektifillrest')
+					type = 'height'
+				}else{
+					x.config.class = cl.replace('konektifillwidth', 'konektifillrest')
+					type = 'width'
+				} 
+					
+				var tout
+				function check(){
+					var c = Konekti.client[x.parent]
+					if(c !== undefined && c !== null){
+						clearTimeout(tout)
+						c.startResizeObserver(x.type)
+					}else tout = setTimeout(check, Konekti.TIMER)
+				}
+				check()
+			}
+			p.appendChild(Konekti.dom.html(this.html()))
+		}	
 		var children = this.children
 		this.children=[]
 		for(var i=0; i<children.length; i++) 
@@ -359,7 +384,7 @@ class Client{
 			});
 						 
 			// Resize observer
-			x.ro.observe(x)
+			x.ro.observe(x.vc())
 		}	
 	}
 }
