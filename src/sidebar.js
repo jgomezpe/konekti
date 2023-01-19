@@ -1,6 +1,7 @@
 Konekti.dom.css(
 	`.w4-main{
 		height:100%;
+		margin-left:200px;
 		transition:margin-left .4s;
 	}
 	  
@@ -23,6 +24,11 @@ Konekti.dom.css(
 	}
 	  
 	@media (min-width:` + (Konekti.MEDIUMSIZE+1) + `px){
+		.w4-main{
+			margin-left:200px!important;
+			margin-right:0px!important;
+		}
+		
 		.w4-sidebtn{
 		   display:none;
 		}
