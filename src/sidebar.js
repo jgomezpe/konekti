@@ -10,7 +10,7 @@ Konekti.dom.css(
 		width:200px;
 		background-color:#fff;
 		position:fixed!important;
-		z-index:1;
+		z-index:40;
 		overflow:auto;
 	}
 	  
