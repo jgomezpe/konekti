@@ -1,5 +1,6 @@
 Konekti.dom.css(
 	`.w4-main{
+		height:100%;
 		transition:margin-left .4s;
 	}
 	  
@@ -66,7 +67,7 @@ class SideBarPlugin extends PlugIn{
 			side
 		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
 		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
-		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main '}]}
+		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main konektifillwidth'}]}
 		return super.setup(parent, id, [expand,side,main], config)
 	}
 	
