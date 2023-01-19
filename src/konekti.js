@@ -278,7 +278,7 @@ class Client{
 					var c = Konekti.client[x.parent]
 					if(c !== undefined && c !== null){
 						clearTimeout(tout)
-						c.startResizeObserver(x.type)
+						c.startResizeObserver(type)
 					}else tout = setTimeout(check, Konekti.TIMER)
 				}
 				check()
