@@ -3,6 +3,8 @@ Konekti.dom.css(
 		height:100%;
 		margin-left:200px;
 		transition:margin-left .4s;
+		position:fixed!important;
+		overflow:auto;
 	}
 	  
 	.w4-sidebar{
