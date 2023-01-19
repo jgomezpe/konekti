@@ -1,5 +1,5 @@
 Konekti.dom.css(
-	`w4-main{
+	`.w4-main{
 		transition:margin-left .4s;
 	}
 	  
