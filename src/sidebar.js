@@ -69,11 +69,11 @@ class SideBarPlugin extends PlugIn{
 	 setup(parent, id, side, main, config={}){
 		var client = 'Konekti.client["'+id+'"].'
 		var side = {'plugin':'raw', 'setup':[id+'Bar', [
-			{'plugin':'btn', 'setup':[id+'Close', 'fa fa-times', '', client+'close()', {'class':' w3-large w3-right-align '}]},
+			{'plugin':'btn', 'setup':[id+'Close', 'fa fa-times', '', client+'close()', {'class':' w3-large w3-hide-large w3-right-align '}]},
 			side
 		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
 		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
-		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main konektifillwidth'}]}
+		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main konektifillwidth', 'style':'margin-left:200px;'}]}
 		return super.setup(parent, id, [expand,side,main], config)
 	}
 	
