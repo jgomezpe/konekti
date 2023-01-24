@@ -9,7 +9,7 @@ class CardPlugin extends PlugIn{
 	 */
 	 setup( parent, id, description, config={} ){
 		config.tag = 'div'
-		config.class = " w3-center " + (config.class||'') 
+		config.class = "w3-container w3-center " + (config.class||'') 
         var content = {'plugin':'raw', 'setup':[id+'Content', description, {'class':"w3-card", 'tag':'div', 'style':'width:100%;height:100%;'}]}
 		return super.setup(parent, id, [content], config) 
 	}
