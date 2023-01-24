@@ -39,7 +39,7 @@
 
         var navbar = {'plugin':'raw','setup':[id+'Btns', btns, {'class':"w3-center", 'style':'width:100%;'}]}
         children.push(navbar)
-        var content = {'plugin':'raw', 'setup':[id+'Content', children, {'class':"w3-container", 'style':'width:100%;margin:0px;'}]}
+        var content = {'plugin':'raw', 'setup':[id+'Content', children, {'style':'width:100%;margin:0px;'}]}
         var modal = {'plugin':'raw', 'setup':[id+'Modal',[content], {'class':"w3-modal-content", 'style':'width:100%;height:100%;'}]}
 		config.class = (config.class || '') + " w3-modal"
 		config.style = 'display:none;'+(config.style || '') 
