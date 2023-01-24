@@ -4,7 +4,7 @@ class GridPlugin extends PlugIn{
 
 	children_setup(id, cells, max_cols, min_cell_width, max_cell_width){
         var col_size = 100/max_cols
-        var rsp = {'tag':'div', 'class':"w3-col w3-center", 'style':'padding:4px;width:'+col_size+'%;max-width:'+max_cell_width+'px;min-width:'+min_cell_width+'px;'}
+        var rsp = {'tag':'div', 'class':"w3-col w3-center", 'style':'padding:4px;margin:0px;width:'+col_size+'%;max-width:'+max_cell_width+'px;min-width:'+min_cell_width+'px;'}
         for(var i=0; i<cells.length; i++)
             cells[i] = {'plugin':'raw', 'setup':[id+'Cell-'+i, cells[i], rsp]}
 		return cells
