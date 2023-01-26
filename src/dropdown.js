@@ -14,8 +14,7 @@ class DropDownPlugin extends PlugIn{
 	setup(parent, id, icon, caption, content, config={}){
 		var btn = {'plugin':'btn', 'setup':[id+'Btn', icon, caption, {'client':id, 'method':'click'}, config]}
 		var drop = {'plugin':'raw', 'setup':[id+'Drop', content, {'tag':'div', "class":'w3-dropdown-content w3-bar-block w3-border'}]}
-		config.style = 'margin:0px;padding:0px;border:0px;'
-		return super.setup(parent, id, [btn,drop], config)		
+		return super.setup(parent, id, [btn,drop], {'style':'margin:0px;padding:0px;border:0px;'})		
 	}
 
 	client(config){ return new DropDown(config) }
