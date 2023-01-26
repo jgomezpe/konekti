@@ -48,7 +48,7 @@ class InputList extends Client{
 			while(i<x.options.length && x.options[i].caption!=value) i++
 			if(i<x.options.length) eval(Konekti.dom.onclick(x.options[i].id,x.onselect))
 			else eval(Konekti.dom.onclick(value,x.onenter))
-			x.vc().value = ''
+			//x.vc().value = ''
 		}
 
 		this.set(this.options)
