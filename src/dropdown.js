@@ -12,9 +12,8 @@ class DropDownPlugin extends PlugIn{
 	 * @param config Style of the dropdown
 	 */
 	setup(parent, id, icon, caption, content, config={}){
-		var btn = {'plugin':'btn', 'setup':[id+'Btn', icon, caption, '', config]}
+		var btn = {'plugin':'btn', 'setup':[id+'Btn', icon, caption, {'client':id, 'method':'click'}, config]}
 		var drop = {'plugin':'raw', 'setup':[id+'Drop', content, {'tag':'div', "class":'w3-dropdown-content w3-bar-block w3-border'}]}
-		config = {'class':' w3-dropdown-hover'}
 		return super.setup(parent, id, [btn,drop], config)		
 	}
 
@@ -29,7 +28,13 @@ class DropDown extends Client{
 	/**
 	 * Creates a dropdown client object
 	 */
-	constructor(config){ super(config) }    
+	constructor(config){ super(config) }
+
+	click(){
+		var x = this.vc()
+		if (x.className.indexOf("w3-show") == -1) x.className += " w3-show"
+		else x.className = x.className.replace(" w3-show", "")
+	}
 }
 
 /**
