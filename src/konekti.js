@@ -243,13 +243,13 @@ class DOM{
 	}
 
 	fontsizeclass( cl ){
-		if(cl.contains('w3-tiny')) return 10
-		if(cl.contains('w3-small')) return 12
-		if(cl.contains('w3-medium')) return 18
-		if(cl.contains('w3-xlarge')) return 24
-		if(cl.contains('w3-xxlarge')) return 34
-		if(cl.contains('w3-xxxlarge')) return 48
-		if(cl.contains('w3-jumbo')) return 64
+		if(cl.includes('w3-tiny')) return 10
+		if(cl.includes('w3-small')) return 12
+		if(cl.includes('w3-medium')) return 18
+		if(cl.includes('w3-xlarge')) return 24
+		if(cl.includes('w3-xxlarge')) return 34
+		if(cl.includes('w3-xxxlarge')) return 48
+		if(cl.includes('w3-jumbo')) return 64
 		return null
 	}
 
