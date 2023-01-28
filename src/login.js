@@ -43,7 +43,7 @@ class LoginPlugin extends PlugIn{
 			{'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.code || 'code',
 			'name':id+'code', 'type':'text'}
 		]}
-		var codebtn = {'plugin':'btn', 'setup':[id+"codebtn", "fa-send", captions.send, {'client':id, 'method':'registercode'}, btncfg]}
+		var codebtn = {'plugin':'btn', 'setup':[id+"codebtn", "fa-check", captions.send, {'client':id, 'method':'registercode'}, Object.assign({}, btncfg)]}
 
 		var log = {'plugin':'raw', 'setup':[id+'log', '', {'class':' w3-red '}]}
 
