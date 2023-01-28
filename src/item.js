@@ -75,8 +75,9 @@ class Item extends Client{
 	}
 	
 	/**
-	 * Sets a component's attribute to the given value 
-	 * @param config Item configuration
+	 * Updates icon and caption of the itema component's attribute to the given value 
+	 * @param icon Item's icon
+	 * @param caption Item's caption
 	 */
 	update(icon, caption){
 		var c = this.vc()
@@ -84,6 +85,27 @@ class Item extends Client{
 		this.caption = caption
 		c.innerHTML = this.inner_html()
 	}
+
+	/**
+	 * Sets the item's caption
+	 * @param caption Item's caption
+	 */
+	setCaption(caption){
+		var c = this.vc()
+		this.caption = caption
+		c.innerHTML = this.inner_html()
+	}
+
+	/**
+	 * Sets the item's icon
+	 * @param icon Item's icon
+	 */
+	setIcon(icon){
+		var c = this.vc()
+		this.icon = icon
+		c.innerHTML = this.inner_html()
+	}
+
 }
 
 /**
