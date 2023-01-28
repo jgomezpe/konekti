@@ -40,12 +40,13 @@ class Item extends Client{
 	html(){ 
 		this.inner = this.inner_html()
 		return super.html()
-	} 
+	}
 
 	inner_html(){
-		var el = Konekti.vc(this.parent)
-		var style = window.getComputedStyle(el, null).getPropertyValue('font-size')
-		var fontSize = parseFloat(style) * 1.3
+		var style = Konekti.dom.fontsizeclass(this.config.class!=undefined?this.config.class:"")
+		if(style == null) style = Konekti.dom.fontsizestyle(this.config.style!=undefined?this.config.style:"")
+		if(style == null) style = Konekti.dom.fontsize(this.parent)
+		var fontSize = style * 1.3
 		var code = ''
 		if(typeof this.icon == 'string') 
 			if(this.icon.length > 0){ 

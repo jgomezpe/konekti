@@ -241,6 +241,31 @@ class DOM{
 		if( general ) lang = lang.split('-')[0]
 		return lang
 	}
+
+	fontsizeclass( cl ){
+		if(cl.contains('w3-tiny')) return 10
+		if(cl.contains('w3-small')) return 12
+		if(cl.contains('w3-medium')) return 18
+		if(cl.contains('w3-xlarge')) return 24
+		if(cl.contains('w3-xxlarge')) return 34
+		if(cl.contains('w3-xxxlarge')) return 48
+		if(cl.contains('w3-jumbo')) return 64
+		return null
+	}
+
+	fontsizestyle( style ){
+		var i = style.indexOf('font-size')
+		if(i>=0){
+			style = style.substring(i)
+			var i = style.indexOf('px')
+			return parseInt(style.substring(0,i))
+		}
+		return null
+	}
+
+	fontsize(element_id){
+		return parseFloat(window.getComputedStyle(Konekti.vc(element_id), null).getPropertyValue('font-size'))
+	}
 }
 
 /** A Konekti client. */
