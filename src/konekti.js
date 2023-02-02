@@ -297,16 +297,13 @@ class Client{
 					x.config.class = cl.replace('konektifillwidth', 'konektifillrest')
 					type = 'width'
 				} 
-					
-				var tout
-				function check(){
-					var c = Konekti.client[x.parent]
-					if(c !== undefined && c !== null){
-						clearTimeout(tout)
-						c.startResizeObserver(type)
-					}else tout = setTimeout(check, Konekti.TIMER)
-				}
-				check()
+				
+				var c = Konekti.client[x.parent]
+				Konekti.check( 
+					function(){	return (c!== undefined && c!==null) },
+					function(){ c.startResizeObserver(type) }
+				)
+
 			}
 			p.appendChild(Konekti.dom.html(this.html()))
 		}	
@@ -325,18 +322,11 @@ class Client{
 		var x = this
 		x.queue.push(component.id || component.setup[1])
 		Konekti.plugin.setup(component, function(expanded){
-			var tout
-			function check(){
-				if(expanded.id == x.queue[0]){
-					clearTimeout(tout)
-					x.children.push(Konekti.build(expanded))
-					x.queue.splice(0,1)
-					if(callback !== undefined){
-						callback(expanded)
-					}			
-				}else tout = setTimeout(check,Konekti.TIMER)
-			}
-			check()
+			Konekti.check(function(){ return expanded.id == x.queue[0] }, function(){
+				x.children.push(Konekti.build(expanded))
+				x.queue.splice(0,1)
+				if(callback !== undefined) callback(expanded)
+			})
 		})
 	}
 
@@ -550,12 +540,11 @@ class PlugInManager{
 		var ids = []
 		var tout
 		function check_eval(){
-			var m=0;
-			while(m<ids.length && x[ids[m]]!==undefined) m++
-			if(m==ids.length){ 
-				clearTimeout(tout)
-				callback()
-			}else tout = setTimeout(check_eval, Konekti.TIMER)
+			Konekti.check(function(){
+				var m=0
+				while(m<ids.length && x[ids[m]]!==undefined) m++
+				return (m==ids.length)
+			}, callback)
 		}
 
 		var k=0
@@ -603,7 +592,20 @@ class KonektiAPI{
 		
 		window.addEventListener("resize", this.resize);
 	}
-    
+
+	/**
+	 * An asynchronous while. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
+	 */
+    check( condition, f ){
+		var tout=null
+		function ch(){
+			if(tout != null) clearTimeout(tout)
+			if(condition()) f()
+			else tout = setTimeout(ch, Konekti.TIMER)
+		}
+		ch()
+	}
+
 	/**
 	 * 
 	 * @param component Konekti component to build  
@@ -674,20 +676,18 @@ class RootClient extends Client{
 	 */
 	constructor(){ 
 		super({'parent':'','plugin':'none','id':'body', 'children':[]})
-		var tout
-		function check(){
-			var c = Konekti.vc()
-			if(c!==undefined && c!==null){
-				clearTimeout(tout)
+		var c = Konekti.vc()
+		Konekti.check( 
+			function (){ return c!==undefined && c!==null; },
+			function (){
 				c.style.position = 'absolute'
 				c.style.height = '100%'
 				c.style.width = '100%'
 				c.style.padding = '0px'
 				c.style.margin = '0px'
 				c.style.border = '0px'
-			}else tout = setTimeout(check,Konekti.TIMER)
-		}
-		check()
+			}
+		)
 	}
 }
 
