@@ -142,16 +142,16 @@ class Split extends Client{
 			if(type!=x.ctype || left == 0) left = Math.round(x.start*(width-8)/100)
 			x.vc('One').style.width = left + 'px'
 			x.vc('Bar').style.width = '8px'
+			x.vc('Bar').style.cursor = 'col-resize'
 			x.vc('Two').style.width = (width-8-left) + 'px'
 			for(var i=0; i<3; i++)	x.children[i].vc().style.height = height + 'px'
-			x.vc('Bar').style.cursor = 'col-resize'
 		}else{
 			var top = x.children[1].vc().clientHeight || 0
 			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
 			x.vc('One').style.height = top + 'px'
-			x.vc('Two').style.height = '8px'
-			x.vc('Bar').style.height = (height-8-top) + 'px'
+			x.vc('Bar').style.height = '8px'
 			x.vc('Bar').style.cursor = 'row-resize'
+			x.vc('Two').style.height = (height-8-top) + 'px'
 			for(var i=0; i<3; i++)	x.children[i].vc().style.width = width + 'px'
 		}
 		if(height!=0 && width!=0) x.ctype = type
