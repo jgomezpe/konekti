@@ -141,7 +141,7 @@ class Split extends Client{
 			x.vc('Two').style.width = (width-8-left) + 'px'
 			for(var i=0; i<3; i++)	x.children[i].vc().style.height = height + 'px'
 		}else{
-			var top = x.children[1].vc().clientHeight || 0
+			var top = x.vc('One').clientHeight || 0
 			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
 			x.vc('One').style.height = top + 'px'
 			x.vc('Bar').style.height = '8px'
