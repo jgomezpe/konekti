@@ -99,17 +99,19 @@ class Split extends Client{
 			this.ctype = type
 			var x = e.pageX-r.left-window.scrollX
 			var y = e.pageY-r.top-window.scrollY
+			console.log(r)
+			console.log(x+','+y)
 			if(type=='col'){
-				if(x>4 && x<r.width-4){
+				if(x>8 && x<r.width-8){
 					this.vc('One').style.width = (x-4) + 'px'
-					this.vc('Two').style.width = (r.width-4-x) + 'px'
+					this.vc('Two').style.width = (r.width-8-x) + 'px'
 					for(var i=0; i<3; i++)	this.children[i].vc().style.height = r.height + 'px'	
 					this.vc('Bar').style.cursor = 'col-resize'
 				}
 			}else{
-				if(y>4 && y<r.height-4){
+				if(y>8 && y<r.height-8){
 					this.vc('One').style.height = (y-4) + 'px'
-					this.vc('Two').style.height = (r.height-4-y) + 'px'
+					this.vc('Two').style.height = (r.height-8-y) + 'px'
 					for(var i=0; i<3; i++)	this.children[i].vc().style.width = r.width + 'px'
 					this.vc('Bar').style.cursor = 'row-resize'
 				}
