@@ -57,7 +57,7 @@ class Split extends Client{
 		var c = x.vc('Bar')
 		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
 		c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
-		//x.vc('Over').addEventListener("mouseleave", function(e){ x.dragend(e);} )
+		window.addEventListener("mouseleave", function(e){ x.dragend(e);} )
 		window.addEventListener("mousemove", function(e){ x.dragmove(e); } )
 		window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
 		window.addEventListener("mouseup", function(){ x.dragend(); } )
@@ -120,12 +120,7 @@ class Split extends Client{
 	/**
 	 * Stops the drag of the split bar
 	 */
-	dragend() { 
-		if(this.dragging){
-			this.dragging = false 
-			this.vc('Over').style.display = 'none'
-		}
-	}  
+	dragend() { this.dragging = false }  
 		
 	/**
 	 * Sets the parent's size (adjust each of its children components)

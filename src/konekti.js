@@ -299,7 +299,7 @@ class Client{
 				} 
 				
 				var c = Konekti.client[x.parent]
-				Konekti.check( 
+				Konekti.deamon( 
 					function(){	return (c!== undefined && c!==null) },
 					function(){ c.startResizeObserver(type) }
 				)
@@ -322,7 +322,7 @@ class Client{
 		var x = this
 		x.queue.push(component.id || component.setup[1])
 		Konekti.plugin.setup(component, function(expanded){
-			Konekti.check(function(){ return expanded.id == x.queue[0] }, function(){
+			Konekti.deamon(function(){ return expanded.id == x.queue[0] }, function(){
 				x.children.push(Konekti.build(expanded))
 				x.queue.splice(0,1)
 				if(callback !== undefined) callback(expanded)
@@ -540,7 +540,7 @@ class PlugInManager{
 		var ids = []
 		var tout
 		function check_eval(){
-			Konekti.check(function(){
+			Konekti.deamon(function(){
 				var m=0
 				while(m<ids.length && x[ids[m]]!==undefined) m++
 				return (m==ids.length)
@@ -594,16 +594,16 @@ class KonektiAPI{
 	}
 
 	/**
-	 * An asynchronous while. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
+	 * A Konekti deamon. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
 	 */
-    check( condition, f ){
+    deamon( condition, f ){
 		var tout=null
-		function ch(){
+		function check(){
 			if(tout != null) clearTimeout(tout)
 			if(condition()) f()
-			else tout = setTimeout(ch, Konekti.TIMER)
+			else tout = setTimeout(check, Konekti.TIMER)
 		}
-		ch()
+		check()
 	}
 
 	/**
@@ -677,7 +677,7 @@ class RootClient extends Client{
 	constructor(){ 
 		super({'parent':'','plugin':'none','id':'body', 'children':[]})
 		var c = Konekti.vc()
-		Konekti.check( 
+		Konekti.deamon( 
 			function (){ return c!==undefined && c!==null; },
 			function (){
 				c.style.position = 'absolute'

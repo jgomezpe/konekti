@@ -33,7 +33,7 @@ class AcePlugIn extends PlugIn{
 	 * @param code Lexical configuration for the ace editor  
 	 */
 	setup(parent, id, initial, mode, theme, code='', config={}){
-		var c = super.setup(parent, id, "<div id='"+id+"Ace' style='width:100%;height:100%;'></div>", config)
+		var c = super.setup(parent, id, "<div id='"+id+"Ace'></div>", config)
 		c.initial = initial
 		c.mode = mode
 		c.theme = theme
@@ -249,7 +249,17 @@ class Ace extends Editor{
 		}else if( x.mode !== "" ) x.edit.session.setMode("ace/mode/"+x.mode)
 		x.edit.$blockScrolling = Infinity
 
-		x.setText(x.initial)		
+		x.setText(x.initial)
+		
+		var ro = new ResizeObserver(entry => {
+			entry = entry[0]
+			var w = x.vc().clientWidth
+			var h = x.vc().clientHeight
+			x.vc('Ace').style.width = w + 'px'
+			x.vc('Ace').style.height = h + 'px'
+		});
+		// Resize observer
+		ro.observe(x.vc())
 	}
 
 	/**
@@ -258,11 +268,7 @@ class Ace extends Editor{
 	constructor(config){ 
 		super(config)
 		var x = this
-		function check(){
-			if(ace_loaded) x.init_edit()
-			else setTimeout(check,Konekti.TIMER)
-		}
-		check()
+		Konekti.deamon(function (){ return ace_loaded }, function (){ x.init_edit() })
 	}
 
 	/**
@@ -277,13 +283,10 @@ class Ace extends Editor{
 	 */
 	setText(txt){
 		var x = this
-		function checked(){
-			if( x.edit !== undefined ){
-				x.edit.focus()
-				x.edit.setValue(txt, 1) 
-			}else setTimeout( checked, Konekti.TIMER )
-		}
-		checked()
+		Konekti.deamon(function (){ return (x.edit !== undefined) }, function(){
+			x.edit.focus()
+			x.edit.setValue(txt, 1)
+		})
 	}
 
 	/**
