@@ -251,15 +251,7 @@ class Ace extends Editor{
 
 		x.setText(x.initial)
 		
-		var ro = new ResizeObserver(entry => {
-			entry = entry[0]
-			var w = x.vc().clientWidth
-			var h = x.vc().clientHeight
-			x.vc('Ace').style.width = w + 'px'
-			x.vc('Ace').style.height = h + 'px'
-		});
-		// Resize observer
-		ro.observe(x.vc())
+		window.dispatchEvent(new Event('resize'))
 	}
 
 	/**

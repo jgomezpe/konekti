@@ -63,18 +63,11 @@ class Split extends Client{
 		c.addEventListener("touchmove", function(e){ x.dragmove(e); } )
 		c.addEventListener("mouseup", function(){ x.dragend(); } )
 		c.addEventListener("touchend", function(){ x.dragend(); } )
-		var ro = new ResizeObserver(entry => {
-			entry = entry[0]
-			var w = x.vc().clientWidth
-			var h = x.vc().clientHeight
-
-			console.log('resize..')
-			console.log(w+','+h)
-			x.resize( w, h )
-		});
+		var ro = new ResizeObserver(entry => { x.resize() });
 		// Resize observer
 		ro.observe(this.vc())
-		x.resize(this.vc().clientWidth, this.vc().clientHeight)
+
+		window.dispatchEvent(new Event('resize'))
 	}
 
 	/**
@@ -105,8 +98,6 @@ class Split extends Client{
 			this.ctype = type
 			var x = e.pageX-r.left-window.scrollX
 			var y = e.pageY-r.top-window.scrollY
-			console.log(r)
-			console.log(x+','+y)
 			if(type=='col'){
 				if(x>8 && x<r.width-8){
 					this.vc('One').style.width = (x-4) + 'px'
@@ -135,13 +126,13 @@ class Split extends Client{
 		
 	/**
 	 * Sets the parent's size (adjust each of its children components)
-	 * @param width Parent's width
-	 * @param height Parent's height
 	 */
-	resize( width, height ){
+	resize(){
 		var x = this
 		var c = this.vc()
 		var r = c.getBoundingClientRect()
+		var width = r.width
+		var height = r.height
 		var type = (width<Konekti.MEDIUMSIZE)? 'row': x.type
 		if(type=='col'){
 			var left = x.vc('One').clientWidth || 0
@@ -150,7 +141,7 @@ class Split extends Client{
 			x.vc('Bar').style.width = '8px'
 			x.vc('Bar').style.cursor = 'col-resize'
 			x.vc('Two').style.width = (width-8-left) + 'px'
-			for(var i=0; i<4; i++)	x.children[i].vc().style.height = height + 'px'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.height = '100%'
 		}else{
 			var top = x.vc('One').clientHeight || 0
 			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
@@ -158,7 +149,7 @@ class Split extends Client{
 			x.vc('Bar').style.height = '8px'
 			x.vc('Bar').style.cursor = 'row-resize'
 			x.vc('Two').style.height = (height-8-top) + 'px'
-			for(var i=0; i<4; i++)	x.children[i].vc().style.width = width + 'px'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.width = '100%'
 		}
 		if(height!=0 && width!=0) x.ctype = type
 	} 
