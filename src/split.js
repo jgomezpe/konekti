@@ -81,9 +81,11 @@ class Split extends Client{
 	dragstart(e) {
 		e.preventDefault()
 		this.dragging = true
+		var c = this.vc()
+		var r = c.getBoundingClientRect()
 		var over = this.vc('Over')
-		over.style.width = window.innerWidth
-		over.style.height = window.innerHeight
+		over.style.width = r.width
+		over.style.height = r.height
 		over.style.display = 'block'
 	}
     
