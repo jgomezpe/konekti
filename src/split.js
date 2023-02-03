@@ -21,14 +21,14 @@ class SplitPlugin extends PlugIn{
 
 		var done = {'plugin':'raw', 'setup':[id+'One', one, {'style':'float:left;'}]}
 
-		//var over = {'plugin':'raw', 'setup':[id+'Over', '',
-		//			{"style":'left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'}]}
+		var over = {'plugin':'raw', 'setup':[id+'Over', '',
+			 		{"style":'left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'}]}
 		var bar = {'plugin':'raw', 'setup':[id+'Bar', '', {"style":"cursor:"+type+"-resize;float:left;", "class":"w3-sand"}]}
 
 		var dtwo = {'plugin':'raw', 'setup':[id+'Two', two, {'style':'float:left;'}]}
-		
-//		var c = super.setup(parent, id,  [over, done, bar, dtwo], config)
-		var c = super.setup(parent, id,  [done, bar, dtwo], config)
+	
+		var c = super.setup(parent, id,  [over, done, bar, dtwo], config)
+
 		c.type=type
 		c.start=percentage
 		return c
@@ -57,11 +57,12 @@ class Split extends Client{
 		var c = x.vc('Bar')
 		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
 		c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
-		window.addEventListener("mouseleave", function(e){ x.dragend(e);} )
-		window.addEventListener("mousemove", function(e){ x.dragmove(e); } )
-		window.addEventListener("touchmove", function(e){ x.dragmove(e); } )
-		window.addEventListener("mouseup", function(){ x.dragend(); } )
-		window.addEventListener("touchend", function(){ x.dragend(); } )
+		c = x.vc('Over')
+		c.addEventListener("mouseleave", function(e){ x.dragend(e);} )
+		c.addEventListener("mousemove", function(e){ x.dragmove(e); } )
+		c.addEventListener("touchmove", function(e){ x.dragmove(e); } )
+		c.addEventListener("mouseup", function(){ x.dragend(); } )
+		c.addEventListener("touchend", function(){ x.dragend(); } )
 		var ro = new ResizeObserver(entry => {
 			entry = entry[0]
 			var w = x.vc().clientWidth
@@ -80,10 +81,10 @@ class Split extends Client{
 	dragstart(e) {
 		e.preventDefault()
 		this.dragging = true
-		/*var over = this.vc('Over')
+		var over = this.vc('Over')
 		over.style.width = window.innerWidth
 		over.style.height = window.innerHeight
-		over.style.display = 'block'*/
+		over.style.display = 'block'
 	}
     
 	/**
@@ -105,14 +106,14 @@ class Split extends Client{
 				if(x>8 && x<r.width-8){
 					this.vc('One').style.width = (x-4) + 'px'
 					this.vc('Two').style.width = (r.width-8-x) + 'px'
-					for(var i=0; i<3; i++)	this.children[i].vc().style.height = r.height + 'px'	
+					for(var i=0; i<4; i++)	this.children[i].vc().style.height = r.height + 'px'	
 					this.vc('Bar').style.cursor = 'col-resize'
 				}
 			}else{
 				if(y>8 && y<r.height-8){
 					this.vc('One').style.height = (y-4) + 'px'
 					this.vc('Two').style.height = (r.height-8-y) + 'px'
-					for(var i=0; i<3; i++)	this.children[i].vc().style.width = r.width + 'px'
+					for(var i=0; i<4; i++)	this.children[i].vc().style.width = r.width + 'px'
 					this.vc('Bar').style.cursor = 'row-resize'
 				}
 			}
@@ -122,7 +123,10 @@ class Split extends Client{
 	/**
 	 * Stops the drag of the split bar
 	 */
-	dragend() { this.dragging = false }  
+	dragend() {
+		this.dragging = false 
+		this.vc('Over').style.display = 'none'
+	}  
 		
 	/**
 	 * Sets the parent's size (adjust each of its children components)
@@ -141,7 +145,7 @@ class Split extends Client{
 			x.vc('Bar').style.width = '8px'
 			x.vc('Bar').style.cursor = 'col-resize'
 			x.vc('Two').style.width = (width-8-left) + 'px'
-			for(var i=0; i<3; i++)	x.children[i].vc().style.height = height + 'px'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.height = height + 'px'
 		}else{
 			var top = x.vc('One').clientHeight || 0
 			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
@@ -149,7 +153,7 @@ class Split extends Client{
 			x.vc('Bar').style.height = '8px'
 			x.vc('Bar').style.cursor = 'row-resize'
 			x.vc('Two').style.height = (height-8-top) + 'px'
-			for(var i=0; i<3; i++)	x.children[i].vc().style.width = width + 'px'
+			for(var i=0; i<4; i++)	x.children[i].vc().style.width = width + 'px'
 		}
 		if(height!=0 && width!=0) x.ctype = type
 	} 
