@@ -287,15 +287,19 @@ class Client{
 		Konekti.client[x.id] = x
 		if(x.parent!=''){
 			var p = Konekti.vc(x.parent)
-			var cl = x.config.class
-			if(cl!==undefined && cl!==null && cl.includes('konektifill')){
+			var cl = x.config.style
+			if(cl!==undefined && cl!==null && cl.includes('fit')){
 				var type = 'height'
-				if(cl.includes('konektifillheight')){
-					x.config.class = cl.replace('konektifillheight', 'konektifillrest')
+				if(cl.includes('height:fit;')){
+					x.config.style = cl.replace('height:fit;', '')
+					x.config.class = (x.config.class || '') + ' konektifillrest '
 					type = 'height'
 				}else{
-					x.config.class = cl.replace('konektifillwidth', 'konektifillrest')
-					type = 'width'
+					if(cl.includes('width:fit;')){
+						x.config.style = cl.replace('width:fit;', '')
+						x.config.class = (x.config.class || '') + ' konektifillrest '
+						type = 'width'
+					}	
 				} 
 				
 				var c = Konekti.client[x.parent]
@@ -377,8 +381,9 @@ class Client{
 			x.ro = new ResizeObserver(entry => {
 				entry = entry[0]
 				var y = x.vc()
-				var h = y.clientHeight
-				var w = y.clientWidth
+				var r = y.getBoundingClientRect()
+				var h = r.height
+				var w = r.width
 				var c = 0
 				var v = 0
 				for (const child of y.children) {
@@ -392,7 +397,7 @@ class Client{
 					else v = (w-v)/c
 					for (const child of y.children) {
 						if(child.className.includes('konektifillrest'))
-							if(type='height') child.style.height = v+'px'
+							if(type=='height') child.style.height = v+'px'
 							else child.style.width = v+'px'
 					}
 				}

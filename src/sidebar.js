@@ -1,7 +1,6 @@
 Konekti.dom.css(
 	`.w4-main{
 		height:100%;
-		width:calc(100%-200px);
 		margin-left:200px;
 		transition:margin-left .4s;
 		position:fixed!important;
@@ -30,7 +29,6 @@ Konekti.dom.css(
 		.w4-main{
 			margin-left:200px!important;
 			margin-right:0px!important;
-			width:calc(100%-200px);
 		}
 		
 		.w4-sidebtn{
@@ -54,7 +52,6 @@ Konekti.dom.css(
 		.w4-main{
 			margin-left:20px!important;
 			margin-right:0px!important;
-			width:calc(100%-20px);
 		}
 	}`
 )
@@ -78,7 +75,7 @@ class SideBarPlugin extends PlugIn{
 			side
 		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
 		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
-		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main ', 'style':'margin-left:200px;height:100%;'}]}
+		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main ', 'style':'margin-left:200px;height:100%;width:fit;'}]}
 		return super.setup(parent, id, [expand,side,main], config)
 	}
 	
