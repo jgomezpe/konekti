@@ -302,11 +302,7 @@ class Client{
 					}	
 				} 
 				
-				var c = Konekti.client[x.parent]
-				Konekti.deamon( 
-					function(){	return (c!== undefined && c!==null) },
-					function(){ c.startResizeObserver(type) }
-				)
+				Konekti.client[x.parent].startResizeObserver(type)
 
 			}
 			p.appendChild(Konekti.dom.html(this.html()))
@@ -682,17 +678,12 @@ class RootClient extends Client{
 	constructor(){ 
 		super({'parent':'','plugin':'none','id':'body', 'children':[]})
 		var c = Konekti.vc()
-		Konekti.deamon( 
-			function (){ return c!==undefined && c!==null; },
-			function (){
-				c.style.position = 'absolute'
-				c.style.height = '100%'
-				c.style.width = '100%'
-				c.style.padding = '0px'
-				c.style.margin = '0px'
-				c.style.border = '0px'
-			}
-		)
+		c.style.position = 'absolute'
+		c.style.height = '100%'
+		c.style.width = '100%'
+		c.style.padding = '0px'
+		c.style.margin = '0px'
+		c.style.border = '0px'
 	}
 }
 
