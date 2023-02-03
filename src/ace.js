@@ -261,7 +261,7 @@ class Ace extends Editor{
 		// Resize observer
 		ro.observe(x.vc())
 
-		window.dispatchEvent(new Event('resize'))
+		setTimeout( function(){ window.dispatchEvent(new Event('resize')) }, Konekti.TIMER )
 	}
 
 	/**
