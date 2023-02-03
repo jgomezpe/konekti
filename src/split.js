@@ -67,6 +67,9 @@ class Split extends Client{
 			entry = entry[0]
 			var w = x.vc().clientWidth
 			var h = x.vc().clientHeight
+
+			console.log('resize..')
+			console.log(w+','+h)
 			x.resize( w, h )
 		});
 		// Resize observer
