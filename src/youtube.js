@@ -55,7 +55,7 @@ class Youtube extends MediaClient{
 	 */
 	load(){
 		var x = this
-		function onPlayerReady(event){}
+		function onPlayerReady(event){  window.dispatchEvent(new Event('resize'))  }
 
 		function onPlayerStateChange(event){
 			var comp = Konekti.vc(event.target.playerInfo.videoData.video_id)
