@@ -14,8 +14,8 @@ class TocPlugin extends PlugIn{
 			var cstyle = c[3] || {}
 			cstyle.class = 'w3-block w3-left-align ' + (cstyle.class||'')
 			var xchildren = c[4] || []
-			var call_action = c[6] || true
-			var showChildren = c[5] || false
+			var showChildren = (c[5]!==undefined && c[5] !=null && c[5])
+			var call_action = (c[6]==undefined || c[6])
 			var nc = (xchildren.length>0)?this.children_setup(xchildren, style, onclick):null
 			if(nc!==null) nc = {'plugin':'raw', 'setup':[id+'Group', nc, {'style':'margin-left:8px;width:100%'}]}
 			nchildren[i] = {'plugin':'accordion', 'setup':[id, icon, caption, nc, showChildren,
