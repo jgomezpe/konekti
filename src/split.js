@@ -151,7 +151,7 @@ class Split extends Client{
 			x.vc('Two').style.height = (height-8-top) + 'px'
 			for(var i=0; i<4; i++)	x.children[i].vc().style.width = '100%'
 		}
-		if(height!=0 && width!=0) x.ctype = type
+		x.ctype = type
 	} 
 }
 
