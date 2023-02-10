@@ -22,7 +22,7 @@ class SplitPlugin extends PlugIn{
 		var done = {'plugin':'raw', 'setup':[id+'One', one, {'style':'float:left;'}]}
 
 		var over = {'plugin':'raw', 'setup':[id+'Over', '',
-			 		{"style":'left:0px; top:0px; height:100%;width:100%;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'}]}
+			 		{"style":'left:0px; top:0px;background-color:transparent;position:fixed!important;z-index:40;overflow:auto;display:none'}]}
 		var bar = {'plugin':'raw', 'setup':[id+'Bar', '', {"style":"cursor:"+type+"-resize;float:left;", "class":"w3-sand"}]}
 
 		var dtwo = {'plugin':'raw', 'setup':[id+'Two', two, {'style':'float:left;'}]}
@@ -129,6 +129,8 @@ class Split extends Client{
 	 */
 	resize(){
 		var x = this
+		x.vc('Over').width = window.innerWidth
+		x.vc('Over').height = window.innerHeight		
 		var c = this.vc()
 		var r = c.getBoundingClientRect()
 		var width = r.width
