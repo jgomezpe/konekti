@@ -102,14 +102,14 @@ class Split extends Client{
 				if(x>8 && x<r.width-8){
 					this.vc('One').style.width = (x-4) + 'px'
 					this.vc('Two').style.width = (r.width-8-x) + 'px'
-					for(var i=0; i<4; i++)	this.children[i].vc().style.height = r.height + 'px'	
+					for(var i=1; i<4; i++)	this.children[i].vc().style.height = r.height + 'px'	
 					this.vc('Bar').style.cursor = 'col-resize'
 				}
 			}else{
 				if(y>8 && y<r.height-8){
 					this.vc('One').style.height = (y-4) + 'px'
 					this.vc('Two').style.height = (r.height-8-y) + 'px'
-					for(var i=0; i<4; i++)	this.children[i].vc().style.width = r.width + 'px'
+					for(var i=1; i<4; i++)	this.children[i].vc().style.width = r.width + 'px'
 					this.vc('Bar').style.cursor = 'row-resize'
 				}
 			}
@@ -143,7 +143,7 @@ class Split extends Client{
 			x.vc('Bar').style.width = '8px'
 			x.vc('Bar').style.cursor = 'col-resize'
 			x.vc('Two').style.width = (width-8-left) + 'px'
-			for(var i=0; i<4; i++)	x.children[i].vc().style.height = '100%'
+			for(var i=1; i<4; i++)	x.children[i].vc().style.height = '100%'
 		}else{
 			var top = x.vc('One').clientHeight || 0
 			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
@@ -151,7 +151,7 @@ class Split extends Client{
 			x.vc('Bar').style.height = '8px'
 			x.vc('Bar').style.cursor = 'row-resize'
 			x.vc('Two').style.height = (height-8-top) + 'px'
-			for(var i=0; i<4; i++)	x.children[i].vc().style.width = '100%'
+			for(var i=1; i<4; i++)	x.children[i].vc().style.width = '100%'
 		}
 		x.ctype = type
 	} 
