@@ -80,8 +80,8 @@ class Split extends Client{
 		var c = this.vc()
 		var r = c.getBoundingClientRect()
 		var over = this.vc('Over')
-		over.width = window.innerWidth
-		over.height = window.innerHeight		
+		over.style.width = window.innerWidth + 'px'
+		over.style.height = window.innerHeight + 'px'		
 		over.style.display = 'block'
 	}
     
@@ -129,8 +129,8 @@ class Split extends Client{
 	 */
 	resize(){
 		var x = this
-		x.vc('Over').width = window.innerWidth
-		x.vc('Over').height = window.innerHeight		
+		x.vc('Over').style.width = window.innerWidth + 'px'
+		x.vc('Over').style.height = window.innerHeight + 'px'
 		var c = this.vc()
 		var r = c.getBoundingClientRect()
 		var width = r.width
