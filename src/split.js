@@ -54,6 +54,7 @@ class Split extends Client{
 		super(config) 
 		var x = this
 		x.ctype = 'none'
+		x.changed = false
 		var c = x.vc('Bar')
 		c.addEventListener("mousedown", function(e){ x.dragstart(e);} )
 		c.addEventListener("touchstart", function(e){ x.dragstart(e); } )
@@ -91,7 +92,8 @@ class Split extends Client{
 	 */
 	dragmove(e) {
 		var id = this.id
-		if (this.dragging){	
+		if (this.dragging){
+			this.changed = true
 			var c = this.vc()
 			var r = c.getBoundingClientRect()
 			var type = (r.width<Konekti.MEDIUMSIZE)? 'row': this.type
@@ -138,7 +140,7 @@ class Split extends Client{
 		var type = (width<Konekti.MEDIUMSIZE)? 'row': x.type
 		if(type=='col'){
 			var left = x.vc('One').clientWidth || 0
-			if(type!=x.ctype || left == 0) left = Math.round(x.start*(width-8)/100)
+			if(type!=x.ctype || !x.changed) left = Math.round(x.start*(width-8)/100)
 			x.vc('One').style.width = left + 'px'
 			x.vc('Bar').style.width = '8px'
 			x.vc('Bar').style.cursor = 'col-resize'
@@ -146,7 +148,7 @@ class Split extends Client{
 			for(var i=1; i<4; i++)	x.children[i].vc().style.height = '100%'
 		}else{
 			var top = x.vc('One').clientHeight || 0
-			if(type!=x.ctype || top == 0) top = Math.round(x.start*(height-8)/100)
+			if(type!=x.ctype || !x.changed) top = Math.round(x.start*(height-8)/100)
 			x.vc('One').style.height = top + 'px'
 			x.vc('Bar').style.height = '8px'
 			x.vc('Bar').style.cursor = 'row-resize'
