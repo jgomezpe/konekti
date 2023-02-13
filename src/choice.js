@@ -47,7 +47,9 @@ class ChoiceClient extends Client{
      * @param {*} id Id of the selected option
      */
     select(id){ 
-    	var x = this
+        var s = id.split('-')
+        s = parseInt(s[s.length-1])
+        var x = this
     	if( x.type=='single' ){
             var selId = x.id+'Btn-'+x.selected[0]
         	var c = Konekti.vc(selId)
@@ -55,15 +57,12 @@ class ChoiceClient extends Client{
             	c.className = c.className.replace(x.selcolor, x.unselcolor)
                 Konekti.client[selId].update('fa fa-square-o', '')
             }    
-            var s = id.split('-')
-            x.selected[0] = s[s.length-1]
+            x.selected[0] = s
             c = Konekti.vc(id)
         	c.className = c.className.replace(x.unselcolor, x.selcolor)
             Konekti.client[id].update('fa fa-check-square-o', '')
         }else{
-        	var s = id.split('-')
-            s = s[s.length-1]
-            var i=0
+        	var i=0
             while(i<x.selected.length && x.selected[i]!=s) i++
            	var c = Konekti.vc(id)
             if(i<x.selected.length){
