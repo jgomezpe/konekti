@@ -16,7 +16,7 @@ class ChoicePlugIn extends PlugIn{
         var unselcolor = config.unselcolor || 'w3-teal'
         var opts = []
         for( var i=0; i<options.length; i++ ){
-        	var btn = {'plugin':'btn', 'setup':[id+'Btn-'+i, 'fa fa-square-o', '', {'client':id, 'method':'select'}, {'class':unselcolor +' w3-block'}]}
+        	var btn = {'plugin':'btn', 'setup':[id+'Btn-'+i, 'fa fa-square-o', String.fromCharCode(65+i), {'client':id, 'method':'select'}, {'class':unselcolor +' w3-block'}]}
         	opts[i] = {'plugin':'card', 'setup':[id+'Option-'+i, [options[i],btn]]}
         }
     	var grid = {'plugin':'grid', 'setup':[id+'Options', opts, cols, 300, 5000]}
@@ -24,8 +24,8 @@ class ChoicePlugIn extends PlugIn{
         c.type = type
         c.selcolor = selcolor
         c.unselcolor = unselcolor
-        if(type=='single') c.selected = [null]
-        else c.selected = []
+        c.selected = []
+        c.total = options.length
         return c
     } 
     
@@ -36,7 +36,7 @@ class ChoicePlugIn extends PlugIn{
 new ChoicePlugIn()
 
 /** A choice manager */
-class ChoiceClient extends Client{
+class ChoiceClient extends Editor{
 	/**
 	 * Creates a choice configuration object
 	 */
@@ -51,31 +51,71 @@ class ChoiceClient extends Client{
         s = parseInt(s[s.length-1])
         var x = this
     	if( x.type=='single' ){
-            var selId = x.id+'Btn-'+x.selected[0]
-        	var c = Konekti.vc(selId)
-        	if(c!==null){
-            	c.className = c.className.replace(x.selcolor, x.unselcolor)
-                Konekti.client[selId].update('fa fa-square-o', '')
+            if(x.selected.length > 0){
+                var selId = x.id+'Btn-'+x.selected[0]
+                var c = Konekti.vc(selId)
+                c.className = c.className.replace(x.selcolor, x.unselcolor)
+                Konekti.client[selId].update('fa fa-square-o', String.fromCharCode(65+x.selected[0]))
             }    
             x.selected[0] = s
             c = Konekti.vc(id)
         	c.className = c.className.replace(x.unselcolor, x.selcolor)
-            Konekti.client[id].update('fa fa-check-square-o', '')
+            Konekti.client[id].update('fa fa-check-square-o', String.fromCharCode(65+x.selected[0]))
         }else{
         	var i=0
             while(i<x.selected.length && x.selected[i]!=s) i++
            	var c = Konekti.vc(id)
             if(i<x.selected.length){
         		c.className = c.className.replace(x.selcolor, x.unselcolor)
-                Konekti.client[id].update('fa fa-square-o', '')
+                Konekti.client[id].update('fa fa-square-o', String.fromCharCode(65+x.selected[i]))
                 x.selected.splice(i,1)
             }else{
         		c.className = c.className.replace(x.unselcolor, x.selcolor)
-                Konekti.client[id].update('fa fa-check-square-o', '')
+                Konekti.client[id].update('fa fa-check-square-o', String.fromCharCode(65+s))
                 x.selected.push(s)
             }
         }
    	}
+
+	/**
+	 * Sets current selected options
+     * @param txt Current selected options
+	 */
+    setText(txt){
+        txt = txt.substring(1,txt.length-1)
+        var s = txt.split(',')
+        for( var i=0; i<s.length; i++) s[i] = parseInt(s[i])
+        var x = this
+        if(x.type=='single'&& s.length>1) s = [s[0]]
+        x.selected = s
+        for( var i=0; i<x.total; i++ ){
+            var selId = x.id+'Btn-'+i
+            var c = Konekti.vc(selId)
+            c.className = c.className.replace(x.selcolor, x.unselcolor)
+            Konekti.client[selId].update('fa fa-square-o', String.fromCharCode(65+i))
+        }
+        for( var i=0; i<x.selected.length; i++ ){
+            var selId = x.id+'Btn-'+x.selected[i]
+            var c = Konekti.vc(selId)
+            c.className = c.className.replace(x.unselcolor, x.selcolor)
+            Konekti.client[selId].update('fa fa-check-square-o', String.fromCharCode(65+x.selected[i]))
+        }
+    }
+
+	/**
+	 * Gets current selected options
+	 * @return Current selected options
+	 */
+    getText(){
+        var txt = '['
+        var s = ''
+        for( var i=0; i<this.selected.length; i++ ){
+            txt += s + this.selected[i]
+            s = ','
+        }
+        txt += ']'
+        return txt
+    }
 }
 
 /**
