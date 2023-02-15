@@ -73,9 +73,9 @@ class InputList extends Client{
 }
 
 /**
- * Associates/adds a header
+ * Associates/adds an inputlist
  * @method
- * btn
+ * inputlist
  * @param parent Parent component
  * @param id Id of the inputlist
  * @param options List of options

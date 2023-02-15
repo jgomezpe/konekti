@@ -270,7 +270,7 @@ class Ace extends Editor{
 	constructor(config){ 
 		super(config)
 		var x = this
-		Konekti.deamon(function (){ return ace_loaded }, function (){ x.init_edit() })
+		Konekti.daemon(function (){ return ace_loaded }, function (){ x.init_edit() })
 	}
 
 	/**
@@ -285,7 +285,7 @@ class Ace extends Editor{
 	 */
 	setText(txt){
 		var x = this
-		Konekti.deamon(function (){ return (x.edit !== undefined) }, function(){
+		Konekti.daemon(function (){ return (x.edit !== undefined) }, function(){
 			x.edit.focus()
 			x.edit.setValue(txt, 1)
 		})

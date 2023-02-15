@@ -53,8 +53,9 @@ class Latex extends Editor{
 		if( tex === undefined || tex===null) tex=''
 		var x = this
 		x.initial = tex
-		function set(){
-			if(window.MathJax !== undefined){
+		Konekti.daemon(
+			function (){ return (window.MathJax !== undefined) },
+			function (){	
 				var output = x.vc()
 				output.innerHTML = tex.trim()
 				window.MathJax.texReset()
@@ -63,9 +64,8 @@ class Latex extends Editor{
 					output.innerHTML = ''
 					output.appendChild(document.createTextNode(err.message))
 				}).then(function(){});
-			}else setTimeout(set, 100)
-		}
-		set()	
+			}
+		)	
 	}
 
 	/**

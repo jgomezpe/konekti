@@ -39,15 +39,12 @@ class Youtube extends MediaClient{
 	constructor(config){ 
 		super(config)	
 		var x = this
-		var tout
-		function check(){
-			if(youtube_ready){
-				clearTimeout(tout)
+		Konekti.daemon( function(){ return youtube_ready }, 
+			function(){
 				x.load()
 				x.vcready = true
-			}else tout = setTimeout(check,Konekti.TIMER)
-		}
-		check()
+			}
+		)
 	}
 
 	/**

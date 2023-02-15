@@ -302,7 +302,7 @@ class Client{
 					}	
 				} 
 				
-				Konekti.deamon( 
+				Konekti.daemon( 
 					function(){	return (Konekti.client[x.parent]!== undefined && Konekti.client[x.parent]!==null) },
 					function(){ Konekti.client[x.parent].startResizeObserver(type) }
 				)
@@ -325,7 +325,7 @@ class Client{
 		var x = this
 		x.queue.push(component.id || component.setup[1])
 		Konekti.plugin.setup(component, function(expanded){
-			Konekti.deamon(function(){ return expanded.id == x.queue[0] }, function(){
+			Konekti.daemon(function(){ return expanded.id == x.queue[0] }, function(){
 				x.children.push(Konekti.build(expanded))
 				x.queue.splice(0,1)
 				if(callback !== undefined) callback(expanded)
@@ -544,7 +544,7 @@ class PlugInManager{
 		var ids = []
 		var tout
 		function check_eval(){
-			Konekti.deamon(function(){
+			Konekti.daemon(function(){
 				var m=0
 				while(m<ids.length && x[ids[m]]!==undefined) m++
 				return (m==ids.length)
@@ -598,9 +598,9 @@ class KonektiAPI{
 	}
 
 	/**
-	 * A Konekti deamon. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
+	 * A Konekti daemon. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
 	 */
-    deamon( condition, f ){
+    daemon( condition, f ){
 		var tout=null
 		function check(){
 			if(tout != null) clearTimeout(tout)
@@ -680,7 +680,7 @@ class RootClient extends Client{
 	 */
 	constructor(){ 
 		super({'parent':'','plugin':'none','id':'body', 'children':[]})
-		Konekti.deamon( 
+		Konekti.daemon( 
 			function (){ return Konekti.vc()!==undefined && Konekti.vc()!==null; },
 			function (){
 				var c = Konekti.vc()
