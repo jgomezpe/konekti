@@ -33,7 +33,9 @@ class AcePlugIn extends PlugIn{
 	 * @param code Lexical configuration for the ace editor  
 	 */
 	setup(parent, id, initial, mode, theme, code='', config={}){
-		var c = super.setup(parent, id, "<div id='"+id+"Ace'></div>", config)
+		if(config.style === undefined || !config.style.includes('font-size')) config.style = (config.style || '') + 'font-size:16px;'
+		console.log(config)
+		var c = super.setup(parent, id, initial, config)
 		c.initial = initial
 		c.mode = mode
 		c.theme = theme
@@ -207,70 +209,55 @@ let aceplugin = new AcePlugIn()
 
 /** An Ace Editor */
 class Ace extends Editor{
-	init_edit(){
-		var x = this
-		var gui = x.vc('Ace')
-		x.edit = ace.edit(x.id+'Ace');
-		x.sui = gui.getElementsByClassName('ace_scroller')[0]
-		x.sbui = gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
-		x.edit.setFontSize("16px")
-		x.edit.setShowPrintMargin(false)
-
-		x.edit.session.on("changeAnnotation", function () {
-			var annot = x.edit.session.getAnnotations();
-			for( var i=0; i<x.listener.length; i++ ){
-				var l = Konekti.client[x.listener[i]]
-				if( l != null && l.annotation != null ) l.annotation(x.id, annot)
-			}             
-		});	
-
-		gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
-			for( var i=0; i<x.listener.length; i++ ){
-				var l = Konekti.client[x.listener[i]]
-				if( l != null && l.onkeyup!=null ) l.onkeyup(x.id, event)
-			}
-		})
-					
-		x.edit.session.on('change', function(){ 
-			for( var i=0; i<x.listener.length; i++ ){
-				var l = Konekti.client[x.listener[i]]
-				if( l != null && l.onchange!=null ) l.onchange(x.id)
-			}
-		})
-
-		if( x.theme !== "" ) x.edit.setTheme("ace/theme/"+x.theme)
-
-		if( x.code !== '' ){
-			x.code.cid = x.id
-			x.code.mode = x.mode
-			aceplugin.register(x.code, x.edit)
-		}else if( x.mode !== "" ) x.edit.session.setMode("ace/mode/"+x.mode)
-		x.edit.$blockScrolling = Infinity
-
-		
-		var ro = new ResizeObserver(entry => {
-			entry = entry[0]
-			var w = x.vc().clientWidth
-			var h = x.vc().clientHeight
-			x.vc('Ace').style.width = w + 'px'
-			x.vc('Ace').style.height = h + 'px'
-		});
-		// Resize observer
-		ro.observe(x.vc())
-
-		setTimeout( function(){ window.dispatchEvent(new Event('resize')) }, Konekti.TIMER )
-
-		x.setText(x.initial)
-
-	}
-
 	/**
 	 * Creates an Ace configuration object
 	 */
 	constructor(config){ 
 		super(config)
 		var x = this
-		Konekti.daemon(function (){ return ace_loaded }, function (){ x.init_edit() })
+
+		Konekti.daemon(
+			function (){ return ace_loaded }, 
+			function (){ 
+				var gui = x.vc()
+				x.edit = ace.edit(x.id);
+				if( x.theme !== "" ) x.edit.setTheme("ace/theme/"+x.theme)
+
+				if( x.code !== '' ){
+					x.code.cid = x.id
+					x.code.mode = x.mode
+					aceplugin.register(x.code, x.edit)
+				}else if( x.mode !== "" ) x.edit.session.setMode("ace/mode/"+x.mode)
+
+				x.sui = gui.getElementsByClassName('ace_scroller')[0]
+				x.sbui = gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
+				x.edit.setShowPrintMargin(false)
+
+				x.edit.session.on("changeAnnotation", function () {
+					var annot = x.edit.session.getAnnotations();
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.annotation != null ) l.annotation(x.id, annot)
+					}             
+				});	
+
+				gui.getElementsByTagName('textarea')[0].addEventListener('keyup', function(event){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.onkeyup!=null ) l.onkeyup(x.id, event)
+					}
+				})
+							
+				x.edit.session.on('change', function(){ 
+					for( var i=0; i<x.listener.length; i++ ){
+						var l = Konekti.client[x.listener[i]]
+						if( l != null && l.onchange!=null ) l.onchange(x.id)
+					}
+				})
+
+				x.edit.$blockScrolling = Infinity
+			}
+		)
 	}
 
 	/**
@@ -349,8 +336,11 @@ class Ace extends Editor{
 	}
 
 	focus(){ 
-		this.edit.focus()
-		this.locateCursorIndex(this.cursorIndex()) 
+		var x = this
+		if(x.edit !== undefined ){
+			x.edit.focus()
+			x.locateCursorIndex(x.cursorIndex()) 
+		}
 	}
 }
 
