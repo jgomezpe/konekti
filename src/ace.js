@@ -216,8 +216,6 @@ class Ace extends Editor{
 		x.edit.setFontSize("16px")
 		x.edit.setShowPrintMargin(false)
 
-		x.edit.setValue(x.initial, 1) 
-
 		x.edit.session.on("changeAnnotation", function () {
 			var annot = x.edit.session.getAnnotations();
 			for( var i=0; i<x.listener.length; i++ ){
@@ -249,7 +247,6 @@ class Ace extends Editor{
 		}else if( x.mode !== "" ) x.edit.session.setMode("ace/mode/"+x.mode)
 		x.edit.$blockScrolling = Infinity
 
-		x.setText(x.initial)
 		
 		var ro = new ResizeObserver(entry => {
 			entry = entry[0]
@@ -262,6 +259,9 @@ class Ace extends Editor{
 		ro.observe(x.vc())
 
 		setTimeout( function(){ window.dispatchEvent(new Event('resize')) }, Konekti.TIMER )
+
+		x.setText(x.initial)
+
 	}
 
 	/**
@@ -286,8 +286,8 @@ class Ace extends Editor{
 	setText(txt){
 		var x = this
 		Konekti.daemon(function (){ return (x.edit !== undefined) }, function(){
-			x.edit.focus()
 			x.edit.setValue(txt, 1)
+			x.edit.focus()
 		})
 	}
 
@@ -323,7 +323,7 @@ class Ace extends Editor{
 	 * Sets current position in the editor (character count)
 	 * @param pos Position of the cursor (character count)
 	 */
-	locateCursorIndex(pos){ this.edit.selection.moveTo(this.edit.session.doc.indexToPosition(pos)) }
+	locateCursorIndex(pos){ this.edit.selection.moveToPosition(this.edit.session.doc.indexToPosition(pos)) }
 
 	/**
 	 * Updates the position of the scroll associated to the editor
@@ -346,6 +346,11 @@ class Ace extends Editor{
 			}
 		}
 		check()
+	}
+
+	focus(){ 
+		this.edit.focus()
+		this.locateCursorIndex(this.cursorIndex()) 
 	}
 }
 
