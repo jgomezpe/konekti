@@ -43,13 +43,13 @@ class Input extends Editor{
 	 * Gets current text in the editor
 	 * @return Current text in the editor
 	 */
-	getText(){ return x.vc().value }
+	getText(){ return this.vc().value }
 
 	/**
 	 * Sets text in the editor
 	 * @param text Text to set in the editor
 	 */
-	setText(txt){ x.vc().value = txt }
+	setText(txt){ this.vc().value = txt }
 }
 
 /**
