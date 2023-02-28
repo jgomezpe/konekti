@@ -16,6 +16,24 @@
 class TerminalPlugIn extends PlugIn{
     /** Creates a Plugin for a Process Terminal */
     constructor(){ super('terminal') }
+
+	/**
+	 * Creates a terminal configuration object
+	 * @param parent Parent component
+	 * @param id Id of the terminal container
+     * @param initial Initial text in the terminal
+	 * @param config Style of the terminal container
+	 */
+    setup(parent, id, initial, config={}){
+        var maxChars = config.maxChars || 1000000
+ 		config.tag = 'textarea'
+		config.name = id
+        config.rows = config.rows || '4'
+        config.columns = config.columns || '80'
+		var c = super.setup(parent, id, initial, config)
+        c.maximum = maxChars
+        return c  
+	}
     
     /**
      * Creates a client for the plugin's instance
@@ -34,11 +52,10 @@ class Terminal extends Editor{
      */
     constructor(config){ 
         super(config) 
-        this.input = ""
-        this.server = null
 		var x = this     
-		this.maximum = config.maximum || 1000000
-		x.edit = this.vc()
+        x.input = ""
+        x.server = null
+		x.edit = x.vc()
 		x.edit.onkeyup = function(event){
 			var length = x.edit.value.length
             var npos = Math.min(x.selectionEnd,x.selectionStart)
@@ -56,15 +73,6 @@ class Terminal extends Editor{
         }     
     }
     
-	/**
-	 * Associated html code
-	 * @param config Client configuration
-	 */
-     html( config ){ 
-		config.inner = config.inner || ''
-		return "<textarea id='"+this.id+"' name='"+this.id+"' rows='4' columns='80'>"+config.inner+"</textarea>"
-	}  
-
     /**
      * Initializes the terminal
      */
@@ -91,19 +99,18 @@ class Terminal extends Editor{
      * @param txt Text to set in the process terminal
      */
     setText(txt){
-		if( txt === undefined || txt == null ) txt = ''
-        else if( txt.length > this.maximum ) txt = txt.substring(txt.length-Math.floor(9*x.maximum/10))
         var x = this
+		if( txt === undefined || txt == null ) txt = ''
+        else if( txt.length > x.maximum ) txt = txt.substring(txt.length-Math.floor(9*x.maximum/10))
         x.value = txt
         x.input = ''
-        function checked(){
-            if( x.edit !== undefined ){
+        Konekti.daemon( function(){ return x.edit !== undefined }, 
+            function(){
                 x.edit.value = txt 
                 x.edit.selectionStart = txt.length 
                 x.edit.selectionEnd = txt.length
-            }else setTimeout( checked, 50 )
-        }
-        checked()
+            }
+        )
     }
     
     /**
@@ -168,33 +175,25 @@ class Terminal extends Editor{
      * @param pos New position for the scroll
      */
     scrollTop(pos){
-         this.edit.scrollTop = pos
+        this.edit.scrollTop = pos
     }
 }
 
 /**
- * Creates a config object from parameters
- * @param id Id/Configuration of the terminal component
- * @param width Width of the terminal's component
- * @param height Height of the terminal's component
- * @param initial Initial text in the terminal
- * @param maxChars Maximum number of characters maintained by the terminal
- * @param parent Parent component
- */
-Konekti.terminalConfig = function(id, width, height, initial, maxChars=1000000, parent='KonektiMain'){ 
-    return {"plugin":'terminal', "id":id, 'width':width, 'height':height, 'inner':initial, 'maximum':maxChars, 'parent':parent} 
-}
-
-/**
- * Associates/Adds a process terminal 
+ * Associates/Adds a Terminal
  * @method
  * terminal
- * @param id Configuration of the process terminal
- * @param width Width of the terminal's component
- * @param height Height of the terminal's component
- * @param initial Initial text in the process terminal
- * @param maxChars Maximum number of characters maintained by the terminal
+ * @param parent Parent component
+ * @param id Id of the terminal container
+ * @param initial Initial text in the terminal
+ * @param config Style of the terminal container
+ * @param callback Function called when the terminal is ready
  */
-Konekti.terminal = function(id, width, height, initial, maxChars=1000000){
-    return Konekti.build(Konekti.terminalConfig(id, width, height, initial, maxChars))
+Konekti.terminal = function(parent, id, initial, config, callback){ 
+	var args = []
+	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
+	if(args.length==2) args[2] = ''
+	if(args.length==3) args[3] = {}
+	if(args.length==4) args[4] = function(){}
+	Konekti.add('terminal', ...args)
 }

@@ -13,143 +13,103 @@
 * @version 1.0
 */
 
+Konekti.resource.JS('https://code.jquery.com/jquery-3.5.1.js')
+
 ////////// FINAPUNKTO //////////////////
 /** An end-point for connecting to a Server */
 class EndPoint{
-    /**
-     * Creates a web server end-point
-     * @param url End-point's URL 
-     * @param method Optional 'GET' or 'POST' method to use. If not provided, the end-point will use 'POST'.
-     */
-    constructor(url, method='POST'){
+	/** 
+     * Creates a server connection (endpoint) to the given url
+     * @param url URL of the server's endpoint
+     */ 
+    constructor( url ){
         this.url = url
-        this.method = method 
+        this.token = null
     }
 
-    /**
-     * Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
-     * @param xhttp Object with the response and request.
-     */
-    callback( xhttp ){}
+	// Determines if the client is connected to the server
+    connected(){ return this.token!=null }
 
-    /**
-     * Parses the response from the server
-     * @param xhttp Response of the server
-     * @return Object version of the response
+	/**
+     * Makes a request to the server (uses JSON objects to transmit information)
+     * @param req Request information: It must be a JSON object that must not include attribute token (used by connection/session track).
+     * @param endpoint url of the service to connect
+     * @param method Indicates type of connection : 'post', 'get'
+     * @param onsuccess Function called when success response from the server is received (request was accepted)
+     * @param onerror Function called when error response from the server is received (request was not accepted)
+     * 
      */
-    parse(xhttp){ return xhttp }
-
-    /**
-     * Stringifies an object
-     * @param obj Object to stringify
-     * @return A stringify version of the object
-     */
-    stringify(obj){ return obj }
-
-    /**
-     * Runs a command of the web server
-     * @param arg Main argument for connecting with the end-point
-     * If not provided, the end-point will use the header provided in the constructor method
-     * @param callback Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
-     * If not provided, the end-point will use the callback provided its defined callback function
-     */
-    request( arg, callback ){
-        this.callback = callback || this.callback
+    request( endpoint, req, method='post', onsuccess=function(){}, onerror=function(){} ){
         var x = this
-        var xhttp = new XMLHttpRequest()
-        xhttp.onreadystatechange = function (){
-            if (xhttp.readyState==4 && xhttp.status == 200) x.callback( x.parse(xhttp) )
-            
+        var token = x.token!=null?x.token:''
+        req.token=token        
+        var req = { 
+            'success' : onsuccess, 
+            'error' : onerror,
+            'url' : x.url + endpoint,
+            'method' : method,
+            'data' : JSON.stringify(req),
+            'dataType' : 'json',
+            'contentType' : "application/json"
         }
-        
-        xhttp.open(this.method, this.url, true)
-        xhttp.send(this.stringify(arg))
+        $.ajax(req) 
     }
 }
 
-/** End point based on sending/receiving JXON objects. 
+/** End point for running a Process of the server using JSON objects. 
   */
-class JXONEndPoint extends EndPoint{
-    /**
-     * Creates a web server end-point
-     * @param url End-point's URL
-     * @param jxon <i>true</i> If the server uses JXON objects, <i>false</i> if uses JSON objects. 
-     * @param method Optional 'GET' or 'POST' method to use. If not provided, the end-point will use 'POST'.
-     */
-    constructor( url, jxon=false, method='POST' ){ 
-        super(url, method) 
-        if(jxon){
-            this.parse = function(xhttp){
-                var resp = xhttp.response==""?"{}":xhttp.response
-                return JXON.parse(resp)
-            }            
-            this.stringify = function(obj){ return JXON.stringify(obj) }
-        }else{
-             this.parse = function(xhttp){
-                var resp = xhttp.response==""?"{}":xhttp.response
-                return JSON.parse(resp)
-            }            
-            this.stringify = function(obj){ return JSON.stringify(obj) }
-        }
-    }
-}
-   
-
-/** End point for running a Process of the server using JSON/JXON objects. 
-  */
-class ProcessRunner extends JXONEndPoint{
+class ProcessRunner extends EndPoint{
     /**
      * Creates a Process runner end-point
      * @param url End-point's URL 
-     * @param jxon <i>true</i> If the server uses JXON objects, <i>false</i> if uses JSON objects. 
      * @param component Process identification in the server
-     * @param args Process arguments 
+     * @param out Function called when the process produces some output
+     * @param end Function called when the process ends
      */
-    constructor(url, component, args, jxon=false){
-        super(url,jxon)
+    constructor(url, component, out, end){
+        super(url)
         this.component = component
-        this.args = args
+        this.out = out
+        this.end = end
         this.timer = 10
     }
     
-    /**
-     * Function that will be called when receiving the response of the server (must process the full XMLHttpRequest).
-     * @param xhttp Object with the response and request.
+	/**
+     * Makes a request to the server (uses JSON objects to transmit information)
+     * @param action Action to run in the server ('start', 'pull', 'end') 
      */
-	callback(response){
-		var x = this
-		if(response.args[0]!=null){
-			if(response.args[0].length > 0 ){
-				x.timer = 10
-				x.out( response.args[0] )
-				x.request({"component":x.component,"method":"pull","args":[""]})  
-			}else{
-				setTimeout( function(){ x.request({"component":x.component,"method":"pull","args":[""]}) }, x.timer )
-				if( x.timer<100 ) x.timer += 10
-			}                  
-		}else{
-			x.running = false
-			x.out()
-		}
-	}
+    request( action='pull', args = [] ){
+        var x = this
+        var c = {'action':action, 'args':args}
+        super.request(x.component, c, 'post', function(res){
+            if( res.out !== undefined ){
+                x.out(res.out)
+                x.timer = 10
+            }else x.timer += 10
+            if(res.done){
+                x.timer = 10 
+                x.end()
+            }else{ setTimeout( function(){ x.request() }, x.timer ) }    
+        }, function(res){
+            x.timer = 10
+            x.end(res)
+        })
+    }
      
     /**
      * Runs the process
-     * @param out Calling back function when the server responses to starting/ending/pulling request
      */    
-    run( out ){
-        var x = this
-        x.out = out
-        this.running = true
-        this.request({"component":x.component,"method":"start","args":x.args})
+    run(){
+        this.timer = 10
+        this.request("start",arguments)
     }
      
     /**
      * Ends the process in the server
      */   
     end(){
-        this.request({"component":this.component,"method":"end","args":[""]})
-        this.running = false
+        this.timer = 10
+        this.request("end") 
     }
      
     /**
@@ -157,8 +117,7 @@ class ProcessRunner extends JXONEndPoint{
      * @param cmd Input to be sent to the process in the server
      */   
     input( cmd ){
-        var x = this
-        x.timer = 10
-        this.request({"component":this.component,"method":"pull","args":[cmd]})  
+        this.timer = 10
+        this.request("pull",[cmd])  
     }
 }
