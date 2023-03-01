@@ -52,10 +52,11 @@ class Terminal extends Editor{
      */
     constructor(config){ 
         super(config) 
-		var x = this     
+		var x = this
         x.input = ""
         x.server = null
 		x.edit = x.vc()
+		x.value = x.edit.value
 		x.edit.onkeyup = function(event){
 			var length = x.edit.value.length
             var npos = Math.min(x.selectionEnd,x.selectionStart)
@@ -66,6 +67,7 @@ class Terminal extends Editor{
             x.input = x.edit.value.substring(x.value.length,length)
             var key = event.keyCode;
             if( key===13 && x.server !== null ){
+				console.log(x.input)
                 x.value += x.input
                 x.server.input(x.input)
                 x.input = ""
@@ -81,12 +83,6 @@ class Terminal extends Editor{
         this.edit.value = ""
         this.input = ""
     }
-    
-    /**
-     * Sets the Process server for input/output operations
-     * @param  Process server
-     */
-    set( server ){ this.server = server || null }
     
     /**
      * Gets current text in the terminal

@@ -71,7 +71,9 @@ class ProcessRunner extends EndPoint{
         this.component = component
         this.out = out
         this.end = end
-        this.timer = 10
+        this.MIN_PULL_TIME = 10
+        this.timer = this.MIN_PULL_TIME
+        this.running = false
     }
     
 	/**
@@ -84,15 +86,14 @@ class ProcessRunner extends EndPoint{
         super.request(x.component, c, 'post', function(res){
             if( res.out !== undefined ){
                 x.out(res.out)
-                x.timer = 10
-            }else x.timer += 10
-            if(res.done){
-                x.timer = 10 
-                x.end()
-            }else{ setTimeout( function(){ x.request() }, x.timer ) }    
+                x.timer = x.MIN_PULL_TIME
+            }else x.timer += x.MIN_PULL_TIME
+            x.running = x.running && res.running
+            if(x.running) setTimeout( function(){ x.request() }, x.timer )    
+            else x.timer = x.MIN_PULL_TIME 
         }, function(res){
-            x.timer = 10
-            x.end(res)
+            x.timer = x.MIN_PULL_TIME
+            x.stop(res)
         })
     }
      
@@ -100,15 +101,19 @@ class ProcessRunner extends EndPoint{
      * Runs the process
      */    
     run(){
-        this.timer = 10
-        this.request("start",arguments)
+        this.timer = x.MIN_PULL_TIME
+        this.running = true
+        var args = []
+        for( var i=0; i<arguments.length; i++) args[i] = arguments[i]
+        this.request("start",args)
     }
      
     /**
      * Ends the process in the server
      */   
-    end(){
-        this.timer = 10
+    stop(){
+        this.timer = x.MIN_PULL_TIME
+        this.running = false
         this.request("end") 
     }
      
@@ -117,7 +122,62 @@ class ProcessRunner extends EndPoint{
      * @param cmd Input to be sent to the process in the server
      */   
     input( cmd ){
-        this.timer = 10
+        this.timer = x.MIN_PULL_TIME
         this.request("pull",[cmd])  
     }
 }
+
+/************************ NODEJS ProcessRunner ENDPOINT EXAMPLE**********************/
+/*
+var session = {} // Simple session managment
+
+async function command(cmd, req, res, onargs=function(req){ return req.args }) {
+    CORS(req, res)
+      console.log('Hello from '+ cmd +' endpoint...')
+    if(session[c]===undefined) session[c] = {}
+    var s = session[c]
+    s[cmd] = s[cmd] || {'out':[]}
+    var out = s[cmd].out
+    var c = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    var action = req.body.action
+    var args = req.body.args
+    var process
+    switch(action){
+      case 'start':
+        if(s[cmd].process !== undefined && s[cmd].process !== null) s[cmd].process.exit(0)
+        s[cmd].process = execFile(cmd, onargs(req));
+        process = s[cmd].process
+        process.stdout.on("data", (data) => {
+          console.log(`stdout:\n${data}`)
+          out.push({'out':data})
+        });
+        process.stderr.on("data", (data) => {
+          console.log(`stdout: ${data}`)
+          out.push({'err':data})
+        });
+        process.on("exit", (code) => {
+          console.log(`Process ended with ${code}`)
+          out.push({'end':code})
+          s[cmd].process = null
+        });
+        res.send({'running':true, "out":[]})
+      break;  
+      case 'pull':
+        process = s[cmd].process
+        if(args.length>0) process.stdin.write(args[0]);
+        var n = out.length
+        var running = !(n>0 && out[n-1].end !== undefined)
+        var cout = []
+        for(var i=0; i<n; i++) cout[i] = out[i]
+        out.splice(0,n)
+        res.send({'running':running, "out":cout})
+      break;
+      case 'end':
+        res.send({'running':false, "out":out})
+        if(s[cmd].process !== undefined && s[cmd].process !== null) s[cmd].process.exit(0)
+      break;
+    }
+  }
+
+app.post('/your_endpoint', (req, res) => command('your_command', req, res, your_process_args_function))
+*/  
