@@ -101,7 +101,7 @@ class ProcessRunner extends EndPoint{
      * Runs the process
      */    
     run(){
-        this.timer = x.MIN_PULL_TIME
+        this.timer = this.MIN_PULL_TIME
         this.running = true
         var args = []
         for( var i=0; i<arguments.length; i++) args[i] = arguments[i]
@@ -112,7 +112,7 @@ class ProcessRunner extends EndPoint{
      * Ends the process in the server
      */   
     stop(){
-        this.timer = x.MIN_PULL_TIME
+        this.timer = this.MIN_PULL_TIME
         this.running = false
         this.request("end") 
     }
@@ -122,7 +122,7 @@ class ProcessRunner extends EndPoint{
      * @param cmd Input to be sent to the process in the server
      */   
     input( cmd ){
-        this.timer = x.MIN_PULL_TIME
+        this.timer = this.MIN_PULL_TIME
         this.request("pull",[cmd])  
     }
 }
