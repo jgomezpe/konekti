@@ -78,9 +78,9 @@ class Terminal extends Editor{
     /**
      * Initializes the terminal
      */
-    init( grettings =''){
-    	this.value = grettings
-        this.edit.value = grettings
+    init( greetings =''){
+    	this.value = greetings
+        this.edit.value = greetings
         this.input = ""
     }
     
