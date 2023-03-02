@@ -129,11 +129,35 @@ class ProcessRunner extends EndPoint{
 
 /************************ NODEJS ProcessRunner ENDPOINT EXAMPLE**********************/
 /*
+#!/usr/bin/env node
+
+// It uses express
+
+const express = require('express')
+
+const app = express()
+const port = 8080
+
+app.use(express.json());
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
 var session = {} // Simple session managment
+
+function CORS(req, res){
+  const allowedOrigins = ['https://www.your.server.id', 'https://your.server.id'];
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)){
+    res.setHeader('Access-Control-Allow-Origin', origin)
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PATCH,OPTIONS')
+  }  
+}
 
 async function command(cmd, req, res, onargs=function(req){ return req.args }) {
     CORS(req, res)
-      console.log('Hello from '+ cmd +' endpoint...')
+    console.log('Hello from '+ cmd +' endpoint...')
     if(session[c]===undefined) session[c] = {}
     var s = session[c]
     s[cmd] = s[cmd] || {'out':[]}
