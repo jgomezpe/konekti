@@ -15,7 +15,7 @@
 
 Konekti.resource.JS('https://code.jquery.com/jquery-3.5.1.js')
 
-////////// FINAPUNKTO //////////////////
+///////////// FINAPUNKTO //////////////////
 /** An end-point for connecting to a Server */
 class EndPoint{
 	/** 

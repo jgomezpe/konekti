@@ -127,7 +127,7 @@ Konekti.python = function(parent, id, url, config, callback){
 	Konekti.add('python', ...args)
 }
 
-/************************ NODEJS Python ENDPOINT EXAMPLE**********************/
+/************************* NODEJS Python ENDPOINT EXAMPLE***********************/
 /*
 const { execFile } = require('node:child_process')
 const fs = require('fs')
