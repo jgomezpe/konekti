@@ -52,7 +52,7 @@ class PythonPlugIn extends PlugIn{
         }
         var c = super.setup(parent, id, [title,navbar,control], maincfg)
         c.url = url
-        c.tabs = tabs
+        c.files = files
         c.greetings = config.greetings || '>>\n'
         return c
 	}
@@ -114,7 +114,7 @@ class Python extends Client{
             Konekti.client[x.id+'run'].update('fa fa-stop', '', '')
             x.terminal.init(x.greetings)
             var args = []
-            for(var i=0; i<x.tabs.length; i++) args[i] = {'name':x.tabs[i], 'code':Konekti.client[x.id+x.tabs[i].name].getText()}
+            for(var i=0; i<x.files.length; i++) args[i] = {'name':x.files[i].name, 'code':Konekti.client[x.id+x.files[i].name].getText()}
             x.process.run(...args)
             x.running = true
             x.vc('console').focus()
