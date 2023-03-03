@@ -37,7 +37,7 @@ class PythonPlugIn extends PlugIn{
         acecfg.style = (acecfg.style || '') + 'width:100%;height:100%;'
         var tabs = []
         for(var i=0; i<files.length; i++){
-            tabs[i] = {'plugin':'ace', 'setup':[id+files[i].name, files[i].content, 'python', acecfg.theme, '', acecfg.style], 
+            tabs[i] = {'plugin':'ace', 'setup':[id+files[i].name, files[i].content, 'python', acecfg.theme, '', {'style':acecfg.style}], 
 			'label':["", files[i].name]}
         }
         var tercfg = config.terminal || {}
