@@ -104,7 +104,7 @@ class Python extends Client{
             x.end()
         }else{
             Konekti.client[x.id+'run'].update('fa fa-stop', '', '')
-            x.terminal.init(x.grettings)
+            x.terminal.init(x.greetings)
             x.process.run({'name':'main.py', 'code':Konekti.client[x.id+'editor'].getText()})
             x.running = true
             x.vc('console').focus()
