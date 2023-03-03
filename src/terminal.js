@@ -76,7 +76,8 @@ class Terminal extends Editor{
     }
     
     /**
-     * Initializes the terminal
+     * Initializes the terminal 
+     * @param greetings An initial text in the terminal
      */
     init( greetings =''){
     	this.value = greetings
