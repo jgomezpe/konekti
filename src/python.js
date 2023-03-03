@@ -24,27 +24,35 @@ class PythonPlugIn extends PlugIn{
 	 * @param parent Parent component
 	 * @param id Id of the python component
 	 * @param url URL of the server with the Python interpreter
+     * @param files Python code files
 	 * @param config Style of the python ide
 	 */
-	setup(parent, id, url, config){
+	setup(parent, id, url, files, config){
         var btn=[ {'plugin':'btn', 'setup':[id+"run","fa-play", '', {'client':id, 'method':'run'}]}	]
         var headercfg = config.header || {}
         var title = {'plugin':'header', 'setup':[id+'title',{'type':'img', 'src':'https://jgomezpe.github.io/konekti/img/python.png'}, headercfg.title || 'Python IDE', headercfg.size || 3, headercfg.style || {'class':'w3-green w3-center'}]}
         var navbar = {'plugin':'navbar', 'setup':[id+'navbar', btn, '', config.navbar || {'class':'w3-blue-grey'}]}			
         var acecfg = config.ace || {}
+        acecfg.theme = acecfg.theme || ''
         acecfg.style = (acecfg.style || '') + 'width:100%;height:100%;'
+        var tabs = []
+        for(var i=0; i<files.length; i++){
+            tabs[i] = {'plugin':'ace', 'setup':[id+files[i].name, files[i].content, 'python', acecfg.theme, '', acecfg.style], 
+			'label':["", files[i].name]}
+        }
         var tercfg = config.terminal || {}
         tercfg.style = (tercfg.style || '') + 'width:100%;height:100%;'
 		var maincfg = config.main || {'style':'width:100%;height:100%;'}
         var control = {
             'plugin':'split', 'setup':[
                 id+'editcon', 'col', 50, 
-                {'plugin':'ace', 'setup':[id+'editor', '', 'python', acecfg.theme || '', '', acecfg]},
+                {'plugin':'tab', 'setup':[id+'editor', tabs, 'main.py', {'style':'width:100%;height:100%;'}]},
                 {'plugin':'terminal', 'setup':[id+'console', '', tercfg]}, {'style':'width:100%;height:fit;'}
             ]
         }
         var c = super.setup(parent, id, [title,navbar,control], maincfg)
         c.url = url
+        c.tabs = tabs
         c.greetings = config.greetings || '>>\n'
         return c
 	}
@@ -105,7 +113,9 @@ class Python extends Client{
         }else{
             Konekti.client[x.id+'run'].update('fa fa-stop', '', '')
             x.terminal.init(x.greetings)
-            x.process.run({'name':'main.py', 'code':Konekti.client[x.id+'editor'].getText()})
+            var args = []
+            for(var i=0; i<x.tabs.length; i++) args[i] = {'name':x.tabs[i], 'code':Konekti.client[x.id+x.tabs[i].name].getText()})
+            x.process.run(...args)
             x.running = true
             x.vc('console').focus()
         }	
@@ -117,13 +127,15 @@ class Python extends Client{
  * @param parent Parent component
  * @param id Id of the python component
  * @param url URL of the server with the Python interpreter
+ * @param files Python code files
  * @param config Style of the python ide
  */
-Konekti.python = function(parent, id, url, config, callback){ 
+Konekti.python = function(parent, id, url, files, config, callback){ 
 	var args = []
 	for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
-	if(args.length==3) args[3] = {}
-	if(args.length==4) args[4] = function(){}
+	if(args.length==3) args[3] = {'name':'main.py', 'content':''}
+	if(args.length==4) args[4] = {}
+	if(args.length==5) args[5] = function(){}
 	Konekti.add('python', ...args)
 }
 
