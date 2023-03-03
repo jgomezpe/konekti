@@ -58,7 +58,7 @@ class PythonPlugIn extends PlugIn{
 
 if( Konekti.python===undefined) new PythonPlugIn()
 
-/** A Python IDE */
+/** A Python IDE client*/
 class Python extends Client{
     /**
      * Creates the Python IDE
