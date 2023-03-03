@@ -29,7 +29,7 @@ class PythonPlugIn extends PlugIn{
 	setup(parent, id, url, config){
         var btn=[ {'plugin':'btn', 'setup':[id+"run","fa-play", '', {'client':id, 'method':'run'}]}	]
         var headercfg = config.header || {}
-        var title = {'plugin':'header', 'setup':[id+'title','', headercfg.title || 'Python IDE', headercfg.size || 3, headercfg.style || {'class':'w3-green w3-center'}]}
+        var title = {'plugin':'header', 'setup':[id+'title',{'type':'img', 'src':'https://jgomezpe.github.io/konekti/img/python.png'}, headercfg.title || 'Python IDE', headercfg.size || 3, headercfg.style || {'class':'w3-green w3-center'}]}
         var navbar = {'plugin':'navbar', 'setup':[id+'navbar', btn, '', config.navbar || {'class':'w3-blue-grey'}]}			
         var acecfg = config.ace || {}
         acecfg.style = (acecfg.style || '') + 'width:100%;height:100%;'
