@@ -127,7 +127,7 @@ class ProcessRunner extends EndPoint{
     }
 }
 
-/************************ NODEJS ProcessRunner ENDPOINT EXAMPLE**********************/
+/********************** NODEJS ProcessRunner ENDPOINT EXAMPLE********************/
 /*
 #!/usr/bin/env node
 
