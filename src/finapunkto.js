@@ -93,7 +93,7 @@ class ProcessRunner extends EndPoint{
             else x.timer = x.MIN_PULL_TIME 
         }, function(res){
             x.timer = x.MIN_PULL_TIME
-            x.stop(res)
+            x.running = false
         })
     }
      
