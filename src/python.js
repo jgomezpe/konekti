@@ -41,16 +41,18 @@ class PythonPlugIn extends PlugIn{
 			'label':["", files[i].name]}
         }
         var tercfg = config.terminal || {}
-        tercfg.style = (tercfg.style || '') + 'width:100%;height:100%;'
+        tercfg.style = (tercfg.style || '') + 'width:100%;height:fit;'
 		var maincfg = config.main || {'style':'width:100%;height:100%;'}
         var control = {
             'plugin':'split', 'setup':[
                 id+'editcon', 'col', 50, 
                 {'plugin':'tab', 'setup':[id+'editor', tabs, 'main.py', {'style':'width:100%;height:100%;'}]},
-                {'plugin':'terminal', 'setup':[id+'console', '', tercfg]}, {'style':'width:100%;height:fit;'}
+                {  'plugin':'raw', 'setup':[id+'right', [ navbar,
+                    {'plugin':'terminal', 'setup':[id+'console', '', tercfg]} ], {'style':'width:100%;height:100%;'}
+                ]}, {'style':'width:100%;height:fit;'}
             ]
         }
-        var c = super.setup(parent, id, [title,navbar,control], maincfg)
+        var c = super.setup(parent, id, [title,control], maincfg)
         c.url = url
         c.files = files
         c.greetings = config.greetings || '>>\n'
