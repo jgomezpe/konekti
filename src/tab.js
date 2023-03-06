@@ -21,7 +21,7 @@ class TabPlugin extends PlugIn{
 			btns.push({'plugin':'btn', 'setup':label})
 			contents.push(tabs[i])
 		}
-		var bar = {'plugin':'navbar', 'setup':[id+'Bar', btns, {'client':id, 'method':'open'}, {'class':'w3-light-grey w3-medium'}]}
+		var bar = {'plugin':'navbar', 'setup':[id+'Bar', btns, {'client':id, 'method':'open'}, {'class':'w3-border-left w3-border-top w3-border-right w3-light-grey w3-medium'}]}
 		var content = {'plugin':'raw', 'setup':[id+'Content', contents, {'style':'width:100%;height:fit;'}]}
 		var c = super.setup(parent, id, [bar,content], config )
 		c.initial = initial
