@@ -238,41 +238,18 @@ class Ace extends Editor{
 				var vs = gui.getElementsByClassName('ace_scrollbar-v')[0]
 				Konekti.daemon(
 					function(){
-						var ah = ac.style.height
-						ah = ah.endsWith('px')? parseInt(ah.substring(0,ah.length-2)) : 0
-						var aw = ac.style.width
-						aw = aw.endsWith('px')? parseInt(aw.substring(0,aw.length-2)) : 0
-						var hw = hs.style.width
-						hw = hw.endsWith('px')? parseInt(hw.substring(0,hw.length-2)) : 0
-						var vh = vs.style.height
-						vh = vh.endsWith('px')? parseInt(vh.substring(0,vh.length-2)) : 0
-						var gw = g.style.width
-						gw = gw.endsWith('px')? parseInt(gw.substring(0,gw.length-2)) : 0
+						return gui.clientHeight > 1 && gui.clientWidth > 1 && 
+							ac.style.height.endsWith('px') && ac.style.width.endsWith('px') && 
+							hs.style.width.endsWith('px') && vs.style.height.endsWith('px')
+					}, 
+					function(){		
 						var h = gui.clientHeight
 						var w = gui.clientWidth - gw
-						if(h<=1 || w<=1) return false
-						console.log(h+','+w+':'+ah+','+aw+':'+vh+','+hw)
-						var flag = true
-						if(aw < w){
-							ac.style.width = w + 'px'
-							flag = false
-						}
-						if(ah < h){
-							ac.style.height = h + 'px'
-							flag = false
-						}
-
-						if(hw < w){
-							hs.style.width = w + 'px'
-							flag = false
-						}	
-						if(vh < h){
-							vs.style.height = h + 'px'
-							flag = false
-						}
-						return flag
-					},
-					function(){}
+						ac.style.width = w + 'px'
+						ac.style.height = h + 'px'
+						hs.style.width = w + 'px'
+						vs.style.height = h + 'px'
+					}
 				)
 
 				x.edit.session.on("changeAnnotation", function () {
