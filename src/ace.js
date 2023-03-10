@@ -238,23 +238,29 @@ class Ace extends Editor{
 				var vs = gui.getElementsByClassName('ace_scrollbar-v')[0]
 				Konekti.daemon(
 					function(){
-						var h = gui.offsetHeight
-						var w = gui.offsetWidth
-						console.log(h+','+w)
-								var flag = true
-						if(ac.offsetWidth < w-g.offsetWidth){
-							 ac.style.width = w-g.offsetWidth + 'px'
-							 flag = false
+						var h = gui.clientHeight
+						var w = gui.clientWidth
+						var ah = parseInt(ac.style.height.substring(0,ac.style.height.length-2))
+						var aw = parseInt(ac.style.width.substring(0,ac.style.width.length-2))
+						var hw = parseInt(hs.style.width.substring(0,hs.style.width.length-2))
+						var vh = parseInt(vs.style.height.substring(0,vs.style.height.length-2))
+						g = parseInt(g.style.width.substring(0,g.style.width.length-2))
+						console.log(h+','+w+':'+ah+','+aw+':'+vh+','+hw)
+						var flag = true
+						if(aw < w-g){
+							ac.style.width = (w-g) + 'px'
+							flag = false
 						}
-						if(ac.offsetHeight < h){
+						if(ah < h){
 							ac.style.height = h + 'px'
 							flag = false
 						}
-						if(hs.offsetWidth < w-g.offsetWidth){
-							hs.style.width = w + 'px'
+
+						if(hw < w-g){
+							hs.style.width = (w-g) + 'px'
 							flag = false
 						}	
-						if(vs.offsetHeight < h){
+						if(vh < h){
 							vs.style.height = h + 'px'
 							flag = false
 						}
