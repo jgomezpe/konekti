@@ -233,6 +233,17 @@ class Ace extends Editor{
 				x.sbui = gui.getElementsByClassName('ace_scrollbar-v')[0].getElementsByClassName('ace_scrollbar-inner')[0]
 				x.edit.setShowPrintMargin(false)
 
+				var ac = x.sui.getElementsByClassName('ace_content')[0]
+				var g = gui.getElementsByClassName('ace_gutter')[0]
+				var hs = gui.getElementsByClassName('ace_scrollbar-h')[0]
+				var vs = gui.getElementsByClassName('ace_scrollbar-v')[0]
+				var h = gui.offsetHeight
+				var w = gui.offsetWidth
+				if(ac.offsetWidth < w-g.offsetWidth) ac.style.width = w-g.offsetWidth + 'px;'
+				if(ac.offsetHeight < h) ac.style.height = h + 'px;'
+				if(hs.offsetWidth < w-g.offsetWidth) hs.style.width = w + 'px;'
+				if(vc.offsetHeight < h) vs.style.height = h + 'px;'
+
 				x.edit.session.on("changeAnnotation", function () {
 					var annot = x.edit.session.getAnnotations();
 					for( var i=0; i<x.listener.length; i++ ){
