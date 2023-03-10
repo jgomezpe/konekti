@@ -242,7 +242,7 @@ class Ace extends Editor{
 				if(ac.offsetWidth < w-g.offsetWidth) ac.style.width = w-g.offsetWidth + 'px;'
 				if(ac.offsetHeight < h) ac.style.height = h + 'px;'
 				if(hs.offsetWidth < w-g.offsetWidth) hs.style.width = w + 'px;'
-				if(vc.offsetHeight < h) vs.style.height = h + 'px;'
+				if(vs.offsetHeight < h) vs.style.height = h + 'px;'
 
 				x.edit.session.on("changeAnnotation", function () {
 					var annot = x.edit.session.getAnnotations();
