@@ -244,7 +244,7 @@ class Ace extends Editor{
 					}, 
 					function(){		
 						var h = gui.clientHeight
-						var w = gui.clientWidth - gw
+						var w = gui.clientWidth - g.clientWidth
 						ac.style.width = w + 'px'
 						ac.style.height = h + 'px'
 						hs.style.width = w + 'px'
