@@ -245,6 +245,8 @@ class Ace extends Editor{
 						g = parseInt(g.style.width.substring(0,g.style.width.length-2))
 						var h = gui.clientHeight
 						var w = gui.clientWidth - g
+						if(h<=1 || w<=1) return false
+						console.log(ac.style.height)
 						console.log(h+','+w+':'+ah+','+aw+':'+vh+','+hw)
 						var flag = true
 						if(aw < w){
