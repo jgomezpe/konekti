@@ -236,12 +236,32 @@ class Ace extends Editor{
 				var g = gui.getElementsByClassName('ace_gutter')[0]
 				var hs = gui.getElementsByClassName('ace_scrollbar-h')[0]
 				var vs = gui.getElementsByClassName('ace_scrollbar-v')[0]
-				var h = gui.offsetHeight
-				var w = gui.offsetWidth
-				if(ac.offsetWidth < w-g.offsetWidth) ac.style.width = w-g.offsetWidth + 'px;'
-				if(ac.offsetHeight < h) ac.style.height = h + 'px;'
-				if(hs.offsetWidth < w-g.offsetWidth) hs.style.width = w + 'px;'
-				if(vs.offsetHeight < h) vs.style.height = h + 'px;'
+				Konekti.daemon(
+					function(){
+						var h = gui.offsetHeight
+						var w = gui.offsetWidth
+						console.log(h+','+w)
+								var flag = true
+						if(ac.offsetWidth < w-g.offsetWidth){
+							 ac.style.width = w-g.offsetWidth + 'px'
+							 flag = false
+						}
+						if(ac.offsetHeight < h){
+							ac.style.height = h + 'px'
+							flag = false
+						}
+						if(hs.offsetWidth < w-g.offsetWidth){
+							hs.style.width = w + 'px'
+							flag = false
+						}	
+						if(vs.offsetHeight < h){
+							vs.style.height = h + 'px'
+							flag = false
+						}
+						return flag
+					},
+					function(){}
+				)
 
 				x.edit.session.on("changeAnnotation", function () {
 					var annot = x.edit.session.getAnnotations();
