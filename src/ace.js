@@ -34,7 +34,6 @@ class AcePlugIn extends PlugIn{
 	 */
 	setup(parent, id, initial, mode, theme, code='', config={}){
 		if(config.style === undefined || !config.style.includes('font-size')) config.style = (config.style || '') + 'font-size:16px;'
-		console.log(config)
 		var c = super.setup(parent, id, initial, config)
 		c.initial = initial
 		c.mode = mode
