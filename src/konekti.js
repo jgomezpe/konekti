@@ -143,6 +143,18 @@ class DOM{
 		return client+method+'("'+id+'")'
 	}
 
+	style( sty ){
+		var attr = sty.split(";")
+		var json = {}
+		for(var k=0; k<attr.length; k++){
+			if(attr[k].indexOf(':')>=0){
+				var a = attr[k].split(':')
+				json[a[0]] = a[1]
+			}
+		}
+		return json
+	}
+
 	/**
 	 * Obtains a String from a template by replacing the set of tags with their associated values. A tag is limited both sides by a character <i>c</i>. 
 	 * For example, if <i>str='lorem ·X· dolor ·haha· amet'</i>, <i>c='·'</i> and <i>dictionary={'X':'ipsum', 'haha':'sit' }
@@ -241,115 +253,210 @@ class DOM{
 		if( general ) lang = lang.split('-')[0]
 		return lang
 	}
+}
 
-	fontsizeclass( cl ){
-		if(cl.includes('w3-tiny')) return 10
-		if(cl.includes('w3-small')) return 12
-		if(cl.includes('w3-medium')) return 18
-		if(cl.includes('w3-xlarge')) return 24
-		if(cl.includes('w3-xxlarge')) return 34
-		if(cl.includes('w3-xxxlarge')) return 48
-		if(cl.includes('w3-jumbo')) return 64
-		return null
-	}
-
-	fontsizestyle( style ){
-		var i = style.indexOf('font-size')
-		if(i>=0){
-			style = style.substring(i)
-			var i = style.indexOf('px')
-			return parseInt(style.substring(0,i))
+class FontSize{
+	constructor(){
+		this.defaultSize = 16
+		this.w3 = {
+			'label': ['w3-tiny', 'w3-small', 'w3-medium', 'w3-large', 'w3-xlarge', 'w3-xxlarge', 'w3-xxxlarge', 'w3.jumbo'],
+			'size': [10, 12, 15, 18, 24, 34, 48, 64]
 		}
+		this.h = [40, 32, 24, 18.72, 16, 13.8, 10.72]
+	}
+
+	locType(cl){
+		var i=0
+		while(i<this.w3.label.length && !cl.includes(this.w3.label[i])) i++
+		if(i<this.w3.label.length) return i
+		return -1
+	}
+
+	type(cl){
+		var i=this.locType(cl)
+		if(i>=0) return this.w3.label[i]
+		return ''
+	}
+
+	fromType(type){
+		var i=0
+		while(i<this.w3.label.length && type!=this.w3.label[i]) i++
+		if(i<this.w3.label.length) return this.w3.size[i]
 		return null
 	}
 
-	fontsize(element_id){
-		return parseFloat(window.getComputedStyle(Konekti.vc(element_id), null).getPropertyValue('font-size'))
+	fromClass( cl ){
+		var i=this.locType(cl)
+		if(i>=0) return this.w3.size[i]
+		return null
+	}
+
+	fromHeader( h ){
+		if(typeof h === 'string') h = parseInt(h.substring(1))
+		if(0<h && h<this.h.length) return this.h[h]
+		return this.h[4]
+	}
+
+	fromFontSize(fs){
+		if(fs.endsWith('px')) return parseFloat(fs.substring(0,fs.length-2))
+		if(fs.endsWith('em')) return parseFloat(fs.substring(0,fs.length-2)) * 16
+		return null
+	}
+
+	size(config){
+		if(config.class!==undefined){
+			var s = this.fromClass(config.class)
+			if(s!='') return s
+		}
+		if(config.style['font-size']!==undefined) return this.fromFontSize(config.style['font-size'])
+		return null
 	}
 }
 
 /** A Konekti client. */
 class Client{
-	/**
-	 * Assigns attributes in JSON configuration object to the client
-	 * @param {*} config JSON configuration object
-	 */
-	assign( config ){ for( var x in config ) this[x] = config[x] }
+    /**
+     * Assigns attributes in JSON configuration object to the client
+     * @param {*} config JSON configuration object
+     */
+    assign( config ){ for( var x in config ) this[x] = config[x] }
 
-	/**
-	 * Creates a client using the JSON configuration object
-	 * @param {*} config JSON configuration object
-	 */
-	constructor( config ){
-		var x = this
-		x.assign(config)
-		x.queue = []
-		Konekti.client[x.id] = x
-		if(x.parent!=''){
-			var p = Konekti.vc(x.parent)
-			var cl = x.config.style
-			if(cl!==undefined && cl!==null && cl.includes('fit')){
-				var type = 'height'
-				if(cl.includes('height:fit;')){
-					x.config.style = cl.replace('height:fit;', '')
-					x.config.class = (x.config.class || '') + ' konektifillrest '
-					type = 'height'
-				}else{
-					if(cl.includes('width:fit;')){
-						x.config.style = cl.replace('width:fit;', '')
-						x.config.class = (x.config.class || '') + ' konektifillrest '
-						type = 'width'
-					}	
-				} 
-				
-				Konekti.daemon( 
-					function(){	return (Konekti.client[x.parent]!== undefined && Konekti.client[x.parent]!==null) },
-					function(){ Konekti.client[x.parent].startResizeObserver(type) }
-				)
+    /**
+     * Creates a client using the JSON configuration object
+     * @param {*} config JSON configuration object
+     */
+    constructor( config ){
+        var x = this
+        x.assign(config)
+		x.addqueue = 0
+		x.callback = []
+        Konekti.client[x.id] = x
+        x.config = x.config || {}
+		x.layout = x.config.layout || 'col'
+		x.config.style = x.config.style || {}
+		if(typeof x.config.style === 'string') x.config.style = Konekti.dom.style(x.config.style)
 
-			}
-			p.appendChild(Konekti.dom.html(this.html()))
-		}	
-		var children = this.children
-		this.children=[]
-		for(var i=0; i<children.length; i++) 
-			this.children[i] = Konekti.build(children[i])
-	}
-
-	/**
-	 * Adds a component to the client
-	 * @param {*} component Component to add 
-	 * @param {*} callback Function called when the component may be successfully added
-	 */
-	add( component, callback ){
-		var x = this
-		x.queue.push(component.id || component.setup[1])
-		Konekti.plugin.setup(component, function(expanded){
-			Konekti.daemon(function(){ return expanded.id == x.queue[0] }, function(){
-				x.children.push(Konekti.build(expanded))
-				x.queue.splice(0,1)
-				if(callback !== undefined) callback(expanded)
-			})
-		})
-	}
-
-	/**
-	  * Associated html code
-	  */
-	html(){
-		this.inner = this.inner || ''
-		var ctag = '</'+this.config.tag+'>'
-		switch(this.config.tag){
-			case 'img':
-				ctag = ''
-			break;
+		function size(config, side){
+			x[side] = ''
+			if(config[side] !== undefined ) x[side] = config[side]
+			else if( config.style[side] !== undefined ) x[side] = config.style[side]
 		}
-		var code = "<"+this.config.tag + " id='" + this.id + "' "
-		for(var x in this.config)
-			if( x!=='tag' && x!=='extra') code += x + "='" + this.config[x] + "' "
-		code += (this.config.extra||'')+">" + this.inner + ctag
-		return code
-	}  
+		
+		size(x.config,'width')
+		size(x.config,'height')
+		x.config.tag = x.config.tag || 'div'
+    }
+
+    /**
+     * Associated html code
+	 */
+    html(){
+        var config = this.config
+        var tag = config.tag
+        // Open tag
+        var otag = "<" + tag + " id='" + this.id + "' "
+		for(var x in config){        
+			if( x=='style' ){
+				var v=''
+				if(typeof config[x] === 'string') v = config[x]
+				else for(var y in config[x]) if(y!='width' && y!='height') v += y + ':' + config[x][y] + ';'
+				otag += x + "='" + v + "' "
+			}else if( x!=='tag' && x!=='extra' && x!='width' && x!='height' && x!='layout') otag += x + "='" + config[x] + "' "
+		}	
+        otag += (config.extra||'')+">"
+        
+        // innerHTML
+        var inner = this.inner || ''
+        if(this.children.length>0){
+        for(var i=0; i<this.children.length; i++)
+            inner += this.children[i].html()
+        }
+        
+        // Close tag
+        var ctag = ''
+        switch(tag){
+            case 'img':
+                ctag = ''
+                break;
+            default:
+                ctag = '</'+tag+'>'
+        }
+        return otag + inner + ctag
+    }
+  
+    vc(id=''){
+        return Konekti.vc(this.id+id)
+    }
+
+	size(parent, child){
+		if(child.endsWith('%'))
+			return parent * parseFloat(child.substring(0,child.length-1)) / 100
+		if(child.endsWith('px'))
+			return parseFloat(child.substring(0,child.length-2))
+		return 0
+	}
+
+    /**
+     * Resize window
+     */
+    rowLayout( width, height ){
+        var x = this
+        var flip = (width<=Konekti.SMALL_SIZE)
+		var h = []
+		var w = []
+		var tw = 0
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] !== null){
+				var rect = x.children[i].vc().getBoundingClientRect()
+				w[i] = (x.children[i].width=='')? rect.width : x.size(width, x.children[i].width)
+				h[i] = (x.children[i].height=='')? rect.height : x.size(height, x.children[i].height)
+				tw += w[i]
+			}	
+		}
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] !== null){
+				if(flip && x.layout=='res' && (w[i]==0 || w[i] > Konekti.SMALL_SIZE)) w[i] = Konekti.SMALL_SIZE
+				if(w[i]==0) w[i] = width - tw
+				x.children[i].resize(w[i], h[i])
+			}	
+		}      
+    }   
+
+    /**
+     * Resize window
+     */
+    colLayout( width, height ){
+        var x = this
+		var h = []
+		var w = []
+		var th = 0
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] !== null){
+				var rect = x.children[i].vc().getBoundingClientRect()
+				w[i] = (x.children[i].width=='')? rect.width : x.size(width, x.children[i].width)
+				h[i] = (x.children[i].height=='')? rect.height : x.size(height, x.children[i].height)
+				th += h[i]
+			}	
+		}
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] !== null){
+				if(h[i]==0) h[i] = height - th
+				x.children[i].resize(w[i], h[i])
+			}	
+		}      
+    }   
+
+
+    /**
+     * Resize window
+     */
+    resize( width, height ){
+        var x = this	
+        x.vc().style.width = width + 'px'
+        x.vc().style.height = height + 'px'
+		if(x.layout=='col') x.colLayout(width,height)
+		else x.rowLayout(width,height)
+    }   
 
 	/**
 	 * Adds listener to events of the client
@@ -367,45 +474,6 @@ class Client{
 		if( i<this.listener.length ) this.listener.splice(i,1)
 	}
 
-	/**
-	 * Gets the visual component associated to the client/subclient
-	 * @param {*} subId Id of the subclient (the subclient id is a combination of the client id and this argument)
-	 * @returns Visual component associated to the client/subclient
-	 */
-	vc(subId=''){ return Konekti.vc(this.id+subId) }
-
-	startResizeObserver( type='height' ){
-		var x = this
-		if(x.ro == undefined || x.ro == null){
-			x.ro = new ResizeObserver(entry => {
-				entry = entry[0]
-				var y = x.vc()
-				var r = y.getBoundingClientRect()
-				var h = r.height
-				var w = r.width
-				var c = 0
-				var v = 0
-				for (const child of y.children) {
-					if(child.className.includes('konektifillrest')) c++
-					else 
-						if(type=='height') v += child.offsetHeight
-						else v += child.offsetWidth
-				}
-				if(c>0){
-					if(type=='height') v = (h-v)/c
-					else v = (w-v)/c
-					for (const child of y.children) {
-						if(child.className.includes('konektifillrest'))
-							if(type=='height') child.style.height = v+'px'
-							else child.style.width = v+'px'
-					}
-				}
-			});
-						 
-			// Resize observer
-			x.ro.observe(x.vc())
-		}	
-	}
 }
 
 /** A Konekti plugin. */
@@ -420,6 +488,17 @@ class PlugIn{
 	}
 
 	/**
+	 * Process the style component of a config object. if it is a string creates an object with all key:pair values in the string
+	 * @param {*} config Visual configuration of the component
+	 * @returns An object with all key:pair values for the style to apply to the component
+	 */
+	style(config){
+		config.style = config.style || {}
+		if(typeof config.style === 'string') config.style = Konekti.dom.style(config.style)
+		return config
+	}
+
+	/**
 	 * Creates a client configuration object
 	 * @param parent Parent component
 	 * @param plugin Id of the component 
@@ -428,144 +507,22 @@ class PlugIn{
 	 * @param config Extra configuration 
 	 */
 	setup( parent, id, children = '', config={}  ){
+		config = this.style(config)
+
 		var inner =''
 		if(typeof children == 'string'){
 			inner = children
 			children = []
 		}else if(!Array.isArray(children)) children = [children]
 		for(var i=0; i<children.length; i++)
-			if(children[i].setup !== undefined) children[i].setup.splice(0,0,id)
-			
+			if(children[i].setup !== undefined && children[i].setup[0]!==id) children[i].setup.splice(0,0,id)
+		
 		config.tag = config.tag || 'div'
-		return {'plugin':this.id, 'id':id, 'parent':parent, 'inner':inner, 'children':children, 'config': config, 
+		return {'id':id, 'parent':parent, 'inner':inner, 'children':children, 'config': config, 
 		'listener':[] } 
 	}
 
 	client( config ){ return new Client(config) }
-}
-
-/** Konekti plugin's manager. Loads plugins as required and connect clients with plugins */
-class PlugInManager{
-	/**
-	 * Inits the konekti framework
-	 */
-	constructor( konekti ){
-		this.konekti = konekti
-		this.url = 'https://jgomezpe.github.io/konekti/3.0/'
-	}
-    
-	/**
-	 * Determines all the required dependencies of an array of Konekti clients
-	 * @param component Konekti components to load and build (bootstrap)
-	 * @param plugs Colection of dependecies
-	 */
-	dependencies(component, plugs={}){
-		if(component===undefined || component===null) return plugs
-		function check(c){ return c !== undefined && c !== null && c.length > 0 }
-		if(Array.isArray(component)) for(var i=0; i<component.length; i++) plugs = this.dependencies(component[i], plugs)
-		else if( typeof component == 'object' && check(component.plugin)){
-			if(plugs[component.plugin] === undefined && this[component.plugin] === undefined) plugs[component.plugin] = component.plugin
-			if(check(component.children)) plugs = this.dependencies(component.children, plugs)
-			else if(check(component.setup)) plugs = this.dependencies(component.setup, plugs)
-		}
-		return plugs
-	}
-
-	/**
-	 * Determines if there is a component or component element in the {'plugin':'xyz', 'setup':[..]} version (expandable)
-	 * @param {*} component Component to analyze
-	 * @returns <i>true</i> if some component or componet element in the {'plugin':'xyz', 'setup':[..]} version (expandable), <i>false</i> otherwise
-	 */
-	expandable(component){
-		function check(c){ return c !== undefined && c !== null }
-		if(Array.isArray(component)) for(var i=0; i<component.length; i++) if(this.expandable(component[i])) return true
-		if( (typeof component == 'object') && check(component.plugin)){
-			if(check(component.setup)) return true
-			else if(component.children.length>0) return this.expandable(component.children)
-		}
-		return false
-	}
-
-	/**
-	 * Expands any component or component element in the in the {'plugin':'xyz', 'setup':[..]} version (expandable)
-	 * @param {*} component Component to analyze
-	 * @returns An expanded version (calling the setup method of the associated plugin 'xyz'). May produce expandable components
-	 */
-	expand(component){
-		function check(c){ return c !== undefined && c !== null }
-		if(Array.isArray(component)) for(var i=0; i<component.length; i++) component[i] = this.expand(component[i])
-		else if( typeof component == 'object' && check(component.plugin)){
-			if(check(component.setup)) component = this[component.plugin].setup(...component.setup)
-			else if(component.children.length>0) component.children = this.expand(component.children)
-		}
-		return component
-	}
-
-	/**
-	 * Creates the expanded configuration JSON of a component (loads plugins if required)
-	 * @param {*} component Component to analyze
-	 * @param {*} callback Function that will be called when the component is completly analyzed
-	 */
-	setup(component, callback){
-		var x = this
-		var plugs = x.dependencies(component)
-		var aplugs = []
-		for( var c in plugs ){
-			if(x[plugs[c]] === undefined){
-				var i=0
-				while(i<aplugs.length && aplugs[i]!=plugs[c]) i++
-				if(i==aplugs.length) aplugs.push(plugs[c])
-			}	
-		}
-		if(aplugs.length==0){ 
-			if(this.expandable(component)){
-				component = x.expand(component)
-				x.setup(component, callback)
-			}else callback(component)
-		}else{
-			x.load(aplugs, function(){
-				component = x.expand(component)
-				x.setup(component, callback)
-			})
-		}
-	}
-
-	/**
-	 * Loads a set of plugins and executes the callback function
-	 * @param plugins An array of plugin ids
-	 * @param callback function to be executed after loading plugins
-	 */
-	 load(plugins, callback=function(){}){ 
-		if(plugins.length == 0){
-			callback()
-			return
-		}
-		var x = this
-		var ids = []
-		var tout
-		function check_eval(){
-			Konekti.daemon(function(){
-				var m=0
-				while(m<ids.length && x[ids[m]]!==undefined) m++
-				return (m==ids.length)
-			}, callback)
-		}
-
-		var k=0
-		function check(){
-			k++
-			if(k==plugins.length) check_eval()
-		}
-
-		for(var i=0; i<plugins.length; i++){
-			ids[i] = plugins[i].substring(Math.max(0,plugins[i].lastIndexOf('/')))
-			if( !plugins[i].endsWith('.js') ) plugins[i] += '.js'
-			else ids[i]= ids[i].substring(0,ids[i].length-3)
-			if( plugins[i].indexOf('/') < 0 ) plugins[i] = x.url+plugins[i]
-			if( x[plugins[i]] === undefined ) x.konekti.resource.JS(plugins[i], check)
-			else check()
-		} 
-	}
 }
 
 /**
@@ -578,24 +535,47 @@ class KonektiAPI{
 	/**
 	 * Inits the konekti framework
 	 */
-	constructor(){
-		this.dom = new DOM(this)
-		this.resource = new Resource()
-		this.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
-		this.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
-		this.TIMER = 20
-		this.MEDIUMSIZE = 992
-
-		Konekti = this
+    constructor(url='https://jgomezpe.github.io/konekti/src/'){
+        var x = this
+		Konekti = x
+        x.url = url
 		
-		this.plugin = new PlugInManager(this)
+		x.font = new FontSize()
+        x.dom = new DOM(x)
+		x.resource = new Resource()
+		x.resource.stylesheet( 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css' )
+		x.resource.stylesheet( 'https://www.w3schools.com/w3css/4/w3.css' )
+		x.TIMER = 20
+        
+        x.SMALL_SIZE = 600
+		x.MEDIUMSIZE = 902
+
+		x.plugin = {}
 		new PlugIn('raw')		
 
-		this.client = {'':{'children':[]}}
-		this.root = new RootClient()
+		x.client = {}
+		new RootClient()
 		
-		window.addEventListener("resize", this.resize);
+		window.addEventListener("resize", function(){ x.resize() })
+        x.resize()
 	}
+
+	/**
+	 * Resizes the components
+	 */
+    resize(){ 
+		var x = this
+		Konekti.daemon( function(){ return x.vc() !== undefined && x.vc()!==null },
+			function(){ x.client['body'].resize(window.innerWidth, window.innerHeight) }	
+		)
+	}
+
+	/**
+	 * Gets a visual component by id 
+	 * @param id Id of the visual component
+	 * @returns Visual componet with the given id
+	 */
+    vc(id='body'){ return (id=='body')?document.body:document.getElementById(id) }
 
 	/**
 	 * A Konekti daemon. Waits until <i>condition</i> is satisfied and then call function <i>f</i>.
@@ -611,94 +591,118 @@ class KonektiAPI{
 	}
 
 	/**
-	 * 
-	 * @param component Konekti component to build  
-	 * @returns A Konekti client
+	 * Expands a component in the {'plugin':'xyz', 'setup':[..]} version (expandable)
+	 * @param {*} component Component to analyze
+     * @param {*} callback Function called when the component is expanded
 	 */
-	build( component ){ return this.plugin[component.plugin].client(component) }
+    expand(component, callback){
+        var x = this
+        if(typeof component == 'object' && component.plugin !== undefined && component.setup!==undefined){
+            var plugin = component.plugin
+            if( !plugin.endsWith('.js') ) plugin += '.js'
+		    if( plugin.indexOf('/') < 0 ) plugin = x.url+plugin
+            var id = plugin.substring(plugin.lastIndexOf('/')+1, plugin.length-3)
+            function check(){
+                Konekti.daemon(
+                    function(){ return x.plugin[id]!==undefined }, 
+                    function(){
+                        var c = x.plugin[id].setup(...component.setup)
+                        var k=0
+                        function add_child(child){
+							var j=0; 
+                            while(j<c.children.length && (c.children[j].setup === undefined || child.id!=c.children[j].setup[1]) ) j++
+                            c.children[j] = child
+                            k++
+                            if(k==c.children.length) callback(x.plugin[id].client(c)) 
+                        }
+                        if(c.children.length>0){
+                            for( var i=0; i<c.children.length; i++ )
+                                x.expand(c.children[i], add_child)
+                        }else callback(x.plugin[id].client(c))
+                    }
+                )
+            }
+            if(x.plugin[id] === undefined) x.resource.JS(plugin, check) 
+            else check()
+		}else callback(component)
+	}
+
+    add(component, callback=function(){}){
+        var x = this
+		var pid = component.parent || component.setup[0]
+		var p = Konekti.client[pid]
+		var i = p.children.length
+		p.children[i] = null
+		p.callback[i] = callback
+        x.expand(component, function(c){
+            p.children[i] = c
+			var k = p.addqueue
+			while(k<p.children.length && p.children[k] != null){
+				p.vc().appendChild(Konekti.dom.html(p.children[k].html()))
+				k++
+			}
+			p.addqueue = k
+			if(k==p.children.length){
+				p.resize(p.vc().clientWidth, p.vc().clientHeight)			
+				for(var j=0; j<p.children.length; j++) p.callback[j]()
+			}	
+        })
+    }
 
 	/**
-	 * Creates and adds a component inside other component
+	 * Creates an item
+	 * @param id Id of the item
+	 * @param children Client components
+	 * @param config Extra configuration 
+	 * @param callback Function called when the item is ready
 	 */
-	add(){
-		var args = []
-		for(var i=1; i<arguments.length-1; i++)
-			args[i-1] = arguments[i]
-		var component = {'plugin':arguments[0], 'setup':args}
-		this.client[args[0]].add(component, arguments[arguments.length-1]) 
+    raw(id, children=[], config={}, callback=function(){}){ 
+		Konekti.add({'plugin':'raw', 'setup':['body', id, children, config]}, callback)
+	}
+
+	/**
+	 * Loads a set of plugins and executes the callback function
+	 * @param plugins An array of plugin ids
+	 * @param callback Function called after loading all plugins
+	 */
+    load(plugins, callback = function(){}){
+        var x = this
+        var ids = []
+        for(var i=0; i<plugins.length; i++){
+            var plugin = plugins[i]
+            if( !plugin.endsWith('.js') ) plugin += '.js'
+		    if( plugin.indexOf('/') < 0 ) plugin = x.url+plugin
+            var id = plugin.substring(plugin.lastIndexOf('/')+1, plugin.length-3)
+            ids[i] = id
+            if(x.plugin[id] === undefined) x.resource.JS(plugin) 
+        }
+        Konekti.daemon(
+            function(){
+                var flag = true
+                var k=0
+                while(k<ids.length && x.plugin[ids[k]] !== undefined) k++
+                return k==ids.length
+            }, 
+            callback
+        )
 	}
 
 	/**
 	 * Defines the set of plugins used by Konekti and executes the KonektiMain function
 	 * @param plugins An array of plugin ids
 	 */
-	uses(){
-		if( KonektiMain !== undefined ) this.plugin.load(arguments, KonektiMain)
-		else this.plugin.load(arguments)
-	}
-
-	/**
-	 * Gets a visual component by id 
-	 * @param id Id of the visual component
-	 * @returns Visual componet with the given id
-	 */
-	vc(id='body'){ return (id=='body')?document.body:document.getElementById(id) }
-
-	/**
-	 * Resizes the components
-	 */
-	resize(){
-		var c = Konekti.vc()
-		c.style.width = window.innerWidth + 'px'
-		c.style.height = window.innerHeight + 'px'
-	}
-
-	/**
-	 * Creates an item
-	 * @param parent Parent component
-	 * @param id Id of the item
-	 * @param children Client components
-	 * @param config Extra configuration 
-	 * @param callback Function called when the item is ready
-	 */
-	raw(parent, id, children, config, callback){ 
-		var args = []
-		for(var i=0; i<arguments.length; i++) args[i] = arguments[i]
-		if(args.length==2) args[2] = ''
-		if(args.length==3) args[3] = {}
-		if(args.length==4) args[4] = function(){}
-		Konekti.add('raw', ...args)
-	}
-}
-
-/**
- * The root client
- */
-class RootClient extends Client{
-	/**
-	 * Creates the root client
-	 */
-	constructor(){ 
-		super({'parent':'','plugin':'none','id':'body', 'children':[]})
-		Konekti.daemon( 
-			function (){ return Konekti.vc()!==undefined && Konekti.vc()!==null; },
-			function (){
-				var c = Konekti.vc()
-				c.style.position = 'absolute'
-				c.style.height = '100%'
-				c.style.width = '100%'
-				c.style.padding = '0px'
-				c.style.margin = '0px'
-				c.style.border = '0px'
-			}
-		)
-	}
+    uses(){
+        if(KonektiMain===undefined) KonektiMain = function(){}
+		var plugins = []
+		for(var i=0; i<arguments.length; i++) plugins[i] = arguments[i]
+        this.load(plugins,KonektiMain)
+	}	
 }
 
 /**
  * An editor (text) manager
  */
- class Editor extends Client{
+class Editor extends Client{
 	/**
 	 * Creates an editor with the given id/client information, and registers it into the Konekti framework
 	 */	
@@ -778,6 +782,27 @@ class MediaClient extends Client{
 	 * @param time Time position for the media component
 	 */
 	seek(time){}
+}
+
+/**
+ * The root client
+ */
+class RootClient extends Client{
+	/**
+	 * Creates the root client
+	 */
+	constructor(){ 
+		super({'id':'body', 'children':[]})
+		var x = this
+		Konekti.daemon(
+			function(){ return x.vc()!==undefined && x.vc()!==null }, 
+			function(){
+				var c = x.vc()
+				c.style.margin = '0px'
+				c.style.padding = '0px'		
+			}
+		)
+	}
 }
 
 /**
