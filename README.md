@@ -15,7 +15,9 @@ Konekti is a Java Script connection library that allows to connect JS/HTML/CSS r
 
 &nbsp;All rights reserved.
 
-&nbsp;Version 3.0 : <A HREF="https://jgomezpe.github.io/konekti/3.0/konekti.js">https://jgomezpe.github.io/konekti/3.0/konekti.js</A>
+<h3>Previous versions</h3>
+
+&nbsp;3.0 : <A HREF="https://jgomezpe.github.io/konekti/3.0/konekti.js">https://jgomezpe.github.io/konekti/3.0/konekti.js</A>
 
 
 <h3>Licence</h3>
