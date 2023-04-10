@@ -25,7 +25,7 @@ Konekti.dom.css(
 		cursor:pointer;
 	}
 	  
-	@media (min-width:` + (Konekti.MEDIUMSIZE+1) + `px){
+	@media (min-width:` + (Konekti.MEDIUM_SIZE+1) + `px){
 		.w4-main{
 			margin-left:200px!important;
 			margin-right:0px!important;
@@ -39,8 +39,9 @@ Konekti.dom.css(
 			display:block;
 		}
 	}
+
 	  
-	@media (max-width:` + Konekti.MEDIUMSIZE + `px){
+	@media (max-width:` + Konekti.MEDIUM_SIZE + `px){
 		.w4-sidebar{
 			display:none;
 		}
@@ -55,6 +56,7 @@ Konekti.dom.css(
 		}
 	}`
 )
+
 
 /** Konekti plugin for sidebarb elements */
 class SideBarPlugin extends PlugIn{
@@ -75,8 +77,8 @@ class SideBarPlugin extends PlugIn{
 			side
 		], {'class':'w4-sidebar w3-collapse w3-card w3-animate-left'}]}
 		config.layout='row'
-		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
-		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main ', 'style':'margin-left:200px;height:100%;width:fit;'}]}
+		var expand = {'plugin':'raw', 'setup':[id+'Resize', '&#9776;', {'width':'20px','onclick':client+"open()", 'class':' w3-large w4-sidebtn '}]}
+		var main = {'plugin':'raw', 'setup':[id+'Main', main, {'class':' w4-main ', 'style':'margin-left:200px;height:100%;'}]}
 		return super.setup(parent, id, [expand,side,main], config)
 	}
 	
@@ -97,14 +99,54 @@ class SideBar extends Client{
 	 * Displays the sidebar
 	 * @param barId Sidebar's id
 	 */
-	open(){ this.vc('Bar').style.display = 'block' }
+	open(){ 
+		var x = this
+		x.vc('Resize').style.display = 'none' 
+		x.vc('Bar').style.display = 'block' 
+		x.update(x.width, x.height)
+	}
 
 	/**
 	 * Hides the sidebar
 	 * @param barId Sidebar's id
 	 */
 	close(){ 
-		this.vc('Bar').style.display = null 
+		var x = this
+		x.vc('Resize').style.display = 'block' 
+		x.vc('Bar').style.display = 'none' 
+		x.update(x.width, x.height)
+	}
+
+    /**
+     * Resizes the component 
+	 * @param width Component's width
+	 * @param height Component's height
+     */
+    update( width, height ){
+		var x = this
+		if(width>Konekti.MEDIUM_SIZE){
+			x.children[0].resize(0,height)
+			x.children[1].resize(200,height)
+			x.children[2].resize(width-200,height)
+		}else{
+			x.children[2].resize(width,height)
+		}
+	}
+
+    /**
+     * Resizes the component 
+	 * @param width Parent's width
+	 * @param height Parent's height
+     */
+    resize( width, height ){
+		var x = this
+		width = x.computeSize(width, x.config.width, x.parent!==undefined?Konekti.client[x.parent].fitWidth():0)
+		height = x.computeSize(height, x.config.height, x.parent!==undefined?Konekti.client[x.parent].fitHeight():0)
+		x.width = width
+		x.vc().style.width = width + 'px'
+		x.height = height
+		x.vc().style.height = height + 'px'
+		x.update(width, height)
 	}
 }
 

@@ -11,7 +11,7 @@ class InputPlugin extends PlugIn{
 	 */
 	setup(parent, id, onenter='', config={}){
 		config.tag = 'input'
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif'
 		config.class = (config.class||"") + " w3-input "
 

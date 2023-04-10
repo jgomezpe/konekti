@@ -16,7 +16,7 @@ class IFramePlugin extends PlugIn{
 	 */
 	setup(parent, id, src, config={}){
 		config.tag = 'iframe'
-		config = this.style(config)
+		config = Konekti.config(config)
 		if( !src.startsWith('https://') ) config.src = this.getBlobURL(src, 'text/html') 
 		else config.src = src
 		config.frameBorder = 0

@@ -12,8 +12,7 @@ class BtnPlugin extends PlugIn{
 	 * @param config Style of the button
 	 */
 	 setup(parent, id, icon, caption, onclick='', config={}){
-		config.tag = 'div'
-		config = this.style(config)
+		config = Konekti.config(config)
 		if(onclick!='') config.onclick = Konekti.dom.onclick(id,onclick)
 		config.class = (config.class||"") + " w3-button "
 		var fs = Konekti.font.size(config) 

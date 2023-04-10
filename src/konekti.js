@@ -13,6 +13,11 @@
 * @version 1.0
 */
 
+/**
+ * Konekti Application program interface. Main object of the Konekti framework
+ */
+let Konekti = null
+
 /** Class for managable resources */
 class Resource{
 	constructor(){}
@@ -143,6 +148,11 @@ class DOM{
 		return client+method+'("'+id+'")'
 	}
 
+	/**
+	 * Creates a JSON from a style parameter of a html element
+	 * @param {*} sty Style parameter string 
+	 * @returns A JSON representation of the style parameter
+	 */
 	style( sty ){
 		var attr = sty.split(";")
 		var json = {}
@@ -253,6 +263,20 @@ class DOM{
 		if( general ) lang = lang.split('-')[0]
 		return lang
 	}
+
+	/**
+	 * Computes the size of a component
+	 * @param {*} parent Parent's size
+	 * @param {*} child  Component's size (ended with 'px', '%', or just with value 'fit')
+	 * @returns The computed size of the component 
+	 */
+	size(parent, child){
+		if(child.endsWith('px'))
+			return parseFloat(child.substring(0,child.length-2))
+		if(child.endsWith('%'))
+			return parent * parseFloat(child.substring(0,child.length-1)) / 100
+		return parent
+	}
 }
 
 class FontSize{
@@ -313,42 +337,41 @@ class FontSize{
 	}
 }
 
-/** A Konekti client. */
+/** A Konekti component. */
 class Client{
     /**
-     * Assigns attributes in JSON configuration object to the client
+     * Assigns attributes in JSON configuration object to the component
      * @param {*} config JSON configuration object
      */
     assign( config ){ for( var x in config ) this[x] = config[x] }
 
     /**
-     * Creates a client using the JSON configuration object
+     * Creates a component using the JSON configuration object
      * @param {*} config JSON configuration object
      */
     constructor( config ){
         var x = this
         x.assign(config)
+		x.inner = x.inner || ''
 		x.addqueue = 0
 		x.callback = []
         Konekti.client[x.id] = x
-        x.config = x.config || {}
-		x.layout = x.config.layout || 'col'
-		x.config.style = x.config.style || {}
-		if(typeof x.config.style === 'string') x.config.style = Konekti.dom.style(x.config.style)
-
-		function size(config, side){
-			x[side] = ''
-			if(config[side] !== undefined ) x[side] = config[side]
-			else if( config.style[side] !== undefined ) x[side] = config.style[side]
-		}
-		
-		size(x.config,'width')
-		size(x.config,'height')
-		x.config.tag = x.config.tag || 'div'
     }
 
     /**
-     * Associated html code
+     * Gets the html code associated to the client
+	 * @return html code associated to the client
+	 */
+    innerHtml(){
+        var inner = this.inner || ''
+        for(var i=0; i<this.children.length; i++)
+            inner += this.children[i].html()
+        return inner
+    }
+
+    /**
+     * Gets the html code associated to the client
+	 * @return html code associated to the client
 	 */
     html(){
         var config = this.config
@@ -358,19 +381,14 @@ class Client{
 		for(var x in config){        
 			if( x=='style' ){
 				var v=''
-				if(typeof config[x] === 'string') v = config[x]
-				else for(var y in config[x]) if(y!='width' && y!='height') v += y + ':' + config[x][y] + ';'
+				for(var y in config[x]) v += y + ':' + config[x][y] + ';'
 				otag += x + "='" + v + "' "
 			}else if( x!=='tag' && x!=='extra' && x!='width' && x!='height' && x!='layout') otag += x + "='" + config[x] + "' "
 		}	
         otag += (config.extra||'')+">"
         
         // innerHTML
-        var inner = this.inner || ''
-        if(this.children.length>0){
-        for(var i=0; i<this.children.length; i++)
-            inner += this.children[i].html()
-        }
+        var inner = this.innerHtml()
         
         // Close tag
         var ctag = ''
@@ -384,79 +402,12 @@ class Client{
         return otag + inner + ctag
     }
   
-    vc(id=''){
-        return Konekti.vc(this.id+id)
-    }
-
-	size(parent, child){
-		if(child.endsWith('%'))
-			return parent * parseFloat(child.substring(0,child.length-1)) / 100
-		if(child.endsWith('px'))
-			return parseFloat(child.substring(0,child.length-2))
-		return 0
-	}
-
-    /**
-     * Resize window
-     */
-    rowLayout( width, height ){
-        var x = this
-        var flip = (width<=Konekti.SMALL_SIZE)
-		var h = []
-		var w = []
-		var tw = 0
-		for(var i=0; i<x.children.length; i++) {
-			if(x.children[i] !== null){
-				var rect = x.children[i].vc().getBoundingClientRect()
-				w[i] = (x.children[i].width=='')? rect.width : x.size(width, x.children[i].width)
-				h[i] = (x.children[i].height=='')? rect.height : x.size(height, x.children[i].height)
-				tw += w[i]
-			}	
-		}
-		for(var i=0; i<x.children.length; i++) {
-			if(x.children[i] !== null){
-				if(flip && x.layout=='res' && (w[i]==0 || w[i] > Konekti.SMALL_SIZE)) w[i] = Konekti.SMALL_SIZE
-				if(w[i]==0) w[i] = width - tw
-				x.children[i].resize(w[i], h[i])
-			}	
-		}      
-    }   
-
-    /**
-     * Resize window
-     */
-    colLayout( width, height ){
-        var x = this
-		var h = []
-		var w = []
-		var th = 0
-		for(var i=0; i<x.children.length; i++) {
-			if(x.children[i] !== null){
-				var rect = x.children[i].vc().getBoundingClientRect()
-				w[i] = (x.children[i].width=='')? rect.width : x.size(width, x.children[i].width)
-				h[i] = (x.children[i].height=='')? rect.height : x.size(height, x.children[i].height)
-				th += h[i]
-			}	
-		}
-		for(var i=0; i<x.children.length; i++) {
-			if(x.children[i] !== null){
-				if(h[i]==0) h[i] = height - th
-				x.children[i].resize(w[i], h[i])
-			}	
-		}      
-    }   
-
-
-    /**
-     * Resize window
-     */
-    resize( width, height ){
-        var x = this	
-        x.vc().style.width = width + 'px'
-        x.vc().style.height = height + 'px'
-		if(x.layout=='col') x.colLayout(width,height)
-		else x.rowLayout(width,height)
-    }   
+	/**
+	 * Gets a html component associated to the client or subclient
+	 * @param {*} id Subclient partial id
+	 * @returns HTML element associated to the client or patial id client
+	 */
+    vc(id=''){ return Konekti.vc(this.id+id) }
 
 	/**
 	 * Adds listener to events of the client
@@ -474,9 +425,159 @@ class Client{
 		if( i<this.listener.length ) this.listener.splice(i,1)
 	}
 
+	fitWidth(){ 
+		var x = this
+		var tw = 0
+		var h = 0
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] != null && x.children[i].config.width!='fit'){
+				tw += x.children[i].width
+				if(h<x.children[i].height) h = x.children[i].height
+			}	
+		}
+		return this.width - tw
+	}
+
+	fitHeight(){ 
+		var x = this
+		var th = 0
+		var w = 0
+		for(var i=0; i<x.children.length; i++) {
+			if(x.children[i] != null && x.children[i].config.height!='fit'){
+				th += x.children[i].height
+				if(w<x.children[i].width) w = x.children[i].width
+			}	
+		}
+		return this.height - th
+	}
+
+
+	widthResize(width){
+		var x = this
+		var w = 0
+		switch(x.config.width){
+			case '':
+				w = this.vc().getBoundingClientRect().width
+			break;
+			case 'fit':
+				w = Konekti.component[x.parent].fitWidth()
+			break;
+			default:
+				if(x.config.width.endsWith('px')) w = parseFloat(x.config.width.substring(0,x.config.width.length-2))
+				else w = width * parseFloat(x.config.width.substring(0,x.config.width.length-1)) / 100	
+		}
+		return w
+	}
+
+	heightResize(height){
+		var x = this
+		var h = 0
+		switch(x.config.height){
+			case '':
+				h = this.vc().getBoundingClientRect().height
+			break;
+			case 'fit':
+				h = Konekti.component[x.parent].fitHeight()
+			break;
+			default:
+				if(x.config.height.endsWith('px')) h = parseFloat(x.config.height.substring(0,x.config.height.length-2))
+				else h = height * parseFloat(x.config.height.substring(0,x.config.height.length-1)) / 100	
+		}
+		return h
+	}
+
+    /**
+     * Resize window
+     */
+    rowLayout(){
+		var x = this
+		for(var i=0; i<x.children.length; i++)
+			if(x.children[i] != null && x.children[i].config.width!='fit')
+				x.children[i].resize(x.width, x.height)
+		for(var i=0; i<x.children.length; i++)
+			if(x.children[i] !== null && x.children[i].config.width=='fit')
+				x.children[i].resize(x.width, x.height)
+    }   
+
+    /**
+     * Resize window
+     */
+    colLayout(){
+		var x = this
+		for(var i=0; i<x.children.length; i++)
+			if(x.children[i] !== null && x.children[i].config.height!='fit')
+				x.children[i].resize(x.width, x.height)
+		for(var i=0; i<x.children.length; i++)
+			if(x.children[i] !== null && x.children[i].config.height=='fit')
+				x.children[i].resize(x.width, x.height)
+    }
+
+	computeSize(size, style, fitSize){
+		if(style=='fit') return fitSize
+		if(style.endsWith('px')) return parseFloat(style.substring(0,style.length-2))
+		if(style.endsWith('%')) return size * parseFloat(style.substring(0,style.length-1)) / 100
+		return size
+	}
+
+    /**
+     * Resizes the component 
+	 * @param width Parent's width
+	 * @param height Parent's height
+     */
+    resize( width, height ){
+		var x = this
+		width = x.computeSize(width, x.config.width, x.parent!==undefined?Konekti.client[x.parent].fitWidth():0)
+		height = x.computeSize(height, x.config.height, x.parent!==undefined?Konekti.client[x.parent].fitHeight():0)
+
+		if(x.children.length>0){
+			if(x.layout=='row'){
+				for(var i=0; i<x.children.length; i++)
+					if(x.children[i] != null && x.children[i].config.width!='fit') 
+						x.children[i].resize(width, height)
+				var r = x.vc().getBoundingClientRect()
+				if(x.config.width!=''){
+					x.width = width
+					x.vc().style.width = width + 'px'
+				}else x.width = r.width
+				for(var i=0; i<x.children.length; i++)
+					if(x.children[i] != null && x.children[i].config.width=='fit') 
+						x.children[i].resize(width, height)				
+				if(x.config.height!=''){
+					x.height = height
+					x.vc().style.height = height + 'px'
+				}else x.height = r.height
+			}else{
+				for(var i=0; i<x.children.length; i++)
+					if(x.children[i] != null && x.children[i].config.height!='fit') 
+						x.children[i].resize(width, height)
+				var r = x.vc().getBoundingClientRect()
+				if(x.config.height!=''){
+					x.height = height
+					x.vc().style.height = height + 'px'
+				}else x.height = r.height
+				for(var i=0; i<x.children.length; i++)
+					if(x.children[i] != null && x.children[i].config.height=='fit') 
+						x.children[i].resize(width, height)				
+				if(x.config.width!=''){
+					x.width = width
+					x.vc().style.width = width + 'px'
+				}else x.width = r.width		
+			}
+		}else{
+			var r = x.vc().getBoundingClientRect()
+			if(x.config.width!=''){
+				x.width = width
+				x.vc().style.width = width + 'px'
+			}else x.width = r.width
+			if(x.config.height!=''){
+				x.height = height
+				x.vc().style.height = height + 'px'
+			}else x.height = r.height
+		}
+ 	}
 }
 
-/** A Konekti plugin. */
+/** Class used for creating an instance of a Konekti component (plugin). */
 class PlugIn{
 	/**
 	 * Creates a plugin
@@ -488,54 +589,40 @@ class PlugIn{
 	}
 
 	/**
-	 * Process the style component of a config object. if it is a string creates an object with all key:pair values in the string
-	 * @param {*} config Visual configuration of the component
-	 * @returns An object with all key:pair values for the style to apply to the component
+	 * Creates a client configuration object
+	 * @param parent Parent component
+	 * @param id Id of the component 
+	 * @param children Children components
+	 * @param config Extra configuration 
 	 */
-	style(config){
-		config.style = config.style || {}
-		if(typeof config.style === 'string') config.style = Konekti.dom.style(config.style)
-		return config
+	setup( parent, id, children=[], config={}  ){
+		config = Konekti.config(config)
+		var inner = ''
+		if(typeof children === 'string'){
+			inner = children
+			children = []
+		}
+		if(!Array.isArray(children)) children = [children]
+		for(var i=0; i<children.length; i++) 
+			if(children[i].setup[0]!=id) children[i].setup.splice(0,0,id)
+		return {'id':id, 'parent':parent, 'children':children, 'inner': inner, 'config': config, 'listener':[] } 
 	}
 
 	/**
-	 * Creates a client configuration object
-	 * @param parent Parent component
-	 * @param plugin Id of the component 
-	 * @param id Id of the component 
-	 * @param children Inner components or pure html code
-	 * @param config Extra configuration 
+	 * Creates a client from the specific plugin
+	 * @param {*} config Client configuration
+	 * @returns Client from the specific plugin
 	 */
-	setup( parent, id, children = '', config={}  ){
-		config = this.style(config)
-
-		var inner =''
-		if(typeof children == 'string'){
-			inner = children
-			children = []
-		}else if(!Array.isArray(children)) children = [children]
-		for(var i=0; i<children.length; i++)
-			if(children[i].setup !== undefined && children[i].setup[0]!==id) children[i].setup.splice(0,0,id)
-		
-		config.tag = config.tag || 'div'
-		return {'id':id, 'parent':parent, 'inner':inner, 'children':children, 'config': config, 
-		'listener':[] } 
-	}
-
 	client( config ){ return new Client(config) }
 }
-
-/**
- * Konekti Application program interface. Main object of the Konekti framework
- */
-var Konekti = null
 
 /** Aplication program interface. Plugins will be seen as methods of this class */
 class KonektiAPI{
 	/**
 	 * Inits the konekti framework
 	 */
-    constructor(url='https://jgomezpe.github.io/konekti/src/'){
+    constructor(url='src/'){ // constructor(url='https://jgomezpe.github.io/konekti/src/'){
+
         var x = this
 		Konekti = x
         x.url = url
@@ -548,13 +635,13 @@ class KonektiAPI{
 		x.TIMER = 20
         
         x.SMALL_SIZE = 600
-		x.MEDIUMSIZE = 902
+		x.MEDIUM_SIZE = 902
 
 		x.plugin = {}
 		new PlugIn('raw')		
 
 		x.client = {}
-		new RootClient()
+		new Root()
 		
 		window.addEventListener("resize", function(){ x.resize() })
         x.resize()
@@ -615,7 +702,7 @@ class KonektiAPI{
                             k++
                             if(k==c.children.length) callback(x.plugin[id].client(c)) 
                         }
-                        if(c.children.length>0){
+                        if(c.children!=undefined && c.children.length>0){
                             for( var i=0; i<c.children.length; i++ )
                                 x.expand(c.children[i], add_child)
                         }else callback(x.plugin[id].client(c))
@@ -696,7 +783,25 @@ class KonektiAPI{
 		var plugins = []
 		for(var i=0; i<arguments.length; i++) plugins[i] = arguments[i]
         this.load(plugins,KonektiMain)
-	}	
+	}
+
+	/**
+	 * Process a configuration object associated to a client
+	 * @param json JSON to process
+	 * @return A processed configuration  object (deep clone with some attributes such as widdth, height, and style processed)
+	 */
+	config(json){ 
+		json = JSON.parse(JSON.stringify(json))
+		json.style = json.style || {}
+		if(typeof json.style === 'string') json.style = Konekti.dom.style(json.style)
+		json.layout = json.layout || 'col'
+		json.width = json.width || json.style.width || ''
+		if(json.style.width !== undefined) delete json.style.width
+		json.height = json.height || json.style.height || ''
+		if(json.style.height !== undefined ) delete json.style.height
+		json.tag = json.tag || 'div'
+		return json
+	}
 }
 
 /**
@@ -787,21 +892,12 @@ class MediaClient extends Client{
 /**
  * The root client
  */
-class RootClient extends Client{
+class Root extends Client{
 	/**
 	 * Creates the root client
 	 */
 	constructor(){ 
-		super({'id':'body', 'children':[]})
-		var x = this
-		Konekti.daemon(
-			function(){ return x.vc()!==undefined && x.vc()!==null }, 
-			function(){
-				var c = x.vc()
-				c.style.margin = '0px'
-				c.style.padding = '0px'		
-			}
-		)
+		super({'id':'body', 'children':[], 'config':{'style':{'margin':'0px', 'padding':'0px'}, 'width':'100%', 'height':'100%'}})
 	}
 }
 

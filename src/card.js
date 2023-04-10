@@ -8,9 +8,9 @@ class CardPlugin extends PlugIn{
 	 * @param description Contained components with description of the product/person
 	 */
 	 setup( parent, id, description, config={} ){
-		config.tag = 'div'
+		console.log(config)
 		config.class = "w3-container w3-center " + (config.class||'') 
-        var content = {'plugin':'raw', 'setup':[id+'Content', description, {'class':"w3-card", 'tag':'div', 'style':'width:100%;height:100%;'}]}
+        var content = {'plugin':'raw', 'setup':[id+'Content', description, {'class':"w3-card", 'width':'100%', 'height':'100%'}]}
 		return super.setup(parent, id, [content], config) 
 	}
 }

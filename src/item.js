@@ -12,9 +12,10 @@ class ItemPlugin extends PlugIn{
 	 */
 	setup(parent, id, icon, caption, config={}){ 
 		config.tag = config.tag || 'span'
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.style["vertical-align"] = "middle"
-		var c = super.setup(parent, id, '', config)
+		config.height = ''
+		var c = super.setup(parent, id, [], config)
 		c.icon = icon
 		c.caption = caption
 		return c
@@ -35,15 +36,7 @@ class Item extends Client{
 	 */	
 	constructor(config){ super(config) }
 
-	/**
-	 * Associated html code
-	 */
-	html(){ 
-		this.inner = this.inner_html()
-		return super.html()
-	}
-
-	inner_html(){
+	innerHtml(){
 		var code = ''
 		if(typeof this.icon == 'string') 
 			if(this.icon.length > 0){ 
@@ -65,10 +58,8 @@ class Item extends Client{
 				code = this.icon.src + ' '
 			break;
 			case 'img':
-				console.log(this.config)
 				var size = Konekti.font.size(this.config) || 10
-				console.log('item..'+size)
-				code = '<div style="float:left;vertical-align:middle;width:' + size + 'px;height:' + size +'px;"><img src="' + this.icon.src + '" style="vertical-align:middle;width:100%;height:100%;"></div>' 
+				code = '<div style="float:left;vertical-align:middle;margin:4px;width:' + size + 'px;height:' + size +'px;"><img src="' + this.icon.src + '" style="vertical-align:middle;width:100%;height:100%;"></div>' 
 			break;
 		}
 		return code + this.caption
@@ -83,7 +74,7 @@ class Item extends Client{
 		var c = this.vc()
 		this.icon = icon
 		this.caption = caption
-		c.innerHTML = this.inner_html()
+		c.innerHTML = this.innerHtml()
 	}
 
 	/**
@@ -93,7 +84,7 @@ class Item extends Client{
 	setCaption(caption){
 		var c = this.vc()
 		this.caption = caption
-		c.innerHTML = this.inner_html()
+		c.innerHTML = this.innerHtml()
 	}
 
 	/**
@@ -103,7 +94,7 @@ class Item extends Client{
 	setIcon(icon){
 		var c = this.vc()
 		this.icon = icon
-		c.innerHTML = this.inner_html()
+		c.innerHTML = this.innerHtml()
 	}
 
 }

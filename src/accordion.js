@@ -13,19 +13,23 @@ class AccordionPlugin extends PlugIn{
 	 * @param config Style of the accordion's header
 	 */
 	setup(parent, id, header, content, showContent, onclick, config={}){
-		config = this.style(config)
+		config.tag = 'div'
+		config = Konekti.config(config)
 		config.style['font-size'] = config.style['font-size'] || (Konekti.font.defaultSize +'px')
-		config.width = '100%'
 		var cfg = header.config || {}
 		cfg.class = (cfg.class || '') + ' w3-button w3-left-align '
-		cfg.width = '100%'
-		cfg =  this.style(cfg)
+		cfg.width = cfg.width || '100%'
+		cfg =  Konekti.config(cfg)
 		cfg.style['font-size'] = config.style['font-size']
 		cfg.style.cursor = 'pointer'
-		cfg.tag = 'div'
 		cfg.onclick = 'Konekti.client["'+id+'"].show()'
 		var children = [{'plugin':'item', 'setup':[id+'Item', header.icon, header.caption, cfg]}]
-		if(content!==null) children[1] = content
+		if(content!==null){
+			if(Array.isArray(content)){
+				for( var i=0; i<content.length; i++)
+					children[i+1] = content[i]
+			}else children[1] = content
+		}
 		var c = super.setup(parent, id, children, config)
 		c.onclick = Konekti.dom.onclick(id, onclick)
 		c.showContent = showContent
@@ -65,6 +69,7 @@ class Accordion extends Client{
 			if( x.style.display=='none'){
 				 x.style.display='block'
 			}else x.style.display = 'none'
+			Konekti.resize()
   		}
 		eval(this.onclick) 		
 	}	

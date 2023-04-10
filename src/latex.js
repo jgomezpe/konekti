@@ -15,8 +15,7 @@ class LatexPlugin extends PlugIn{
 	 * @param tex Latex code
 	 */
 	 setup(parent, id, tex, config={}){
-		config.tag = 'div'
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.style.padding = '8px'
 		config.overflow='auto'
 		var c = super.setup(parent, id, '', config)

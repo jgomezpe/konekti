@@ -16,18 +16,22 @@ class LoginPlugin extends PlugIn{
 	setup(parent, id, server, captions, config={}){		
 		config.input = config.input || {}
 		var input = config.input
-		input.class = ' w3-input ' + (input.class || '')
-		input.style = 'width:80%;font-family: FontAwesome, Arial, Verdana, sans-serif;'+(input.style || '')
-console.log(input.style)
-		var email = {'plugin':'raw', 'setup':[id+'email', '', 
-			{'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.email || 'email',
-			'name':id+'email', 'type':'text'}
-		]}
+		input.tag = 'input'
+		input.width = '100%'
+		input.class = input.class || ' w3-input ' 
+		var email_cfg = Konekti.config(input)
+		email_cfg.placeholder = captions.email || 'email'
+		email_cfg.type = 'text'
+		email_cfg.name = id+'email'
+		email_cfg.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif;'
+		var email = {'plugin':'raw', 'setup':[id+'email', '', email_cfg]}
 
-		var password = {'plugin':'raw', 'setup':[id+'password', '', 
-			{'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.password || 'password',
-			'name':id+'password', 'type':'password'}
-		]}
+		var pwd_cfg = Konekti.config(input)
+		pwd_cfg.placeholder = captions.password || 'password'
+		pwd_cfg.type = 'password'
+		pwd_cfg.name = id+'password'
+		pwd_cfg.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif;'
+		var password = {'plugin':'raw', 'setup':[id+'password', '', pwd_cfg]}
 
 		config.btn = config.btn || {}
 		var btncfg = config.btn
@@ -39,10 +43,12 @@ console.log(input.style)
 		]		
 		var navbar = {'plugin':'navbar', 'setup':[id+'navbar', btn, '']}
 
-		var code = {'plugin':'raw', 'setup':[id+'code', '', 
-			{'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.code || 'code',
-			'name':id+'code', 'type':'text'}
-		]}
+		var code_cfg = Konekti.config(input)
+		code_cfg.placeholder = captions.code || 'code'
+		code_cfg.type = 'text'
+		code_cfg.name = id+'code'
+		code_cfg.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif;'
+		var code = {'plugin':'raw', 'setup':[id+'code', '', code_cfg]}
 		var codebtn = {'plugin':'btn', 'setup':[id+"codebtn", "fa-check", captions.send, {'client':id, 'method':'registercode'}, Object.assign({}, btncfg)]}
 
 		var log = {'plugin':'raw', 'setup':[id+'log', '', {'class':' w3-red '}]}

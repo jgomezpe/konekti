@@ -11,9 +11,8 @@ class NavBarPlugin extends PlugIn{
 	 * @return A NavBar manager
 	 */
 	setup(parent, id, btns, onclick, config={}){
-		config.tag = 'div'
 		config.class = (config.class || '') + " w3-bar "
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.width = '100%'
 		var size = Konekti.font.fromClass(config.class)
 		for(var i=0; i<btns.length; i++) this.init_child(btns[i], size, onclick)

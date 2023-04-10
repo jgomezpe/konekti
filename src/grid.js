@@ -4,10 +4,8 @@ class GridPlugin extends PlugIn{
 
 	children_setup(id, cells, max_cols, cell_config){
         var col_size = 96/max_cols
-		cell_config.tag = 'div'
 		cell_config.height = cell_config.height || '200px'
-		//cell_config.class = " w3-center " + (cell_config.class||'')
-		cell_config = this.style(cell_config)
+		cell_config =  Konekti.config(cell_config)
 		cell_config.style.padding = '4px'
 		cell_config.style.margin = '4px'
 		cell_config.width = col_size+'%'
@@ -29,7 +27,7 @@ class GridPlugin extends PlugIn{
 	 * @param cells Contained components
 	 */
 	setup( parent, id, cells, max_cols, cell_config, config={} ){
-		config = this.style(config)
+		config = Konekti.config(config)
         cells = this.children_setup(id, cells, max_cols, cell_config)
 		config.style.margin = "2px"
 		config.style.padding = "0px"
@@ -52,7 +50,7 @@ class Grid extends Client{
 	 */
     constructor(config){ 
 		super(config) 
-		this.layout = 'res'
+		this.layout = 'row'
 	}
 
 	set(cells){

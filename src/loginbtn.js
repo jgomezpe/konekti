@@ -1,4 +1,5 @@
 Konekti.load(['dropdown'], function(){
+
 /**
  * A login button plugin (dropdown with login/logout, registration, and extra information component)
  */
@@ -18,33 +19,46 @@ class LoginBtnPlugin extends DropDownPlugin{
      * @param {*} config  Style of the components (input, buttons, etc)
      */
     setup(parent, id, extra, server, captions, config){
+        config = Konekti.config(config)
+        config.user = Konekti.config(config.user)
         var login = {'plugin':'login', 'setup':[id+'login', id, captions, config]}
 
-        var input = config.input
-        var oldpwd = {'plugin':'raw', 'setup':[id+'oldpwd', '', 
-            {'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.oldpassword || 'Current',
-            'name':id+'oldpwd', 'type':'password'}
-        ]}
+		var input = config.input
+		input.tag = 'input'
+		input.width = '100%'
+		input.class = input.class || ' w3-input ' 
+		
+        var old_cfg = Konekti.config(input)
+		old_cfg.placeholder = captions.oldpassword || 'current'
+		old_cfg.type = 'password'
+		old_cfg.name = id+'oldpwd'
+		old_cfg.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif;'
+		var oldpwd = {'plugin':'raw', 'setup':[id+'oldpwd', '', old_cfg]}
 
-        var newpwd = {'plugin':'raw', 'setup':[id+'newpwd', '', 
-            {'tag':'input', 'class':input.class, 'style':input.style, 'placeholder':captions.newpassword || 'New',
-            'name':id+'newpwd', 'type':'password'}
-        ]}
+        var new_cfg = Konekti.config(input)
+		new_cfg.placeholder = captions.newpassword || 'new'
+		new_cfg.type = 'password'
+		new_cfg.name = id+'newpwd'
+		new_cfg.style['font-family'] ='FontAwesome, Arial, Verdana, sans-serif;'
+		var newpwd = {'plugin':'raw', 'setup':[id+'newpwd', '', new_cfg]}
+
         var change = {'plugin':'accordion', 'setup':[id+'cpwd', {'icon':'fa-key', 'caption':'Cambiar clave'}, {
             'plugin':'raw', 'setup':[id+'ccpwd', [
                 oldpwd, newpwd,
-                {'plugin':'raw', 'setup':[id+'pwdlog', '', {'class':' w3-red '}]},
+                {'plugin':'raw', 'setup':[id+'pwdlog', '', {'class':' w3-red ', 'width':'100%'}]},
                 {'plugin':'btn', 'setup':[id+'updatepwd', 'fa-user-secret', 'Actualizar', {'client':id, 'method':'updatepwd'}, {'class':' w3-block  w3-left-align'}]}
             ]]},
-            false, '', {}]
+            false, '', config.user]
         }
         var logout = {'plugin':'btn', 'setup':[id+'logout', 'fa-sign-out', 'Salir', {'client':id, 'method':'logout'}, {'class':' w3-block w3-left-align'}]}
         if(extra==null) extra = []
         else if(!Array.isArray(extra)) extra=[extra]
         extra.push(change)
         extra.push(logout)
-        var connected = {'plugin':'raw', 'setup':[id+'connected', extra, {'class':'w3-small', 'style':'display:none;'}]}
-        var c = super.setup(parent, id, "fa-user", "", [login,connected])
+        var cfg = Konekti.config(config.user)
+        cfg.style.display = 'none'
+        var connected = {'plugin':'raw', 'setup':[id+'connected', extra, cfg]}
+        var c = super.setup(parent, id, "fa-user", "", {'plugin':'raw', 'setup':[id+'content', [login,connected], config.btn]})
         c.server = server
         c.captions = captions
         return c
@@ -81,6 +95,7 @@ class LoginBtn extends DropDown{
             Konekti.client[x.id+'login'].log()
             x.vc('login').style.display = 'none'
             x.vc('connected').style.display = 'block'
+            Konekti.resize()
         }, function(){ Konekti.client[x.id+'login'].log(x.captions.invaliduser) })
     }
 
@@ -89,7 +104,7 @@ class LoginBtn extends DropDown{
      * @param {*} user User information (email)
      * @param {*} password password information
      */
-     register(user,password){
+    register(user,password){
         var x = this
         x.server.register(user, password, function(){ Konekti.client[x.id+'login'].showcode() }, 
             function(){ Konekti.client[x.id+'login'].log(x.captions.alreadyuser) })	
@@ -106,6 +121,7 @@ class LoginBtn extends DropDown{
             Konekti.client[x.id+'login'].hidecode()
             x.vc('login').style.display = 'none'
             x.vc('connected').style.display = 'block'	
+            Konekti.resize()
         }, function(){ Konekti.client[x.id+'login'].log(x.captions.invalidcode) })	
     }
 
@@ -134,6 +150,7 @@ class LoginBtn extends DropDown{
         x.vc('oldpwd').value = ''
         x.vc('newpwd').value = ''
         x.vc('pwdlog').innerHTML = ''
+        Konekti.resize()
     }
 
     /**

@@ -18,7 +18,7 @@ class TabPlugin extends PlugIn{
 			var label = tabs[i].label
 			label.splice(0,0,cid+'Btn')
 			label.splice(3,0,null)
-			label[4] = {'class': ' w3-border-left w3-border-top w3-border-right w3-round '}
+			label[4] = {'class': ' w3-border-left w3-border-top w3-border-right w3-round w3-medium '}
 			btns.push({'plugin':'btn', 'setup':label})
 			contents.push(tabs[i])
 		}
@@ -52,6 +52,7 @@ class Tab extends Client{
 	 * @param page Tab to display
 	 */
 	open(page) {
+		console.log(page)
 		var x = this
 		page = page.substring(0,page.length-3)
 		function check(){
@@ -67,8 +68,10 @@ class Tab extends Client{
 				var tabs = x.children[1].children
 				btn = Konekti.vc(x.current+'Btn')
 				btn.className = btn.className.replace("w3-light-grey", "") + " w3-grey"
+				var r = x.children[1].vc().getBoundingClientRect()
 				for( var c in tabs ) tabs[c].vc().style.display = "none"  
 				Konekti.vc(page).style.display = ""
+				Konekti.client[page].resize(r.width, r.height)
 				if(Konekti.client[page].focus!==undefined) Konekti.client[page].focus()
 			}else setTimeout(check, 100)
 		}

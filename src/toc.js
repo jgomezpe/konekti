@@ -13,7 +13,7 @@ class TocPlugin extends PlugIn{
 			var caption = c[2]
 			var cstyle = c[3] || {}
 			cstyle.class = 'w3-block w3-left-align ' + (cstyle.class||'')
-			cstyle = this.style(cstyle)
+			cstyle = Konekti.config(cstyle)
 			cstyle.style['font-size'] = cstyle.style['font-size'] || style.style['font-size']
 			var xchildren = c[4] || []
 			var showChildren = (c[5]!==undefined && c[5] !=null && c[5])
@@ -35,9 +35,8 @@ class TocPlugin extends PlugIn{
 	 * @param config Style of the toc
 	 */
 	setup(parent, id, content, onclick, config){
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.style['font-size'] = config.style['font-size'] || (Konekti.font.defaultSize +'px')
-		config.style.width = '100%'
 		config.style.padding = '0px'
 		return super.setup(parent, id, this.children_setup(content, config, onclick), config)
 	}

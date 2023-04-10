@@ -23,8 +23,8 @@ class CanvasPlugIn extends PlugIn{
 	 * @param config Component style
 	 */
 	setup(parent, id, initial, custom_commands, config={}){
+		config = Konekti.config(config)
 		if( typeof custom_commands === 'string' ) custom_commands = JSON.parse(custom_commands)
-		config = this.style(config)
 		config.style.border = '1px solid #d3d3d3'
 		var inner = '<canvas id="'+id+'Canvas"></canvas>'
 		var c = super.setup(parent, id, inner, config )
@@ -54,8 +54,8 @@ class Canvas extends Editor{
 	resize(width, height){
 		super.resize(width, height)
 		var x = this
-		x.vc('Canvas').width = width
-		x.vc('Canvas').height = height
+		x.vc('Canvas').width = x.width - 2
+		x.vc('Canvas').height = x.height - 2
 		x.redraw()
 	}
 
@@ -77,6 +77,7 @@ class Canvas extends Editor{
 	 * Redraws the canvas
 	 */
 	redraw(){
+		this.getContext().strokeRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
 		this.draw(this.commands) 
 	}
 	
@@ -299,8 +300,6 @@ class Canvas extends Editor{
 		var x = obj.x
 		var y = obj.y
 		var keepAspectRatio = obj.r
-		this.vc('Canvas').width = this.vc().clientWidth
-		this.vc('Canvas').height = this.vc().clientHeight
 		var w = this.vc('Canvas').width
 		var h = this.vc('Canvas').height
 		if(keepAspectRatio) {

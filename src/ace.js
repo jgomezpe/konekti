@@ -30,9 +30,9 @@ class AcePlugIn extends PlugIn{
 	 * @param code Lexical configuration for the ace editor  
 	 */
 	setup(parent, id, initial, mode, theme, code='', config={}){
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.style['font-size'] = config.style['font-size'] || (Konekti.font.defaultSize +'px')
-		var c = super.setup(parent, id, '', config)
+		var c = super.setup(parent, id, [], config)
 		c.initial = initial
 		c.mode = mode
 		c.theme = theme
@@ -247,7 +247,6 @@ class Ace extends Editor{
 				})
 
 				x.edit.$blockScrolling = Infinity
-
 				x.setText(x.initial)	
 			}
 		)

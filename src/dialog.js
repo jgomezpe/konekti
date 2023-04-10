@@ -37,12 +37,12 @@
 			btns[i].setup[3] = 'Konekti.vc("'+id+'").style.display="none"\n' + onclick
 		}
 
-        var navbar = {'plugin':'raw','setup':[id+'Btns', btns, {'class':" w3-center ", 'style':'width:100%;'}]}
+        var navbar = {'plugin':'raw','setup':[id+'Btns', btns, {'class':" w3-center ", 'width':'100%'}]}
         children.push(navbar)
-        var content = {'plugin':'raw', 'setup':[id+'Content', children, {'style':'width:100%;margin:0px;'}]}
-        var modal = {'plugin':'raw', 'setup':[id+'Modal',[content], {'class':" w3-modal-content "}]}
+        var content = {'plugin':'raw', 'setup':[id+'Content', children, {'width':'100%', 'style':'margin:0px;'}]}
+        var modal = {'plugin':'raw', 'setup':[id+'Modal',[content], {'width':'80%', 'class':" w3-modal-content "}]}
 		config.class = (config.class || '') + " w3-modal "
-		config = this.style(config)
+		config = Konekti.config(config)
 		config.width = '100%'
 		config.height = '100%'
 		config.style.display = 'none'
@@ -64,10 +64,9 @@ class Dialog extends Client{
 	resize( width, height ){
         var x = this	
 		if(x.vc().style.display!='none') super.resize(width, height)
-		else{
-			x.vc().style.width = width + 'px'
-			x.vc().style.height = height + 'px'	
-		}
+		
+		x.vc().style.width = width + 'px'
+		x.vc().style.height = height + 'px'	
 	}
 
 	show(){

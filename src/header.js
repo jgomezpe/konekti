@@ -13,12 +13,12 @@ class HeaderPlugin extends PlugIn{
 	 */
 	setup(parent, id, icon, caption, h, config={}){
 		config.tag = 'h'+h
-		config = this.style(config)
+		config = Konekti.config(config)
 		var fs = Konekti.font.fromHeader(h) + 'px'
 		config.width = '100%'
 		config.style['margin-top'] = 0
 		config.style['margin-bottom'] = 0
-		config.style['padding'] = '2px'
+		config.style.padding = '2px'
 		return super.setup(parent, id, [{'plugin':'item', 'setup': [id+'Item', icon, caption, {'width':'100%', 'style':{'font-size':fs}}]}], config)
 	}
 
@@ -35,6 +35,18 @@ class Header extends Client{
 	 * Creates a Header configuration object
 	 */
 	constructor(config){ super(config) }
+
+    /**
+     * Resizes the visual component window associated to the client
+	 * @param width Parents width
+	 * @param height Parents height
+     */
+    resize( width, height ){
+		this.children[0].resize(width,height)
+		var r = this.vc().getBoundingClientRect()
+		this.width = r.width
+		this.height = r.height
+    }
 }
 
 /**
