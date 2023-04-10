@@ -621,7 +621,7 @@ class KonektiAPI{
 	/**
 	 * Inits the konekti framework
 	 */
-    constructor(url='src/'){ // constructor(url='https://jgomezpe.github.io/konekti/src/'){
+    constructor(url='https://jgomezpe.github.io/konekti/src/'){
 
         var x = this
 		Konekti = x
