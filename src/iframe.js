@@ -41,15 +41,20 @@ class IFrameEditor extends Editor{
 	 * Gets current html code in the iframe component
 	 * @return Current html code in the iframe component
 	 */
-	getText(){ return this.gui.contentWindow.document.documentElement.outerHTML }
+	getText(){ return this.vc().contentWindow.document.documentElement.outerHTML }
 
 	/**
 	 * Sets html code for the iframe component
 	 * @param txt Html code to set in the iframe component
 	 */
 	setText(txt){
-    	if( !txt.startsWith('https://') ) this.vc().src = iframeplugin.getBlobURL(txt, 'text/html')
-		else this.vc().src = txt 
+		var x = this
+		Konekti.daemon( function(){ return x.vc()!=null }, 
+			function(){
+    			if( !txt.startsWith('https://') ) x.vc().src = iframeplugin.getBlobURL(txt, 'text/html')
+				else x.vc().src = txt
+			}
+		)
 	}
 }
 
