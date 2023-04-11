@@ -114,7 +114,7 @@ class SideBar extends Client{
 		var x = this
 		x.vc('Resize').style.display = 'block' 
 		x.vc('Bar').style.display = 'none' 
-		x.update(x.width, x.height)
+		x.update(x.width-20, x.height)
 	}
 
     /**
