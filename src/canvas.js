@@ -112,6 +112,10 @@ class Canvas extends Editor{
 			}else{
 				c.x = obj.x * sx
 				c.y = obj.y * sy
+				if(obj.command=='ellipse'){
+					c.rx = obj.rx * sx
+					c.ry = obj.ry * sy
+				}
 			}
 		}    
 		return c
@@ -260,6 +264,7 @@ class Canvas extends Editor{
 					p = this.rotate_point( cx, cy, obj.x, obj.y, angle )
 					c.x = p[0]
 					c.y = p[1]
+					if(obj.command=='ellipse') c.r = obj.r + angle
 				}
 			}    
 		}
@@ -448,6 +453,31 @@ class Canvas extends Editor{
 	}
 
 	/**
+	 * Draws an ellipse curve using the given control points.
+	 * @param obj Ellipse to command. It is defined by attributes:
+	 * <i>command='ellipse'</i>, 
+	 * <i>x</i> coordinate x of the center of the ellipse 
+	 * <i>y</i> coordinate x of the center of the ellipse 
+	 * <i>rx</i> radius of the ellipse in the x coordinate
+	 * <i>ry</i> radius of the ellipse in the y coordinate
+	 * <i>r</i> rotation of the ellise
+	 * <i>sa</i> start angle position for drawing the ellipse
+	 * <i>ea</i> end angle position for drawing the ellipse
+	 */
+	ellipse(obj){
+		var ctx = this.getContext()
+		var cx = obj.x 
+		var cy = obj.y
+		var rx = obj.rx
+		var ry = obj.ry
+		var r = obj.r || 0
+		var sa = obj.sa || 0
+		var ea = obj.ea || 2*Math.PI
+		ctx.ellipse(cx, cy, rx, ry, r, sa, ea)
+	}
+
+
+	/**
 	 * Draws a line using the given control points.
 	 * @param obj Line command. It is defined by attributes:
 	 * <i>command='line'</i>, 
@@ -496,6 +526,7 @@ class Canvas extends Editor{
 	 */
 	polygon(obj){
 		this.poly(obj)
+		this.closePath(obj)
 		this.fill(obj)
 	}
 
@@ -590,11 +621,7 @@ class Canvas extends Editor{
 	 * @param obj Fill command. It is defined by attribute:
 	 * <i>command='fill'</i>
 	 */
-	fill(obj){
-		var ctx = this.getContext()
-		ctx.closePath()
-		ctx.fill()
-	}
+	fill(obj){ this.getContext().fill()	}
 	
 	/**
 	 * Creates a hard copy of the command
