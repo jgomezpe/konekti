@@ -70,6 +70,8 @@ class Canvas extends Editor{
 	 */
 	clear(){ 
 		this.commands = {}
+		this.getContext().fillStyle = "#FFFFFF"
+		this.getContext().fillRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
 		this.getContext().strokeRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
 	}
 
@@ -77,7 +79,8 @@ class Canvas extends Editor{
 	 * Redraws the canvas
 	 */
 	redraw(){
-		this.getContext().strokeRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
+		this.getContext().fillStyle = "#FFFFFF"
+		this.getContext().fillRect(0,0,this.vc().clientWidth,this.vc().clientHeight) 
 		this.draw(this.commands) 
 	}
 	
