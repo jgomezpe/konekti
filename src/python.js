@@ -45,7 +45,7 @@ class PythonPlugIn extends PlugIn{
 		var maincfg = config.main || {'style':'width:100%;height:100%;'}
         var control = {
             'plugin':'split', 'setup':[
-                id+'editcon', 'col', 50, 
+                id+'editcon', config.layout || 'col', 50, 
                 {'plugin':'tab', 'setup':[id+'editor', tabs, 'main.py', {'style':'width:100%;height:100%;'}]},
                 {  'plugin':'raw', 'setup':[id+'right', [ navbar,
                     {'plugin':'terminal', 'setup':[id+'console', '', tercfg]} ], {'style':'width:100%;height:100%;'}
@@ -145,7 +145,9 @@ const fs = require('fs')
 
 function python_args(req) {
     var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
-    var dir = '/tmp/python/'+ip+'/'
+    var dir = '/tmp/python/'
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir) 
+    dir += ip+'/'
     if (!fs.existsSync(dir)) fs.mkdirSync(dir) 
     var args = req.body.args
     var name = []
