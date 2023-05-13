@@ -37,7 +37,7 @@ class Input extends Editor{
 	constructor(config){ 
 		super(config)
 		var x = this
-		Konekti.daemon(function(){ x.vc()!==null }, 
+		Konekti.daemon(function(){ return x.vc()!==null }, 
 			       function(){ 
 					x.vc().onchange = function(){ eval(Konekti.dom.onclick(x.vc().value,x.onenter)) }
 				})
