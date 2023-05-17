@@ -136,13 +136,88 @@ Konekti.python = function(id, url, files={'name':'main.py', 'content':''}, confi
 	Konekti.add({'plugin':'python', 'setup':['body', id, url, files, config]}, callback)
 }
 
-/*********************** NODEJS Python ENDPOINT EXAMPLE*********************/
+/*********************** NODEJS Python/linux SERVER ENDPOINT EXAMPLE*********************/
 /*
+#!/usr/bin/env node
 const { execFile } = require('node:child_process')
 const fs = require('fs')
+const express = require('express')
 
-//  Insert here the NODEJS example code of finapunkto.js (commented at the end of file) //
+const app = express()
+const port = 8080
 
+app.use(express.json());
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
+
+app.get('/', (req, res) => {
+    res.send('Hello World!... Numtseng server is up and running')
+  })
+  
+session = {}
+  
+function CORS(req, res){
+    // Set of domains that you are allowing to cross origin (Here I use mit github pages a lot from numtseng domain)
+    const allowedOrigins = ['https://www.mumtseng.com', 'https://numtseng.com', 'https://jgomezpe.github.io', 'https://www.jgomezpe.github.io']
+    const origin = req.headers.origin
+    if (allowedOrigins.includes(origin)){
+      res.setHeader('Access-Control-Allow-Origin', origin)
+      res.setHeader('Access-Control-Allow-Methods','GET,POST,PATCH,OPTIONS')
+    }  
+  }
+  
+async function command(cmd, req, res, onargs=function(req){ return req.args }) {
+    CORS(req, res)
+    var c = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    if(session[c]===undefined) session[c] = {}
+    var s = session[c]
+    s[cmd] = s[cmd] || {'out':[]}
+    var out = s[cmd].out
+    var action = req.body.action
+    var args = req.body.args
+    var process
+    var dir = '/tmp/python/'+c+'/'
+    switch(action){
+      case 'start':
+        if(s[cmd].process !== undefined && s[cmd].process !== null) s[cmd].process.exit(0)
+        var args = onargs(req)
+        // To reduce hacking risk, You need to create a restricted user able to run python3, here I call such user python
+        args.splice(0,0,'-upython') 
+        // Run python as such user in the temporary client folder
+        s[cmd].process = execFile('sudo', args, {cwd:dir})
+        process = s[cmd].process
+        process.stdout.on("data", (data) => { out.push({'out':data}) })
+        process.stderr.on("data", (data) => {
+          data = data.replace(dir,'')
+          out.push({'err':data})
+        });
+        process.on("exit", (code) => {
+          out.push({'end':code})
+          s[cmd].process = null
+        });
+        res.send({'running':true, "out":[]})
+      break;  
+      case 'pull':
+        process = s[cmd].process
+        if(args.length>0) process.stdin.write(args[0])
+        var n = out.length
+        var running = !(n>0 && out[n-1].end !== undefined)
+        var cout = []
+        for(var i=0; i<n; i++) cout[i] = out[i]
+        out.splice(0,n)
+        res.send({'running':running, "out":cout})
+      break;
+      case 'end':
+        out.push('Terminated by user')
+        res.send({'running':false, "out":out})
+        if(s[cmd].process !== undefined && s[cmd].process !== null) s[cmd].process.kill(0)
+        s[cmd].process = null
+      break;
+    }
+  }
+  
 function python_args(req) {
     var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
     var dir = '/tmp/python/'
@@ -152,11 +227,11 @@ function python_args(req) {
     var args = req.body.args
     var name = []
     for(var i=0; i<args.length; i++){
-      name[i] = dir + args[i].name
-      fs.writeFileSync(name[i], args[i].code)
+      name[i] = args[i].name
+      fs.writeFileSync(dir + name[i], args[i].code)
     }
-    return [name[0]]
-  }
+    return ['python3', name[0]]
+}
   
   app.post('/python', (req, res) => command('python3', req, res, python_args))
 */
