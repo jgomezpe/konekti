@@ -132,7 +132,7 @@ class Python extends Client{
  * @param files Python code files
  * @param config Style of the python ide
  */
-Konekti.python = function(id, url, files={'name':'main.py', 'content':''}, config={}, callback=function(){}){ 
+Konekti.python = function(id, url, files=[{'name':'main.py', 'content':''}], config={}, callback=function(){}){ 
 	Konekti.add({'plugin':'python', 'setup':['body', id, url, files, config]}, callback)
 }
 
