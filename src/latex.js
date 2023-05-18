@@ -17,7 +17,7 @@ class LatexPlugin extends PlugIn{
 	 setup(parent, id, tex, config={}){
 		config = Konekti.config(config)
 		config.style.padding = '8px'
-		config.overflow='auto'
+		config.style.overflow='auto'
 		var c = super.setup(parent, id, '', config)
 		c.initial = tex
 		return c
