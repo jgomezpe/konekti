@@ -58,8 +58,8 @@ class Item extends Client{
 				code = this.icon.src + ' '
 			break;
 			case 'img':
-				var size = Konekti.font.size(this.config) || 10
-				code = '<div style="float:left;vertical-align:middle;margin:4px;width:' + size + 'px;height:' + size +'px;"><img src="' + this.icon.src + '" style="vertical-align:middle;width:100%;height:100%;"></div>' 
+				var size = Konekti.font.size(this.config)
+				code = '<div style="float:left;padding:0px;margin:0px;width:' + size + 'px;height:' + size +'px;"><img src="' + this.icon.src + '" style="vertical-align:middle;width:100%;height:100%;"></div>' 
 			break;
 		}
 		return code + this.caption
