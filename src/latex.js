@@ -60,6 +60,7 @@ class Latex extends Editor{
 			function (){	
 				var output = x.vc()
 				output.innerHTML = tex.trim()
+				window.MathJax.tex = { inlineMath: [['$', '$'], ['\\(', '\\)']] }
 				window.MathJax.texReset()
 				window.MathJax.typesetClear()
 				window.MathJax.typesetPromise([output]).catch(function(err){
