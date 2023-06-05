@@ -328,12 +328,10 @@ class FontSize{
 	}
 
 	size(config){
-		if(config.class!==undefined){
-			var s = this.fromClass(config.class)
-			if(s!='') return s
-		}
-		if(config.style['font-size']!==undefined) return this.fromFontSize(config.style['font-size'])
-		return null
+		var s = null
+		if(config.style['font-size']!==undefined) s = this.fromFontSize(config.style['font-size'])
+		if(s==null && config.class!==undefined)	s = this.fromClass(config.class)
+		return (s!=null)?s:this.defaultSize
 	}
 }
 
