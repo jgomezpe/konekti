@@ -1,10 +1,8 @@
 if(typeof window.MathJax=='undefined'){
-	var script = document.createElement('script')
-	script.setAttribute('type', 'text/x-mathjax-config');
-	script.innerHTML = "MathJax = { tex:{ inlineMath: [['$', '$'], ['\\(', '\\)']], processEscapes: true } }"
-	var b = document.getElementsByTagName('script')[0]
-	b.parentNode.insertBefore(script, b)
-	Konekti.resource.JS('https://polyfill.io/v3/polyfill.min.js?features=es6')
+	window.MathJax = { 
+		tex:{ inlineMath: [['$', '$'], ['\\(', '\\)']] }
+	}
+//	Konekti.resource.JS('https://polyfill.io/v3/polyfill.min.js?features=es6')
 	Konekti.resource.JS('https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js')
 }
 
