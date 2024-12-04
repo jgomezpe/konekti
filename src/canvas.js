@@ -391,6 +391,33 @@ class Canvas extends Editor{
 	closePath(obj){ this.getContext().closePath() }
 
 	/**
+	 * Sets the canvas font.
+	 * @param obj Font command. It is defined by attributes:
+	 * <i>command='font'</i>,
+	 * <i>description</i> Font description. 
+	 */
+	font(obj){
+		var ctx = this.getContext()
+		ctx.font = obj.description
+	}
+
+	/**
+	 * Draws a text in the canvas.
+	 * @param obj Text command. It is defined by attributes:
+	 * <i>command='text'</i>,
+	 * <i>str</i> Text to draw, 
+	 * <i>x</i> x coordinate for drawing the text, 
+	 * <i>y</i> y coordinate for drawing the text. 
+	 */
+	text(obj){
+		var ctx = this.getContext()
+		var x = obj.x 
+		var y = obj.y
+		var str = obj.str
+		ctx.strokeText(str,x,y)
+	}
+	
+	/**
 	 * Moves the drawing cursor to a given position.
 	 * @param obj Move to command. It is defined by attributes:
 	 * <i>command='moveTo'</i>,
@@ -539,7 +566,7 @@ class Canvas extends Editor{
 	 * <i>blue</i> blue component of the color,
 	 * <i>alpha</i> alpha component of the color
 	 */
-    rgba( obj ){ return "rgba("+obj.red+","+obj.green+","+obj.blue+","+obj.alpha+")"; }
+    	rgba( obj ){ return "rgba("+obj.red+","+obj.green+","+obj.blue+","+obj.alpha+")"; }
 
 	/**
 	 * Applies and returns a drawing style
