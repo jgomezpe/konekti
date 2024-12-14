@@ -33,7 +33,8 @@
 		if(!Array.isArray(children)) children = [children]
         children.splice(0,0,span)
 		for( var i=0; i<btns.length; i++ ){
-			var onclick = Konekti.dom.onclick(btns[i].setup[0], btns[i].setup[3])
+			var run = (btns[i].setup.length>=4)?btns[i].setup[3]:''
+			var onclick = Konekti.dom.onclick(btns[i].setup[0], run)
 			btns[i].setup[3] = 'Konekti.vc("'+id+'").style.display="none"\n' + onclick
 		}
 
