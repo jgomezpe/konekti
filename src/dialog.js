@@ -68,7 +68,8 @@ class Dialog extends Client{
 		if(x.vc().style.display!='none') super.resize(width, height)
 		
 		x.vc().style.width = width + 'px'
-		x.vc().style.height = height + 'px'	
+		x.vc().style.height = height + 'px'
+		x.vc().style.zIndex="100"
 	}
 
 	show(){
