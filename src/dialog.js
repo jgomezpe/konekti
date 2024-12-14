@@ -35,6 +35,7 @@
 		for( var i=0; i<btns.length; i++ ){
 			var run = (btns[i].setup.length>=4)?btns[i].setup[3]:''
 			var onclick = Konekti.dom.onclick(btns[i].setup[0], run)
+			while(btns[i].setup.length < 4 ) btns[i].setup.push('') 
 			btns[i].setup[3] = 'Konekti.vc("'+id+'").style.display="none"\n' + onclick
 		}
 
@@ -88,7 +89,7 @@ class Dialog extends Client{
  * @param btns Options
  * @param config Dialog style configuration
  */
-Konekti.dialog = function(id, children, btns=[{'plugin':'btn', 'setup':[id+'OK','fa-check','']}], config={}, 
+Konekti.dialog = function(id, children, btns=[{'plugin':'btn', 'setup':[id+'OK','fa-check','','']}], config={}, 
 	callback=function(){}){ 
 	Konekti.add({'plugin':'dialog', 'setup':['body', id, children, btns, config]}, callback)
 }
